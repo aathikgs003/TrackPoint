@@ -1,24 +1,44 @@
 package com.example.trackpoint;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
+    EditText edtEmail;
+    EditText edtPassword;
+    Button btnLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WindowCompat.enableEdgeToEdge(getWindow());
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        edtEmail = findViewById(R.id.username);
+        edtPassword = findViewById(R.id.password);
+        btnLogin = findViewById(R.id.login);
+        btnLogin.setOnClickListener(v -> {
+            String email = edtEmail.getText().toString().trim();
+            String password = edtPassword.getText().toString();
+            if(email.isEmpty()) {
+                edtEmail.setError("Email is required");
+            }
+            else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                edtEmail.setError("Enter valid email");
+            }
+            else if(password.isEmpty()) {
+                edtPassword.setError("Password is required");
+            }
+            else if(email.equals("aathi00602@gmail.com") && password.equals("123")) {
+                Intent intent = new Intent(
+                        MainActivity.this, StudentAdmin.class
+                );
+                startActivity(intent);
+                edtEmail.setText("");
+                edtPassword.setText("");
+            }
         });
     }
 }
