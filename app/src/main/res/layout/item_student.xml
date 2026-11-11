@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="76dp"
+    android:layout_marginBottom="5dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="10dp"
+    android:background="@drawable/action_card">
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@android:drawable/ic_menu_myplaces"
+        android:contentDescription="Student profile"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="12dp">
+
+        <TextView
+            android:id="@+id/tvStudentName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Divya S"
+            android:textColor="#18233F"
+            android:textStyle="bold"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/tvRollNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CSE22CS002"
+            android:textColor="#68738A"
+            android:textSize="12sp"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnViewStudent"
+        android:layout_width="65dp"
+        android:layout_height="38dp"
+        android:text="View"
+        android:textColor="#4935B8"
+        android:textSize="12sp"
+        android:textAllCaps="false"
+        android:backgroundTint="#EAE5FF"
+        android:minWidth="0dp"
+        android:minHeight="0dp"/>
+
+</LinearLayout>

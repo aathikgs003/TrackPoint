@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#4935B8"
+    android:fitsSystemWindows="true">
+
+    <!-- HEADER -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#4935B8"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/back_symbol"
+            app:tint="#FFFFFF"
+            android:contentDescription="Back"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add Student"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <View
+            android:layout_width="28dp"
+            android:layout_height="28dp"/>
+
+    </LinearLayout>
+
+    <!-- FORM CONTENT -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:padding="16dp"
+        android:background="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- STUDENT NAME -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Student Name *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp"/>
+
+            <EditText
+                android:id="@+id/etStudentName"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/input_box"
+                android:padding="12dp"
+                android:hint="Enter student name"
+                android:inputType="textPersonName"
+                android:textSize="14sp"/>
+
+            <!-- REGISTER NUMBER -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Register / Roll No *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp"/>
+
+            <EditText
+                android:id="@+id/etRegisterNumber"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/input_box"
+                android:padding="12dp"
+                android:hint="Enter register number"
+                android:inputType="textCapCharacters"
+                android:textSize="14sp"/>
+
+            <!-- DEPARTMENT -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Department *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp"/>
+
+            <Spinner
+                android:id="@+id/spDepartment"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/input_box"
+                android:paddingStart="12dp"/>
+
+            <!-- YEAR -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Year *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp"/>
+
+            <Spinner
+                android:id="@+id/spYear"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/input_box"
+                android:paddingStart="12dp"/>
+
+            <!-- SECTION -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Section *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp"/>
+
+            <Spinner
+                android:id="@+id/spSection"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/input_box"
+                android:paddingStart="12dp"/>
+
+            <!-- SAVE BUTTON -->
+            <Button
+                android:id="@+id/btnSaveStudent"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Save Student"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:backgroundTint="#5636C8"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,16 +9,43 @@
         android:theme="@style/Theme.TrackPoint">
 
         <activity android:name=".StudentAdmin"
-            android:exported="true"/>
+            android:exported="false"/>
 
-        <activity android:name=".MyStudents"
-            android:exported="true"/>
+        <activity
+            android:name=".MyStudents"
+            android:exported="false" />
 
-        <activity android:name=".StudentAttendance"
-            android:exported="true"/>
+        <activity
+            android:name=".AddStudentActivity"
+            android:exported="false" />
 
-        <activity android:name=".StudentProgress"
-            android:exported="true"/>
+        <activity
+            android:name=".DailyProgress"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ProgressHistory"
+            android:exported="false"/>
+
+        <activity
+            android:name=".MarkAttendance"
+            android:exported="false"/>
+
+        <activity
+            android:name=".AttendanceReport"
+            android:exported="false"/>
+
+        <activity
+            android:name=".Reports"
+            android:exported="false"/>
+
+        <activity
+            android:name=".Notifications"
+            android:exported="false"/>
+
+        <activity
+            android:name=".MyProfile"
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"

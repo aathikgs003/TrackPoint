@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="58dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="6dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tvStudentName"
+        android:layout_width="105dp"
+        android:layout_height="wrap_content"
+        android:text="Arun Kumar"
+        android:textColor="#26334D"
+        android:textStyle="bold"
+        android:textSize="12sp"/>
+
+    <EditText
+        android:id="@+id/etActivity"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_weight="1"
+        android:background="@drawable/input_box"
+        android:padding="9dp"
+        android:hint="Enter today's activity"
+        android:textSize="12sp"
+        android:singleLine="true"
+        android:inputType="textCapSentences"/>
+
+</LinearLayout>
