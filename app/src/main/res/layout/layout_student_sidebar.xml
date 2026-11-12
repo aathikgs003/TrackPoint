@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    android:background="#FFFFFF">
+    android:background="#4935B8">
 
     <!-- Sidebar Header (Flush to top and sides) -->
     <LinearLayout
@@ -14,6 +14,7 @@
         android:orientation="vertical"
         android:gravity="bottom"
         android:padding="20dp"
+        android:layout_marginTop="20dp"
         android:background="#4935B8">
 
         <ImageView
@@ -46,6 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:background="#FFFFFF"
         android:fillViewport="true">
 
         <LinearLayout
@@ -172,6 +174,35 @@
                     android:textSize="15sp"/>
             </LinearLayout>
 
+            <!-- Progress History -->
+            <LinearLayout
+                android:id="@+id/menuProgressHistory"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/progress_history_symbol"
+                    app:tint="#52627A"
+                    android:contentDescription="Progress History Icon"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Progress History"
+                    android:textColor="#34415B"
+                    android:textSize="15sp"/>
+            </LinearLayout>
+
             <!-- Reports -->
             <LinearLayout
                 android:id="@+id/menuReports"
@@ -237,35 +268,6 @@
                     android:textSize="15sp"/>
             </LinearLayout>
 
-            <!-- Notifications -->
-            <LinearLayout
-                android:id="@+id/menuNotifications"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?android:attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/notification_symbol"
-                    app:tint="#52627A"
-                    android:contentDescription="Notifications Icon"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Notifications"
-                    android:textColor="#34415B"
-                    android:textSize="15sp"/>
-            </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 
@@ -285,7 +287,7 @@
         android:paddingEnd="20dp"
         android:clickable="true"
         android:focusable="true"
-        android:background="?android:attr/selectableItemBackground">
+        android:background="#FFFFFF">
 
         <ImageView
             android:layout_width="22dp"

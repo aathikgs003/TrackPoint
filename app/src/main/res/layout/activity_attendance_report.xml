@@ -58,56 +58,36 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- REPORT PERIOD -->
+            <!-- MONTH & YEAR SELECTOR CARD -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:orientation="horizontal"
-                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
                 android:background="@drawable/action_card"
-                android:layout_marginBottom="14dp">
+                android:elevation="2dp"
+                android:layout_marginBottom="16dp">
 
                 <TextView
-                    android:id="@+id/tvDaily"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Daily"
-                    android:textColor="#4935B8"
-                    android:textStyle="bold"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Month &amp; Year *"
+                    android:textColor="#26334D"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
 
-                <TextView
-                    android:id="@+id/tvWeekly"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Weekly"
-                    android:textColor="#52627A"/>
-
-                <TextView
-                    android:id="@+id/tvMonthly"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Monthly"
-                    android:textColor="#52627A"/>
+                <Spinner
+                    android:id="@+id/spMonth"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/input_box"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"/>
 
             </LinearLayout>
 
-            <!-- MONTH FILTER -->
-            <Spinner
-                android:id="@+id/spMonth"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/input_box"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:layout_marginBottom="18dp"/>
-
-            <!-- SUMMARY -->
+            <!-- SUMMARY CARD -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -115,7 +95,8 @@
                 android:gravity="center_vertical"
                 android:padding="16dp"
                 android:background="@drawable/action_card"
-                android:elevation="2dp">
+                android:elevation="2dp"
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="110dp"
@@ -208,7 +189,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="10dp"
                 android:text="Student-wise Attendance"
                 android:textColor="#26334D"
@@ -220,7 +201,22 @@
                 android:id="@+id/studentAttendanceList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- DOWNLOAD PDF BUTTON -->
+            <Button
+                android:id="@+id/btnDownloadPdf"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="20dp"
+                android:text="Download PDF Report"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:backgroundTint="#4935B8"
+                app:cornerRadius="12dp"/>
 
         </LinearLayout>
 

@@ -91,33 +91,23 @@
                     android:textColor="#26334D"
                     android:textSize="14sp"/>
 
-                <!-- YEAR AND SECTION -->
-                <LinearLayout
+                <!-- YEAR FILTER -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Year *"
+                    android:textColor="#26334D"
+                    android:textStyle="bold"
+                    android:textSize="13sp"/>
+
+                <Spinner
+                    android:id="@+id/spYear"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:orientation="horizontal">
-
-                    <Spinner
-                        android:id="@+id/spYear"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="6dp"
-                        android:background="@drawable/filter_box"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"/>
-
-                    <Spinner
-                        android:id="@+id/spSection"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginStart="6dp"
-                        android:background="@drawable/filter_box"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"/>
-
-                </LinearLayout>
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/filter_box"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"/>
 
             </LinearLayout>
 

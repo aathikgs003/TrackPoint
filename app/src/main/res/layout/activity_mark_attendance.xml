@@ -92,39 +92,29 @@
                     android:textColor="#26334D"
                     android:textSize="14sp"/>
 
-                <!-- YEAR AND SECTION -->
-                <LinearLayout
+                <!-- YEAR FILTER -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Year *"
+                    android:textColor="#26334D"
+                    android:textStyle="bold"
+                    android:textSize="13sp"/>
+
+                <Spinner
+                    android:id="@+id/spYear"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="14dp">
-
-                    <Spinner
-                        android:id="@+id/spYear"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="6dp"
-                        android:background="@drawable/input_box"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"/>
-
-                    <Spinner
-                        android:id="@+id/spSection"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginStart="6dp"
-                        android:background="@drawable/input_box"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"/>
-
-                </LinearLayout>
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/filter_box"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"/>
 
                 <!-- MARK ALL BUTTONS -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="42dp"
+                    android:layout_height="46dp"
                     android:orientation="horizontal">
 
                     <Button
@@ -133,14 +123,22 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:layout_marginEnd="5dp"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
                         android:text="✓ Mark All Present"
                         android:textAllCaps="false"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textStyle="bold"
                         android:textColor="#16864B"
                         android:backgroundTint="#DDF5E7"
                         android:minHeight="0dp"
                         android:minWidth="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:singleLine="true"
+                        android:gravity="center"
                         app:cornerRadius="8dp"/>
 
                     <Button
@@ -149,14 +147,22 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:layout_marginStart="5dp"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
                         android:text="✕ Mark All Absent"
                         android:textAllCaps="false"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textStyle="bold"
                         android:textColor="#C43B48"
                         android:backgroundTint="#FFE5E7"
                         android:minHeight="0dp"
                         android:minWidth="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:singleLine="true"
+                        android:gravity="center"
                         app:cornerRadius="8dp"/>
 
                 </LinearLayout>

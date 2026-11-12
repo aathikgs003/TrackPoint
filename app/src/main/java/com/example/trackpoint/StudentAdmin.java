@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class StudentAdmin extends AppCompatActivity {
@@ -49,10 +50,10 @@ public class StudentAdmin extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Notifications Navigation (Action Card & Top Header Icon)
-        View.OnClickListener openNotifications = v -> startActivity(new Intent(StudentAdmin.this, Notifications.class));
-        findViewById(R.id.btnNotifications).setOnClickListener(openNotifications);
-        findViewById(R.id.notificationButton).setOnClickListener(openNotifications);
+        // Header Logout Button
+        if (findViewById(R.id.notificationButton) != null) {
+            findViewById(R.id.notificationButton).setOnClickListener(v -> showLogoutDialog());
+        }
 
 
         // Sidebar Navigation
@@ -77,9 +78,17 @@ public class StudentAdmin extends AppCompatActivity {
             sidebar.setOutsideTouchable(true);
             sidebar.setElevation(20);
 
+            // Allow sidebar to extend to the screen edges
+            sidebar.setClippingEnabled(false);
+
+            if (android.os.Build.VERSION.SDK_INT >= 29) {
+                sidebar.setIsClippedToScreen(false);
+                sidebar.setIsLaidOutInScreen(true);
+            }
+
             sidebar.showAtLocation(
-                    findViewById(android.R.id.content),
-                    Gravity.START,
+                    getWindow().getDecorView(),
+                    Gravity.START | Gravity.TOP,
                     0,
                     0
             );
@@ -120,6 +129,18 @@ public class StudentAdmin extends AppCompatActivity {
                         sidebar.dismiss();
                     });
 
+            // Progress History
+            if (sidebarView.findViewById(R.id.menuProgressHistory) != null) {
+                sidebarView.findViewById(R.id.menuProgressHistory)
+                        .setOnClickListener(item -> {
+                            startActivity(new Intent(
+                                    StudentAdmin.this,
+                                    ProgressHistory.class
+                            ));
+                            sidebar.dismiss();
+                        });
+            }
+
             // Reports
             sidebarView.findViewById(R.id.menuReports)
                     .setOnClickListener(item -> {
@@ -140,22 +161,26 @@ public class StudentAdmin extends AppCompatActivity {
                         sidebar.dismiss();
                     });
 
-            // Notifications
-            sidebarView.findViewById(R.id.menuNotifications)
-                    .setOnClickListener(item -> {
-                        startActivity(new Intent(
-                                StudentAdmin.this,
-                                Notifications.class
-                        ));
-                        sidebar.dismiss();
-                    });
-
             // Logout
             sidebarView.findViewById(R.id.menuLogout)
                     .setOnClickListener(item -> {
                         sidebar.dismiss();
-                        finish();
+                        showLogoutDialog();
                     });
         });
+    }
+
+    private void showLogoutDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Logout Confirmation")
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    Intent intent = new Intent(StudentAdmin.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .show();
     }
 }

@@ -188,13 +188,13 @@ public class MyStudents extends AppCompatActivity {
             rollNumber.setText(student.registerNumber);
 
             btnView.setOnClickListener(v -> {
-
-                Toast.makeText(
-                        MyStudents.this,
-                        "Selected: " + student.name,
-                        Toast.LENGTH_SHORT
-                ).show();
-
+                Intent intent = new Intent(MyStudents.this, StudentDetailsActivity.class);
+                intent.putExtra("student_name", student.name);
+                intent.putExtra("student_roll_no", student.registerNumber);
+                intent.putExtra("student_dept", student.department);
+                intent.putExtra("student_year", student.year);
+                intent.putExtra("student_section", student.section);
+                startActivity(intent);
             });
 
             studentList.addView(row);
@@ -275,12 +275,12 @@ public class MyStudents extends AppCompatActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item,
                 items
         );
 
         adapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
+                R.layout.spinner_dropdown_item
         );
 
         spinner.setAdapter(adapter);

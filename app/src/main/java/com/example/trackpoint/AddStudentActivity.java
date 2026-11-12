@@ -68,12 +68,12 @@ public class AddStudentActivity extends AppCompatActivity {
     private void setSpinner(Spinner spinner, String[] items) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item,
                 items
         );
 
         adapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
+                R.layout.spinner_dropdown_item
         );
 
         spinner.setAdapter(adapter);

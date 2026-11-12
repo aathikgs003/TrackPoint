@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,20 +24,25 @@ public class MarkAttendance extends AppCompatActivity {
 
     ImageView btnBack;
     TextView tvAttendanceDate;
-    Spinner spYear, spSection;
+    Spinner spYear;
     Button btnAllPresent, btnAllAbsent, btnSubmitAttendance;
 
     LinearLayout attendanceList;
 
-    ArrayList<Spinner> statusSpinners = new ArrayList<>();
+    static class AttendanceStudent {
+        String name;
+        String year;
+        String section;
 
-    String[] students = {
-            "Arun Kumar",
-            "Divya S",
-            "Karthik R",
-            "Nithya P",
-            "Praveen M"
-    };
+        AttendanceStudent(String name, String year, String section) {
+            this.name = name;
+            this.year = year;
+            this.section = section;
+        }
+    }
+
+    ArrayList<AttendanceStudent> allStudents = new ArrayList<>();
+    ArrayList<Spinner> statusSpinners = new ArrayList<>();
 
     String[] attendanceOptions = {
             "Present", "Absent"
@@ -50,7 +56,6 @@ public class MarkAttendance extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         tvAttendanceDate = findViewById(R.id.tvAttendanceDate);
         spYear = findViewById(R.id.spYear);
-        spSection = findViewById(R.id.spSection);
 
         btnAllPresent = findViewById(R.id.btnAllPresent);
         btnAllAbsent = findViewById(R.id.btnAllAbsent);
@@ -63,11 +68,6 @@ public class MarkAttendance extends AppCompatActivity {
                 "III Year", "IV Year"
         });
 
-        setSpinner(spSection, new String[]{
-                "Select Section", "A", "B", "C"
-        });
-
-        // Set current date
         Calendar calendar = Calendar.getInstance();
         updateDate(calendar);
 
@@ -89,17 +89,26 @@ public class MarkAttendance extends AppCompatActivity {
             dialog.show();
         });
 
-        // Create student rows
-        addStudentRows();
+        loadSampleStudents();
 
-        // Mark all present
+        filterStudents();
+
+        spYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                filterStudents();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
         btnAllPresent.setOnClickListener(v -> {
             for (Spinner spinner : statusSpinners) {
                 spinner.setSelection(0);
             }
         });
 
-        // Mark all absent
         btnAllAbsent.setOnClickListener(v -> {
             for (Spinner spinner : statusSpinners) {
                 spinner.setSelection(1);
@@ -108,39 +117,66 @@ public class MarkAttendance extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        // Submit attendance
         btnSubmitAttendance.setOnClickListener(v -> {
-
-            if (spYear.getSelectedItemPosition() == 0 ||
-                    spSection.getSelectedItemPosition() == 0) {
-
-                Toast.makeText(this,
-                        "Please select Year and Section",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            StringBuilder result = new StringBuilder();
-
-            for (int i = 0; i < students.length; i++) {
-                result.append(students[i])
-                        .append(": ")
-                        .append(statusSpinners.get(i).getSelectedItem())
-                        .append("\n");
-            }
-
             Toast.makeText(this,
-                    "Attendance validated for " + students.length + " students",
+                    "Attendance submitted successfully!",
                     Toast.LENGTH_SHORT).show();
+            finish();
         });
     }
 
-    private void addStudentRows() {
+    private void loadSampleStudents() {
+        allStudents.clear();
+        allStudents.add(new AttendanceStudent("Arun Kumar", "III Year", "A"));
+        allStudents.add(new AttendanceStudent("Divya S", "III Year", "A"));
+        allStudents.add(new AttendanceStudent("Karthik R", "III Year", "B"));
+        allStudents.add(new AttendanceStudent("Nithya P", "II Year", "A"));
+        allStudents.add(new AttendanceStudent("Praveen M", "II Year", "B"));
+        allStudents.add(new AttendanceStudent("Kaviya R", "II Year", "A"));
+        allStudents.add(new AttendanceStudent("Suresh K", "I Year", "A"));
+        allStudents.add(new AttendanceStudent("Meena T", "IV Year", "A"));
+    }
+
+    private void filterStudents() {
+        if (spYear == null || spYear.getSelectedItem() == null) {
+            return;
+        }
+
+        String selectedYear = spYear.getSelectedItem().toString();
+
+        ArrayList<AttendanceStudent> filtered = new ArrayList<>();
+
+        for (AttendanceStudent s : allStudents) {
+            boolean matchesYear = selectedYear.equals("Select Year") ||
+                    selectedYear.equals("All Years") ||
+                    s.year.equalsIgnoreCase(selectedYear);
+
+            if (matchesYear) {
+                filtered.add(s);
+            }
+        }
+
+        displayStudents(filtered);
+    }
+
+    private void displayStudents(ArrayList<AttendanceStudent> list) {
+        if (attendanceList == null) return;
+        attendanceList.removeAllViews();
+        statusSpinners.clear();
 
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        for (String student : students) {
+        if (list.isEmpty()) {
+            TextView emptyView = new TextView(this);
+            emptyView.setText("No students found for selected filter");
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(android.view.Gravity.CENTER);
+            emptyView.setTextColor(android.graphics.Color.parseColor("#68738A"));
+            attendanceList.addView(emptyView);
+            return;
+        }
 
+        for (AttendanceStudent student : list) {
             View row = inflater.inflate(
                     R.layout.item_attendance,
                     attendanceList,
@@ -150,18 +186,15 @@ public class MarkAttendance extends AppCompatActivity {
             TextView name = row.findViewById(R.id.tvStudentName);
             Spinner status = row.findViewById(R.id.spAttendanceStatus);
 
-            name.setText(student);
-
+            name.setText(student.name);
             setSpinner(status, attendanceOptions);
 
             statusSpinners.add(status);
-
             attendanceList.addView(row);
         }
     }
 
     private void updateDate(Calendar calendar) {
-
         SimpleDateFormat format =
                 new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
 
@@ -169,15 +202,14 @@ public class MarkAttendance extends AppCompatActivity {
     }
 
     private void setSpinner(Spinner spinner, String[] items) {
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item,
                 items
         );
 
         adapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
+                R.layout.spinner_dropdown_item
         );
 
         spinner.setAdapter(adapter);

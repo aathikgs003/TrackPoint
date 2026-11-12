@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,18 +25,23 @@ public class DailyProgress extends AppCompatActivity {
 
     ImageView btnBack;
     TextView tvSelectedDate;
-    Spinner spYear, spSection;
+    Spinner spYear;
     Button btnSaveProgress;
     LinearLayout progressList;
 
-    String[] students = {
-            "Arun Kumar",
-            "Divya S",
-            "Karthik R",
-            "Nithya P",
-            "Praveen M"
-    };
+    static class ProgressStudent {
+        String name;
+        String year;
+        String section;
 
+        ProgressStudent(String name, String year, String section) {
+            this.name = name;
+            this.year = year;
+            this.section = section;
+        }
+    }
+
+    ArrayList<ProgressStudent> allStudents = new ArrayList<>();
     ArrayList<EditText> activityInputs = new ArrayList<>();
 
     @Override
@@ -46,16 +52,12 @@ public class DailyProgress extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         tvSelectedDate = findViewById(R.id.tvSelectedDate);
         spYear = findViewById(R.id.spYear);
-        spSection = findViewById(R.id.spSection);
         btnSaveProgress = findViewById(R.id.btnSaveProgress);
         progressList = findViewById(R.id.progressList);
 
         setSpinner(spYear,
                 new String[]{"Select Year", "I Year", "II Year",
                         "III Year", "IV Year"});
-
-        setSpinner(spSection,
-                new String[]{"Select Section", "A", "B", "C"});
 
         Calendar calendar = Calendar.getInstance();
         updateDate(calendar);
@@ -75,35 +77,91 @@ public class DailyProgress extends AppCompatActivity {
             dialog.show();
         });
 
-        addStudentRows();
+        loadSampleStudents();
+
+        // Initial fetch/filter
+        filterStudents();
+
+        // Spinner item listener for dynamic filtering by Year
+        spYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                filterStudents();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         btnBack.setOnClickListener(v -> finish());
 
         btnSaveProgress.setOnClickListener(v -> {
-            if (spYear.getSelectedItemPosition() == 0 ||
-                    spSection.getSelectedItemPosition() == 0) {
-
+            if (spYear.getSelectedItemPosition() == 0) {
                 Toast.makeText(this,
-                        "Please select Year and Section",
+                        "Please select Year",
                         Toast.LENGTH_SHORT).show();
                 return;
             }
 
             Toast.makeText(this,
-                    "Daily progress saved successfully for " + students.length + " students",
+                    "Daily progress saved successfully!",
                     Toast.LENGTH_SHORT).show();
             finish();
         });
     }
 
-    private void addStudentRows() {
+    private void loadSampleStudents() {
+        allStudents.clear();
+        allStudents.add(new ProgressStudent("Arun Kumar", "III Year", "A"));
+        allStudents.add(new ProgressStudent("Divya S", "III Year", "A"));
+        allStudents.add(new ProgressStudent("Karthik R", "III Year", "B"));
+        allStudents.add(new ProgressStudent("Nithya P", "II Year", "A"));
+        allStudents.add(new ProgressStudent("Praveen M", "II Year", "B"));
+        allStudents.add(new ProgressStudent("Kaviya R", "II Year", "A"));
+        allStudents.add(new ProgressStudent("Suresh K", "I Year", "A"));
+        allStudents.add(new ProgressStudent("Meena T", "IV Year", "A"));
+    }
+
+    private void filterStudents() {
+        if (spYear == null || spYear.getSelectedItem() == null) {
+            return;
+        }
+
+        String selectedYear = spYear.getSelectedItem().toString();
+
+        ArrayList<ProgressStudent> filtered = new ArrayList<>();
+
+        for (ProgressStudent s : allStudents) {
+            boolean matchesYear = selectedYear.equals("Select Year") ||
+                    selectedYear.equals("All Years") ||
+                    s.year.equalsIgnoreCase(selectedYear);
+
+            if (matchesYear) {
+                filtered.add(s);
+            }
+        }
+
+        displayStudents(filtered);
+    }
+
+    private void displayStudents(ArrayList<ProgressStudent> list) {
         if (progressList == null) return;
         progressList.removeAllViews();
         activityInputs.clear();
 
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        for (String student : students) {
+        if (list.isEmpty()) {
+            TextView emptyView = new TextView(this);
+            emptyView.setText("No students found for selected filter");
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(android.view.Gravity.CENTER);
+            emptyView.setTextColor(android.graphics.Color.parseColor("#68738A"));
+            progressList.addView(emptyView);
+            return;
+        }
+
+        for (ProgressStudent student : list) {
             View row = inflater.inflate(
                     R.layout.item_daily_progress,
                     progressList,
@@ -113,9 +171,10 @@ public class DailyProgress extends AppCompatActivity {
             TextView name = row.findViewById(R.id.tvStudentName);
             EditText etActivity = row.findViewById(R.id.etActivity);
 
-            name.setText(student);
-            activityInputs.add(etActivity);
+            name.setText(student.name);
+            // etActivity is intentionally left blank so user enters fresh input!
 
+            activityInputs.add(etActivity);
             progressList.addView(row);
         }
     }
@@ -130,12 +189,12 @@ public class DailyProgress extends AppCompatActivity {
     private void setSpinner(Spinner spinner, String[] items) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item,
                 items
         );
 
         adapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
+                R.layout.spinner_dropdown_item
         );
 
         spinner.setAdapter(adapter);

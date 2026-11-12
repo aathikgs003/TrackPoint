@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/action_card"
+    android:elevation="2dp"
+    android:layout_marginBottom="16dp">
+
+    <!-- TOP ROW: DATE & TIME -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvReportCardDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="May 15, 2025"
+            android:textColor="#18233F"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvReportCardTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10:30 AM"
+            android:textColor="#68738A"
+            android:textSize="12sp"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EEEEF3"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- STATUS BADGE -->
+    <LinearLayout
+        android:id="@+id/layoutReportBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:background="@drawable/card_green"
+        android:layout_marginBottom="12dp">
+
+        <ImageView
+            android:id="@+id/imgReportBadgeIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/check_circle_symbol"
+            app:tint="#10B23E"
+            android:contentDescription="Status Icon"/>
+
+        <TextView
+            android:id="@+id/tvReportBadgeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="Verified Processing"
+            android:textColor="#10B23E"
+            android:textSize="13sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <!-- DOCUMENT DETAILS -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Uploaded Document / File"
+        android:textColor="#68738A"
+        android:textSize="12sp"/>
+
+    <TextView
+        android:id="@+id/tvReportDocName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="10dp"
+        android:text="📄 assignment.pdf"
+        android:textColor="#18233F"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+    <!-- DESCRIPTION / NOTES DETAILS -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Description / Notes"
+        android:textColor="#68738A"
+        android:textSize="12sp"/>
+
+    <TextView
+        android:id="@+id/tvReportNotes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:text="Java activity assignment completed."
+        android:textColor="#34415B"
+        android:textSize="13sp"/>
+
+</LinearLayout>

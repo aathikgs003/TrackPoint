@@ -17,6 +17,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".StudentDetailsActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".AddStudentActivity"
             android:exported="false" />
 
@@ -46,6 +50,43 @@
 
         <activity
             android:name=".MyProfile"
+            android:exported="false" />
+
+        <!-- Student Portal Activities -->
+        <activity
+            android:name=".StudentDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentTodayActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentAttendanceActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentAttendanceCalendarActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentProgressHistoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentReportsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentNotificationsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentEditProfileActivity"
             android:exported="false" />
 
         <activity

@@ -20,38 +20,36 @@ public class MainActivity extends AppCompatActivity {
         edtEmail = findViewById(R.id.username);
         edtPassword = findViewById(R.id.password);
         btnLogin = findViewById(R.id.login);
+
         btnLogin.setOnClickListener(v -> {
             String email = edtEmail.getText().toString().trim();
             String password = edtPassword.getText().toString();
-            if(email.isEmpty()) {
+
+            if (email.isEmpty()) {
                 edtEmail.setError("Email is required");
-            }
-            else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() && !email.equalsIgnoreCase("CSE22CS001")) {
                 edtEmail.setError("Enter valid email");
-            }
-            else if(password.isEmpty()) {
+            } else if (password.isEmpty()) {
                 edtPassword.setError("Password is required");
-            }
-            else if(email.equals("aathi00602@gmail.com") && password.equals("123")) {
-                Intent intent = new Intent(
-                        MainActivity.this, StudentAdmin.class
-                );
+            } else if (email.equalsIgnoreCase("aathi@gmail.com") && password.equals("123")) {
+                // Student Admin
+                Intent intent = new Intent(MainActivity.this, StudentAdmin.class);
                 startActivity(intent);
                 edtEmail.setText("");
                 edtPassword.setText("");
-            }
-            else if (email.equals("suruthika@gmail.com")
-                    && password.equals("123")) {
-
-                Intent intent = new Intent(
-                        MainActivity.this, StaffAdmin.class
-                );
+            } else if (email.equalsIgnoreCase("suruthika@gmail.com") && password.equals("123")) {
+                // Staff Admin
+                Intent intent = new Intent(MainActivity.this, StaffAdmin.class);
                 startActivity(intent);
-
                 edtEmail.setText("");
                 edtPassword.setText("");
-            }
-            else {
+            } else if ((email.equalsIgnoreCase("arun@gmail.com") || email.equalsIgnoreCase("CSE22CS001")) && password.equals("123")) {
+                // Student Dashboard
+                Intent intent = new Intent(MainActivity.this, StudentDashboardActivity.class);
+                startActivity(intent);
+                edtEmail.setText("");
+                edtPassword.setText("");
+            } else {
                 Toast.makeText(MainActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
             }
         });
