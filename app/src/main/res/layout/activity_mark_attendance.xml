@@ -11,7 +11,7 @@
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="60dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingStart="16dp"
@@ -48,8 +48,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        android:padding="14dp"
-        android:background="#FFFFFF"
+        android:padding="16dp"
+        android:background="#F5F6FC"
         app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -58,87 +58,108 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- DATE LABEL -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- CONFIGURATION CARD -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Date"
-                android:textColor="#68738A"
-                android:textSize="12sp"/>
-
-            <!-- DATE PICKER -->
-            <TextView
-                android:id="@+id/tvAttendanceDate"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="14dp"
-                android:gravity="center_vertical"
-                android:padding="12dp"
-                android:background="@drawable/input_box"
-                android:text="Select Date"
-                android:textColor="#26334D"
-                android:textSize="14sp"/>
-
-            <!-- YEAR AND SECTION -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:layout_marginBottom="15dp">
-
-                <Spinner
-                    android:id="@+id/spYear"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/input_box"/>
-
-                <Spinner
-                    android:id="@+id/spSection"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:background="@drawable/input_box"/>
-
-            </LinearLayout>
-
-            <!-- MARK ALL BUTTONS -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:orientation="horizontal"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@drawable/action_card"
+                android:elevation="2dp"
                 android:layout_marginBottom="16dp">
 
-                <Button
-                    android:id="@+id/btnAllPresent"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="5dp"
-                    android:text="✓ Mark All Present"
-                    android:textAllCaps="false"
-                    android:textSize="11sp"
-                    android:textColor="#16864B"
-                    android:backgroundTint="#DDF5E7"
-                    android:minHeight="0dp"
-                    android:minWidth="0dp"/>
+                <!-- DATE LABEL -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Date *"
+                    android:textColor="#26334D"
+                    android:textStyle="bold"
+                    android:textSize="13sp"/>
 
-                <Button
-                    android:id="@+id/btnAllAbsent"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    android:text="✕ Mark All Absent"
-                    android:textAllCaps="false"
-                    android:textSize="11sp"
-                    android:textColor="#C43B48"
-                    android:backgroundTint="#FFE5E7"
-                    android:minHeight="0dp"
-                    android:minWidth="0dp"/>
+                <!-- DATE PICKER -->
+                <TextView
+                    android:id="@+id/tvAttendanceDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="14dp"
+                    android:background="@drawable/input_box"
+                    android:text="Select Date"
+                    android:textColor="#26334D"
+                    android:textSize="14sp"/>
+
+                <!-- YEAR AND SECTION -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="14dp">
+
+                    <Spinner
+                        android:id="@+id/spYear"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/input_box"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"/>
+
+                    <Spinner
+                        android:id="@+id/spSection"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/input_box"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"/>
+
+                </LinearLayout>
+
+                <!-- MARK ALL BUTTONS -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnAllPresent"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="5dp"
+                        android:text="✓ Mark All Present"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#16864B"
+                        android:backgroundTint="#DDF5E7"
+                        android:minHeight="0dp"
+                        android:minWidth="0dp"
+                        app:cornerRadius="8dp"/>
+
+                    <Button
+                        android:id="@+id/btnAllAbsent"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="5dp"
+                        android:text="✕ Mark All Absent"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#C43B48"
+                        android:backgroundTint="#FFE5E7"
+                        android:minHeight="0dp"
+                        android:minWidth="0dp"
+                        app:cornerRadius="8dp"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -148,7 +169,8 @@
                 android:layout_height="42dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="10dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:background="#DED8FF">
 
                 <TextView
@@ -189,7 +211,8 @@
                 android:textColor="#FFFFFF"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:backgroundTint="#5636C8"/>
+                android:backgroundTint="#4935B8"
+                app:cornerRadius="12dp"/>
 
         </LinearLayout>
 

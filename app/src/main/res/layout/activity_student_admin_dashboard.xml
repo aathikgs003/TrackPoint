@@ -22,18 +22,18 @@
             android:id="@+id/moreButton"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/more_symbol"
+            android:src="@drawable/menu_symbol"
             android:scaleType="fitCenter"
             app:tint="@color/white"
             android:contentDescription="Menu"/>
 
-        <TextView
+        <ImageView
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:layout_marginStart="18dp"
             android:gravity="center"
-            android:text="🎓"
-            android:textSize="23sp"
+            android:src="@drawable/student_admin_logo"
+            app:tint="#4935B8"
             android:background="@drawable/action_card"/>
 
         <LinearLayout
@@ -136,11 +136,12 @@
                     android:padding="10dp"
                     android:background="@drawable/card_blue">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="42dp"
                         android:layout_height="42dp"
                         android:gravity="center"
-                        android:text="👥"
+                        android:src="@drawable/group_symbol"
+                        app:tint="#247AE3"
                         android:textSize="23sp"/>
 
                     <LinearLayout
@@ -178,11 +179,12 @@
                     android:padding="10dp"
                     android:background="@drawable/card_green">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="42dp"
                         android:layout_height="42dp"
                         android:gravity="center"
-                        android:text="☑"
+                        android:src="@drawable/attendance_symbol"
+                        app:tint="#10B23E"
                         android:textSize="25sp"
                         android:textColor="#19A76A"/>
 
@@ -229,11 +231,12 @@
                     android:padding="10dp"
                     android:background="@drawable/card_purple">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="42dp"
                         android:layout_height="42dp"
                         android:gravity="center"
-                        android:text="📊"
+                        android:src="@drawable/progress_symbol"
+                        app:tint="#4935B8"
                         android:textSize="23sp"/>
 
                     <LinearLayout
@@ -271,11 +274,12 @@
                     android:padding="10dp"
                     android:background="@drawable/card_yellow">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="42dp"
                         android:layout_height="42dp"
                         android:gravity="center"
-                        android:text="🕒"
+                        app:tint="#BCBF17"
+                        android:src="@drawable/pending_symbol"
                         android:textSize="23sp"/>
 
                     <LinearLayout
@@ -322,10 +326,11 @@
                     android:orientation="vertical"
                     android:background="@drawable/action_card">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="👥"
+                        android:src="@drawable/group_symbol"
+                        app:tint="#247AE3"
                         android:textSize="25sp"/>
 
                     <TextView
@@ -348,10 +353,11 @@
                     android:orientation="vertical"
                     android:background="@drawable/action_card">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="📝"
+                        app:tint="#4935B8"
+                        android:src="@drawable/daily_progress_symbol"
                         android:textSize="25sp"/>
 
                     <TextView
@@ -374,10 +380,11 @@
                     android:orientation="vertical"
                     android:background="@drawable/action_card">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="☑"
+                        app:tint="#10B23E"
+                        android:src="@drawable/attendance_symbol"
                         android:textColor="#19A76A"
                         android:textSize="25sp"/>
 
@@ -409,10 +416,11 @@
                     android:orientation="vertical"
                     android:background="@drawable/action_card">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="📄"
+                        app:tint="#247AE3"
+                        android:src="@drawable/reports_symbol"
                         android:textSize="25sp"/>
 
                     <TextView
@@ -435,10 +443,11 @@
                     android:orientation="vertical"
                     android:background="@drawable/action_card">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="📊"
+                        app:tint="#BCBF17"
+                        android:src="@drawable/progress_history_symbol"
                         android:textSize="25sp"/>
 
                     <TextView
@@ -461,10 +470,11 @@
                     android:orientation="vertical"
                     android:background="@drawable/action_card">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🔔"
+                        app:tint="#E32424"
+                        android:src="@drawable/notification_symbol"
                         android:textSize="25sp"/>
 
                     <TextView
@@ -482,112 +492,5 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <!-- FIXED BOTTOM NAVIGATION -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:background="@color/white"
-        android:elevation="8dp">
-
-        <LinearLayout
-            android:id="@+id/navHome"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⌂"
-                android:textColor="#5636C8"
-                android:textSize="25sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home"
-                android:textColor="#5636C8"
-                android:textStyle="bold"
-                android:textSize="11sp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navStudents"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="👥"
-                android:textSize="21sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Students"
-                android:textColor="#52627A"
-                android:textSize="11sp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navProgress"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="▥"
-                android:textSize="23sp"
-                android:textColor="#52627A"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Progress"
-                android:textColor="#52627A"
-                android:textSize="11sp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navAttendance"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="▦"
-                android:textSize="23sp"
-                android:textColor="#52627A"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Attendance"
-                android:textColor="#52627A"
-                android:textSize="10sp"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
 
 </LinearLayout>

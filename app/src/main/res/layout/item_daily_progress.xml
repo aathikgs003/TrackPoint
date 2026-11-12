@@ -2,20 +2,23 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="58dp"
+    android:layout_height="56dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:padding="6dp"
-    android:background="@color/white">
+    android:padding="8dp"
+    android:layout_marginBottom="6dp"
+    android:background="@drawable/action_card"
+    android:elevation="1dp">
 
     <TextView
         android:id="@+id/tvStudentName"
-        android:layout_width="105dp"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
-        android:text="Arun Kumar"
+        android:paddingStart="4dp"
+        android:text="Student Name"
         android:textColor="#26334D"
         android:textStyle="bold"
-        android:textSize="12sp"/>
+        android:textSize="13sp"/>
 
     <EditText
         android:id="@+id/etActivity"
@@ -23,9 +26,12 @@
         android:layout_height="42dp"
         android:layout_weight="1"
         android:background="@drawable/input_box"
-        android:padding="9dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         android:hint="Enter today's activity"
-        android:textSize="12sp"
+        android:textColor="#18233F"
+        android:textColorHint="#9299AA"
+        android:textSize="13sp"
         android:singleLine="true"
         android:inputType="textCapSentences"/>
 

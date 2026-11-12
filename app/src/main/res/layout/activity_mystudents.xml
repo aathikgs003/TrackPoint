@@ -23,8 +23,8 @@
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:src="@drawable/back_symbol"
             android:scaleType="fitCenter"
             app:tint="#FFFFFF"
@@ -41,8 +41,8 @@
             android:textColor="#FFFFFF"/>
 
         <View
-            android:layout_width="30dp"
-            android:layout_height="30dp"/>
+            android:layout_width="28dp"
+            android:layout_height="28dp"/>
 
     </LinearLayout>
 
@@ -53,7 +53,7 @@
         android:fillViewport="true"
         android:clipToPadding="false"
         android:paddingBottom="85dp"
-        android:background="#FFFFFF"
+        android:background="#F5F6FC"
         app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,12 +63,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="16dp">
 
             <!-- FILTERS -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="48dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
@@ -77,25 +77,28 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginEnd="5dp"
-                    android:background="@drawable/filter_box"/>
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/filter_box"
+                    android:paddingStart="8dp"/>
 
                 <Spinner
                     android:id="@+id/spYear"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:background="@drawable/filter_box"/>
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/filter_box"
+                    android:paddingStart="8dp"/>
 
                 <Spinner
                     android:id="@+id/spSection"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    android:background="@drawable/filter_box"/>
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/filter_box"
+                    android:paddingStart="8dp"/>
 
             </LinearLayout>
 
@@ -103,15 +106,18 @@
             <EditText
                 android:id="@+id/etSearchStudent"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="14dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/input_box"
                 android:drawableStart="@android:drawable/ic_menu_search"
-                android:drawablePadding="10dp"
+                android:drawablePadding="12dp"
                 android:hint="Search student by name or roll no..."
-                android:padding="12dp"
-                android:textSize="13sp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="#18233F"
+                android:textColorHint="#9299AA"
+                android:textSize="14sp"
                 android:singleLine="true"
                 android:inputType="text"/>
 
@@ -129,9 +135,9 @@
     <!-- ADD STUDENT BUTTON -->
     <TextView
         android:id="@+id/btnAddStudent"
-        android:layout_width="58dp"
-        android:layout_height="58dp"
-        android:layout_margin="18dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_margin="20dp"
         android:gravity="center"
         android:text="+"
         android:textColor="#FFFFFF"

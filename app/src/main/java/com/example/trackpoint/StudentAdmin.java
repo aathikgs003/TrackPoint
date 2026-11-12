@@ -22,17 +22,14 @@ public class StudentAdmin extends AppCompatActivity {
         // My Students Navigation (Action Card & Bottom Nav)
         View.OnClickListener openStudents = v -> startActivity(new Intent(StudentAdmin.this, MyStudents.class));
         findViewById(R.id.btnMyStudents).setOnClickListener(openStudents);
-        findViewById(R.id.navStudents).setOnClickListener(openStudents);
 
         // Daily Progress Navigation (Action Card & Bottom Nav)
         View.OnClickListener openProgress = v -> startActivity(new Intent(StudentAdmin.this, DailyProgress.class));
         findViewById(R.id.btnDailyProgress).setOnClickListener(openProgress);
-        findViewById(R.id.navProgress).setOnClickListener(openProgress);
 
         // Attendance Navigation (Action Card & Bottom Nav)
         View.OnClickListener openAttendance = v -> startActivity(new Intent(StudentAdmin.this, MarkAttendance.class));
         findViewById(R.id.btnAttendance).setOnClickListener(openAttendance);
-        findViewById(R.id.navAttendance).setOnClickListener(openAttendance);
 
         // Progress History Navigation
         findViewById(R.id.btnProgressHistory).setOnClickListener(v -> {
@@ -57,10 +54,6 @@ public class StudentAdmin extends AppCompatActivity {
         findViewById(R.id.btnNotifications).setOnClickListener(openNotifications);
         findViewById(R.id.notificationButton).setOnClickListener(openNotifications);
 
-        // Home Bottom Nav Navigation
-        findViewById(R.id.navHome).setOnClickListener(v -> {
-            // Already on Dashboard Home
-        });
 
         // Sidebar Navigation
         View menuButton = findViewById(R.id.moreButton);

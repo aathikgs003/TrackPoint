@@ -11,7 +11,7 @@
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="60dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingStart="16dp"
@@ -48,8 +48,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        android:padding="14dp"
-        android:background="#FFFFFF"
+        android:padding="16dp"
+        android:background="#F5F6FC"
         app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -111,13 +111,15 @@
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/notification_unread">
 
-                <TextView
+                <ImageView
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:gravity="center"
-                    android:text="📢"
-                    android:textSize="22sp"
-                    android:background="@drawable/card_blue"/>
+                    android:padding="9dp"
+                    android:src="@drawable/attendance_symbol"
+                    app:tint="#247AE3"
+                    android:background="@drawable/card_blue"
+                    android:contentDescription="Notification Icon"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -170,13 +172,15 @@
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/notification_unread">
 
-                <TextView
+                <ImageView
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:gravity="center"
-                    android:text="📊"
-                    android:textSize="22sp"
-                    android:background="@drawable/card_green"/>
+                    android:padding="9dp"
+                    android:src="@drawable/daily_progress_symbol"
+                    app:tint="#10B23E"
+                    android:background="@drawable/card_green"
+                    android:contentDescription="Notification Icon"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -229,13 +233,15 @@
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/notification_unread">
 
-                <TextView
+                <ImageView
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:gravity="center"
-                    android:text="⚠"
-                    android:textSize="22sp"
-                    android:background="@drawable/card_yellow"/>
+                    android:padding="9dp"
+                    android:src="@drawable/notification_symbol"
+                    app:tint="#BCBF17"
+                    android:background="@drawable/card_yellow"
+                    android:contentDescription="Notification Icon"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -299,14 +305,15 @@
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/notification_read">
 
-                <TextView
+                <ImageView
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:gravity="center"
-                    android:text="✓"
-                    android:textSize="22sp"
-                    android:textColor="#16864B"
-                    android:background="@drawable/card_green"/>
+                    android:padding="9dp"
+                    android:src="@drawable/attendance_symbol"
+                    app:tint="#10B23E"
+                    android:background="@drawable/card_green"
+                    android:contentDescription="Notification Icon"/>
 
                 <LinearLayout
                     android:layout_width="0dp"

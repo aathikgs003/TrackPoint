@@ -2,11 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:layout_marginBottom="8dp"
     android:background="@drawable/action_card"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="14dp">
+    android:padding="12dp"
+    android:elevation="1dp">
 
     <TextView
         android:id="@+id/tvStudentName"
@@ -21,7 +22,7 @@
     <Spinner
         android:id="@+id/spAttendanceStatus"
         android:layout_width="125dp"
-        android:layout_height="45dp"
+        android:layout_height="44dp"
         android:background="@drawable/filter_box"
         android:paddingStart="8dp"
         android:paddingEnd="8dp" />

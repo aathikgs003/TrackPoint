@@ -2,22 +2,23 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="55dp"
+    android:layout_height="56dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:padding="12dp"
-    android:layout_marginBottom="5dp"
-    android:background="@drawable/action_card">
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/action_card"
+    android:elevation="1dp">
 
     <TextView
         android:id="@+id/tvReportStudentName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Arun Kumar"
+        android:text="Student Name"
         android:textColor="#26334D"
         android:textStyle="bold"
-        android:textSize="13sp"/>
+        android:textSize="14sp"/>
 
     <TextView
         android:id="@+id/tvReportPercentage"
