@@ -57,6 +57,50 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".StaffAdmin"
+            android:exported="false" />
+
+        <activity
+            android:name=".StaffAdminStudents"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentAdmins"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentAdminDetails"
+            android:exported="false" />
+        <activity
+            android:name=".StaffStudentDetails"
+            android:exported="false" />
+
+        <activity
+            android:name=".AddStudentAdmin"
+            android:exported="false" />
+
+        <activity
+            android:name=".StaffAddStudentActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StaffReports"
+            android:exported="false" />
+
+        <activity
+            android:name=".StaffNotifications"
+            android:exported="false" />
+
+        <activity
+            android:name=".StaffAttendanceReport"
+            android:exported="false" />
+
+        <activity
+            android:name=".StaffProgressReport"
+            android:exported="false" />
+
     </application>
 
 </manifest>

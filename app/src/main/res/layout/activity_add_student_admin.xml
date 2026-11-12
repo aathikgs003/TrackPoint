@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#4825B8"
+    android:fitsSystemWindows="true">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#4825B8">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/back_symbol"
+            app:tint="#FFFFFF"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add Student Admin"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <View
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
+
+    </LinearLayout>
+
+    <!-- Form Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:padding="16dp"
+        android:background="#F5F6FC">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:background="@drawable/action_card"
+            android:elevation="4dp">
+
+            <!-- Admin Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Student Admin Name *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+            <EditText
+                android:id="@+id/etAdminName"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/input_box"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:hint="Enter student admin name"
+                android:textColor="#18233F"
+                android:textColorHint="#9299AA"
+                android:inputType="textPersonName"
+                android:textSize="14sp" />
+
+            <!-- Admin ID -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Student Admin ID *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+            <EditText
+                android:id="@+id/etAdminId"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/input_box"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:hint="e.g., SADM005"
+                android:textColor="#18233F"
+                android:textColorHint="#9299AA"
+                android:inputType="textCapCharacters"
+                android:textSize="14sp" />
+
+            <!-- Department -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Department *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+            <Spinner
+                android:id="@+id/spAdminDepartment"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/input_box"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp" />
+
+            <!-- Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email ID *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+            <EditText
+                android:id="@+id/etAdminEmail"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/input_box"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:hint="Enter college email"
+                android:textColor="#18233F"
+                android:textColorHint="#9299AA"
+                android:inputType="textEmailAddress"
+                android:textSize="14sp" />
+
+            <!-- Phone -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone Number *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+            <EditText
+                android:id="@+id/etAdminPhone"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/input_box"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:hint="Enter phone number"
+                android:textColor="#18233F"
+                android:textColorHint="#9299AA"
+                android:inputType="phone"
+                android:textSize="14sp" />
+
+            <!-- Save Button -->
+            <Button
+                android:id="@+id/btnSaveAdmin"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Save Student Admin"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:backgroundTint="#4825B8" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

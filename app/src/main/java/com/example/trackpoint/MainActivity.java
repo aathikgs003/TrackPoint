@@ -39,7 +39,19 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 edtEmail.setText("");
                 edtPassword.setText("");
-            } else {
+            }
+            else if (email.equals("suruthika@gmail.com")
+                    && password.equals("123")) {
+
+                Intent intent = new Intent(
+                        MainActivity.this, StaffAdmin.class
+                );
+                startActivity(intent);
+
+                edtEmail.setText("");
+                edtPassword.setText("");
+            }
+            else {
                 Toast.makeText(MainActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
             }
         });

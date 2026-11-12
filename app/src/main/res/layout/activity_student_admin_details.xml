@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#4825B8">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#4825B8">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/back_symbol"
+            app:tint="@color/white"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Student Admin Details"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="@color/white">
+
+    <!-- Admin Profile Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="22dp"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:text="👤"
+            android:textSize="45sp"
+            android:gravity="center"
+            android:background="#E2D5FF" />
+
+        <TextView
+            android:id="@+id/txtAdminName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Admin Name"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            android:textColor="#17112D"
+            android:layout_marginTop="12dp" />
+
+        <TextView
+            android:id="@+id/txtAdminId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Admin ID"
+            android:textSize="14sp"
+            android:textColor="#666666" />
+
+    </LinearLayout>
+
+    <!-- Student Count Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="18dp"
+        android:layout_margin="16dp"
+        android:background="#F3EEFF">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Assigned Students"
+            android:textSize="15sp"
+            android:textColor="#555555" />
+
+        <TextView
+            android:id="@+id/txtStudentCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="24"
+            android:textSize="27sp"
+            android:textStyle="bold"
+            android:textColor="#4825B8" />
+
+    </LinearLayout>
+
+    <!-- View Students Button -->
+    <Button
+        android:id="@+id/btnViewStudents"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Students"
+        android:layout_margin="16dp"
+        android:backgroundTint="#4825B8"
+        android:textColor="#FFFFFF" />
+
+    <!-- Attendance Button -->
+    <Button
+        android:id="@+id/btnAttendance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Attendance Report"
+        android:layout_marginHorizontal="16dp"
+        android:backgroundTint="#4825B8"
+        android:textColor="#FFFFFF" />
+
+    <!-- Progress Button -->
+    <Button
+        android:id="@+id/btnProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Progress Report"
+        android:layout_margin="16dp"
+        android:backgroundTint="#4825B8"
+        android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+    <!-- Bottom Navigation -->
+    <include
+        layout="@layout/view_staff_admin_bottom_navigation" />
+
+</LinearLayout>
