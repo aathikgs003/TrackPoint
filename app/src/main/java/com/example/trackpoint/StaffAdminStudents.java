@@ -17,13 +17,10 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class StaffAdminStudents extends AppCompatActivity {
 
@@ -34,62 +31,24 @@ public class StaffAdminStudents extends AppCompatActivity {
     LinearLayout studentListContainer;
     Button btnAddStudent;
 
-    int purple = Color.parseColor("#4825B8");
+    StudentRepository repository;
+    int purple = Color.parseColor("#4935B8");
 
     String filterByAdminName = null;
-
-    static class StudentModel {
-        String name, regId, department, year, assignedAdmin, phone, email, attendance, progress, tasks;
-
-        StudentModel(String name, String regId, String department, String year,
-                     String assignedAdmin, String phone, String email,
-                     String attendance, String progress, String tasks) {
-            this.name = name;
-            this.regId = regId;
-            this.department = department;
-            this.year = year;
-            this.assignedAdmin = assignedAdmin;
-            this.phone = phone;
-            this.email = email;
-            this.attendance = attendance;
-            this.progress = progress;
-            this.tasks = tasks;
-        }
-    }
-
-    List<StudentModel> allStudents = new ArrayList<>();
-
-    ActivityResultLauncher<Intent> addStudentLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    Intent data = result.getData();
-                    allStudents.add(new StudentModel(
-                            data.getStringExtra("studentName"),
-                            data.getStringExtra("studentId"),
-                            data.getStringExtra("department"),
-                            data.getStringExtra("year"),
-                            data.getStringExtra("assignedAdmin"),
-                            data.getStringExtra("phone"),
-                            data.getStringExtra("email"),
-                            "100%", "0%", "0"
-                    ));
-                    applyFilters();
-                }
-            }
-    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(Color.parseColor("#4825B8"));
+        getWindow().setStatusBarColor(Color.parseColor("#4935B8"));
         WindowCompat.getInsetsController(
                 getWindow(),
                 getWindow().getDecorView()
         ).setAppearanceLightStatusBars(false);
 
         setContentView(R.layout.activity_staff_admin_students);
+
+        repository = new StudentRepository(this);
 
         btnBack = findViewById(R.id.btnBack);
         txtHeaderTitle = findViewById(R.id.txtHeaderTitle);
@@ -110,16 +69,7 @@ public class StaffAdminStudents extends AppCompatActivity {
 
         // Setup Filter Spinners
         setupSpinner(spFilterDepartment, new String[]{"All Departments", "CSE", "AI & DS", "ECE", "IT", "MECH"});
-        setupSpinner(spFilterYear, new String[]{"All Years", "II Year", "III Year", "IV Year"});
-
-        // Sample Students across Departments, Years & Student Admins
-        allStudents.add(new StudentModel("Aishu M", "CSE22CS001", "CSE", "II Year", "Arun Kumar", "98765 43210", "aishu@college.edu", "92%", "88%", "5"));
-        allStudents.add(new StudentModel("Bala K", "CSE22CS002", "CSE", "II Year", "Arun Kumar", "98765 43211", "bala@college.edu", "89%", "84%", "4"));
-        allStudents.add(new StudentModel("Dharani R", "AIDS21AD014", "AI & DS", "III Year", "Divya S", "98765 43212", "dharani@college.edu", "94%", "91%", "6"));
-        allStudents.add(new StudentModel("Gokul S", "ECE20EC029", "ECE", "IV Year", "Karthik R", "98765 43213", "gokul@college.edu", "86%", "85%", "5"));
-        allStudents.add(new StudentModel("Harini V", "IT22IT018", "IT", "II Year", "Nithya P", "98765 43214", "harini@college.edu", "90%", "87%", "5"));
-
-        applyFilters();
+        setupSpinner(spFilterYear, new String[]{"All Years", "I Year", "II Year", "III Year", "IV Year"});
 
         AdapterView.OnItemSelectedListener filterListener = new AdapterView.OnItemSelectedListener() {
             @Override
@@ -149,8 +99,14 @@ public class StaffAdminStudents extends AppCompatActivity {
 
         btnAddStudent.setOnClickListener(v -> {
             Intent intent = new Intent(StaffAdminStudents.this, StaffAddStudentActivity.class);
-            addStudentLauncher.launch(intent);
+            startActivity(intent);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        applyFilters();
     }
 
     private void setupSpinner(Spinner spinner, String[] items) {
@@ -164,34 +120,30 @@ public class StaffAdminStudents extends AppCompatActivity {
     }
 
     private void applyFilters() {
+        if (studentListContainer == null) return;
         studentListContainer.removeAllViews();
 
-        String selectedDept = spFilterDepartment.getSelectedItem().toString();
-        String selectedYear = spFilterYear.getSelectedItem().toString();
-        String query = searchStudent.getText().toString().toLowerCase().trim();
+        String selectedDept = spFilterDepartment.getSelectedItem() != null ? spFilterDepartment.getSelectedItem().toString() : "All Departments";
+        String selectedYear = spFilterYear.getSelectedItem() != null ? spFilterYear.getSelectedItem().toString() : "All Years";
+        String query = searchStudent.getText().toString().trim();
 
-        for (StudentModel student : allStudents) {
-            if (filterByAdminName != null && !filterByAdminName.isEmpty()
-                    && !student.assignedAdmin.equalsIgnoreCase(filterByAdminName)) {
-                continue;
+        ArrayList<StudentModel> dbList = repository.searchAndFilterStudentsForAdmin(query, selectedDept, selectedYear, filterByAdminName);
+
+        if (dbList.isEmpty()) {
+            TextView emptyView = new TextView(this);
+            if (filterByAdminName != null && !filterByAdminName.isEmpty()) {
+                emptyView.setText("No students assigned to " + filterByAdminName + " in database");
+            } else {
+                emptyView.setText("No students found in database");
             }
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(Gravity.CENTER);
+            emptyView.setTextColor(Color.parseColor("#68738A"));
+            studentListContainer.addView(emptyView);
+            return;
+        }
 
-            if (!selectedDept.equals("All Departments")
-                    && !student.department.equalsIgnoreCase(selectedDept)) {
-                continue;
-            }
-
-            if (!selectedYear.equals("All Years")
-                    && !student.year.equalsIgnoreCase(selectedYear)) {
-                continue;
-            }
-
-            if (!query.isEmpty()
-                    && !student.name.toLowerCase().contains(query)
-                    && !student.regId.toLowerCase().contains(query)) {
-                continue;
-            }
-
+        for (StudentModel student : dbList) {
             addStudentCard(student);
         }
     }
@@ -207,7 +159,8 @@ public class StaffAdminStudents extends AppCompatActivity {
         card.setOrientation(LinearLayout.HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
         card.setPadding(dpToPx(14), dpToPx(14), dpToPx(14), dpToPx(14));
-        card.setBackgroundColor(Color.parseColor("#F3EEFF"));
+        card.setBackgroundResource(R.drawable.action_card);
+        card.setElevation(dpToPx(2));
 
         ImageView avatar = new ImageView(this);
         LinearLayout.LayoutParams avatarParams = new LinearLayout.LayoutParams(dpToPx(44), dpToPx(44));
@@ -215,7 +168,7 @@ public class StaffAdminStudents extends AppCompatActivity {
         avatar.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
         avatar.setImageResource(R.drawable.profile_symbol);
         avatar.setColorFilter(purple);
-        avatar.setBackgroundColor(Color.parseColor("#E2D5FF"));
+        avatar.setBackgroundResource(R.drawable.card_purple);
 
         LinearLayout infoCol = new LinearLayout(this);
         LinearLayout.LayoutParams infoParams = new LinearLayout.LayoutParams(
@@ -226,18 +179,19 @@ public class StaffAdminStudents extends AppCompatActivity {
         infoCol.setPadding(dpToPx(12), 0, 0, 0);
 
         TextView tvName = new TextView(this);
-        tvName.setText(student.name);
+        tvName.setText(student.getName());
         tvName.setTypeface(null, Typeface.BOLD);
         tvName.setTextSize(16);
-        tvName.setTextColor(Color.parseColor("#17112D"));
+        tvName.setTextColor(Color.parseColor("#18233F"));
 
         TextView tvId = new TextView(this);
-        tvId.setText(student.regId + "  •  " + student.department + " (" + student.year + ")");
+        tvId.setText(student.getRegisterNumber() + "  •  " + student.getDepartment() + " (" + student.getYear() + ")");
         tvId.setTextSize(12);
-        tvId.setTextColor(Color.parseColor("#555555"));
+        tvId.setTextColor(Color.parseColor("#68738A"));
 
         TextView tvAdmin = new TextView(this);
-        tvAdmin.setText("Admin: " + student.assignedAdmin);
+        String assignedName = student.getAssignedAdmin() != null ? student.getAssignedAdmin() : "Aathi";
+        tvAdmin.setText("Admin: " + assignedName);
         tvAdmin.setTextSize(12);
         tvAdmin.setTextColor(purple);
 
@@ -247,25 +201,24 @@ public class StaffAdminStudents extends AppCompatActivity {
 
         TextView arrow = new TextView(this);
         arrow.setText("›");
-        arrow.setTextSize(27);
-        arrow.setTextColor(purple);
+        arrow.setTextSize(26);
+        arrow.setTextColor(Color.parseColor("#68738A"));
 
         card.addView(avatar);
         card.addView(infoCol);
         card.addView(arrow);
 
-        // Open Screen 6 (Student Details)
         card.setOnClickListener(v -> {
             Intent intent = new Intent(StaffAdminStudents.this, StaffStudentDetails.class);
-            intent.putExtra("studentName", student.name);
-            intent.putExtra("studentId", student.regId);
-            intent.putExtra("department", student.department);
-            intent.putExtra("year", student.year);
-            intent.putExtra("phone", student.phone);
-            intent.putExtra("email", student.email);
-            intent.putExtra("attendance", student.attendance);
-            intent.putExtra("progress", student.progress);
-            intent.putExtra("tasks", student.tasks);
+            intent.putExtra("studentName", student.getName());
+            intent.putExtra("studentId", student.getRegisterNumber());
+            intent.putExtra("department", student.getDepartment());
+            intent.putExtra("year", student.getYear());
+            intent.putExtra("phone", student.getPhone());
+            intent.putExtra("email", student.getEmail());
+            intent.putExtra("attendance", "95%");
+            intent.putExtra("progress", "90%");
+            intent.putExtra("tasks", "1");
             startActivity(intent);
         });
 

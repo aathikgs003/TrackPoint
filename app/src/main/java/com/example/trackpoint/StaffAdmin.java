@@ -8,8 +8,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,13 +23,15 @@ import java.util.Locale;
 public class StaffAdmin extends AppCompatActivity {
 
     TextView quickAdmins;
+    TextView tvStaffAdminsCount, tvStaffStudentsCount, tvStaffAttendanceRate, tvStaffSubmissionsCount;
+    StudentRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Set Staff Admin status bar color
-        getWindow().setStatusBarColor(Color.parseColor("#4825B8"));
+        getWindow().setStatusBarColor(Color.parseColor("#4935B8"));
 
         WindowCompat.getInsetsController(
                 getWindow(),
@@ -39,6 +39,13 @@ public class StaffAdmin extends AppCompatActivity {
         ).setAppearanceLightStatusBars(false);
 
         setContentView(R.layout.activity_staff_admin);
+
+        repository = new StudentRepository(this);
+
+        tvStaffAdminsCount = findViewById(R.id.tvStaffAdminsCount);
+        tvStaffStudentsCount = findViewById(R.id.tvStaffStudentsCount);
+        tvStaffAttendanceRate = findViewById(R.id.tvStaffAttendanceRate);
+        tvStaffSubmissionsCount = findViewById(R.id.tvStaffSubmissionsCount);
 
         // Quick Access
         quickAdmins = findViewById(R.id.quickAdmins);
@@ -50,9 +57,7 @@ public class StaffAdmin extends AppCompatActivity {
         }
 
         // Top Header - Logout
-        findViewById(R.id.btnStaffHeaderLogout).setOnClickListener(v -> {
-            showLogoutDialog();
-        });
+        findViewById(R.id.btnStaffHeaderLogout).setOnClickListener(v -> showLogoutDialog());
 
         // Top Header - Side Menu
         findViewById(R.id.btnStaffMenu).setOnClickListener(v -> {
@@ -95,7 +100,7 @@ public class StaffAdmin extends AppCompatActivity {
             });
 
             sidebarView.findViewById(R.id.menuStaffProfile).setOnClickListener(item -> {
-                Toast.makeText(StaffAdmin.this, "Staff Admin: Academic Staff", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(StaffAdmin.this, StaffProfileActivity.class));
                 sidebar.dismiss();
             });
 
@@ -106,24 +111,47 @@ public class StaffAdmin extends AppCompatActivity {
         });
 
         // Quick Access - Student Admins
-        quickAdmins.setOnClickListener(v -> {
-            startActivity(new Intent(StaffAdmin.this, StudentAdmins.class));
-        });
+        if (quickAdmins != null) {
+            quickAdmins.setOnClickListener(v -> startActivity(new Intent(StaffAdmin.this, StudentAdmins.class)));
+        }
 
         // Quick Access - Students
         TextView quickStudents = findViewById(R.id.quickStudents);
         if (quickStudents != null) {
-            quickStudents.setOnClickListener(v -> {
-                startActivity(new Intent(StaffAdmin.this, StaffAdminStudents.class));
-            });
+            quickStudents.setOnClickListener(v -> startActivity(new Intent(StaffAdmin.this, StaffAdminStudents.class)));
         }
 
         // Quick Access - Progress History
         TextView quickProgressHistory = findViewById(R.id.quickProgressHistory);
         if (quickProgressHistory != null) {
-            quickProgressHistory.setOnClickListener(v -> {
-                startActivity(new Intent(StaffAdmin.this, StaffProgressHistory.class));
-            });
+            quickProgressHistory.setOnClickListener(v -> startActivity(new Intent(StaffAdmin.this, StaffProgressHistory.class)));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadDashboardMetrics();
+    }
+
+    private void loadDashboardMetrics() {
+        int studentAdminsCount = repository.getAllStudentAdmins().size();
+        int studentsCount = repository.getAllStudents().size();
+
+        if (tvStaffAdminsCount != null) {
+            tvStaffAdminsCount.setText(String.valueOf(studentAdminsCount));
+        }
+
+        if (tvStaffStudentsCount != null) {
+            tvStaffStudentsCount.setText(String.valueOf(studentsCount));
+        }
+
+        if (tvStaffAttendanceRate != null) {
+            tvStaffAttendanceRate.setText("100%");
+        }
+
+        if (tvStaffSubmissionsCount != null) {
+            tvStaffSubmissionsCount.setText(String.valueOf(studentsCount));
         }
     }
 

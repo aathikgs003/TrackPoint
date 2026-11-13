@@ -13,13 +13,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class StudentAdmins extends AppCompatActivity {
 
@@ -28,53 +25,14 @@ public class StudentAdmins extends AppCompatActivity {
     LinearLayout adminListContainer;
     Button btnAddAdmin;
 
-    int purple = Color.parseColor("#4825B8");
-
-    static class AdminModel {
-        String name, id, department, year, phone, email, studentsAssigned, joinedDate, status;
-
-        AdminModel(String name, String id, String department, String year, String phone,
-                   String email, String studentsAssigned, String joinedDate, String status) {
-            this.name = name;
-            this.id = id;
-            this.department = department;
-            this.year = year;
-            this.phone = phone;
-            this.email = email;
-            this.studentsAssigned = studentsAssigned;
-            this.joinedDate = joinedDate;
-            this.status = status;
-        }
-    }
-
-    List<AdminModel> allAdmins = new ArrayList<>();
-
-    ActivityResultLauncher<Intent> addAdminLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    Intent data = result.getData();
-                    allAdmins.add(new AdminModel(
-                            data.getStringExtra("adminName"),
-                            data.getStringExtra("adminId"),
-                            data.getStringExtra("department"),
-                            data.getStringExtra("year"),
-                            data.getStringExtra("phone"),
-                            data.getStringExtra("email"),
-                            "0",
-                            "Today",
-                            "Active"
-                    ));
-                    renderAdminCards(searchAdmin.getText().toString().trim());
-                }
-            }
-    );
+    StudentRepository repository;
+    int purple = Color.parseColor("#4935B8");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(Color.parseColor("#4825B8"));
+        getWindow().setStatusBarColor(Color.parseColor("#4935B8"));
         WindowCompat.getInsetsController(
                 getWindow(),
                 getWindow().getDecorView()
@@ -82,20 +40,14 @@ public class StudentAdmins extends AppCompatActivity {
 
         setContentView(R.layout.activity_student_admins);
 
+        repository = new StudentRepository(this);
+
         btnBack = findViewById(R.id.btnBack);
         searchAdmin = findViewById(R.id.searchAdmin);
         adminListContainer = findViewById(R.id.adminListContainer);
         btnAddAdmin = findViewById(R.id.btnAddAdmin);
 
         btnBack.setOnClickListener(v -> finish());
-
-        // Initial Student Admins with realistic details
-        allAdmins.add(new AdminModel("Arun Kumar", "SADM001", "CSE", "III Year", "98765 43201", "arun.admin@college.edu", "24", "Jan 10, 2025", "Active"));
-        allAdmins.add(new AdminModel("Divya S", "SADM002", "AI & DS", "III Year", "98765 43202", "divya.admin@college.edu", "28", "Jan 12, 2025", "Active"));
-        allAdmins.add(new AdminModel("Karthik R", "SADM003", "ECE", "IV Year", "98765 43203", "karthik.admin@college.edu", "22", "Jan 15, 2025", "Active"));
-        allAdmins.add(new AdminModel("Nithya P", "SADM004", "IT", "II Year", "98765 43204", "nithya.admin@college.edu", "22", "Jan 18, 2025", "Active"));
-
-        renderAdminCards("");
 
         // Live Search Filter
         searchAdmin.addTextChangedListener(new TextWatcher() {
@@ -114,19 +66,38 @@ public class StudentAdmins extends AppCompatActivity {
         // Open Add Student Admin Form
         btnAddAdmin.setOnClickListener(v -> {
             Intent intent = new Intent(StudentAdmins.this, AddStudentAdmin.class);
-            addAdminLauncher.launch(intent);
+            startActivity(intent);
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        renderAdminCards(searchAdmin.getText().toString().trim());
+    }
+
     private void renderAdminCards(String query) {
+        if (adminListContainer == null) return;
         adminListContainer.removeAllViews();
+
+        ArrayList<StudentAdminModel> admins = repository.getAllStudentAdmins();
         String q = query.toLowerCase();
 
-        for (AdminModel admin : allAdmins) {
+        if (admins.isEmpty()) {
+            TextView emptyView = new TextView(this);
+            emptyView.setText("No Student Admins found in database");
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(Gravity.CENTER);
+            emptyView.setTextColor(Color.parseColor("#68738A"));
+            adminListContainer.addView(emptyView);
+            return;
+        }
+
+        for (StudentAdminModel admin : admins) {
             if (!q.isEmpty()
-                    && !admin.name.toLowerCase().contains(q)
-                    && !admin.id.toLowerCase().contains(q)
-                    && !admin.department.toLowerCase().contains(q)) {
+                    && !admin.getName().toLowerCase().contains(q)
+                    && !admin.getAdminId().toLowerCase().contains(q)
+                    && !admin.getDepartment().toLowerCase().contains(q)) {
                 continue;
             }
 
@@ -140,7 +111,8 @@ public class StudentAdmins extends AppCompatActivity {
             card.setOrientation(LinearLayout.HORIZONTAL);
             card.setGravity(Gravity.CENTER_VERTICAL);
             card.setPadding(dpToPx(14), dpToPx(14), dpToPx(14), dpToPx(14));
-            card.setBackgroundColor(Color.parseColor("#F3EEFF"));
+            card.setBackgroundResource(R.drawable.action_card);
+            card.setElevation(dpToPx(2));
 
             ImageView avatar = new ImageView(this);
             LinearLayout.LayoutParams avatarParams = new LinearLayout.LayoutParams(dpToPx(45), dpToPx(45));
@@ -148,7 +120,7 @@ public class StudentAdmins extends AppCompatActivity {
             avatar.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
             avatar.setImageResource(R.drawable.profile_symbol);
             avatar.setColorFilter(purple);
-            avatar.setBackgroundColor(Color.parseColor("#E2D5FF"));
+            avatar.setBackgroundResource(R.drawable.card_purple);
 
             LinearLayout infoCol = new LinearLayout(this);
             LinearLayout.LayoutParams infoParams = new LinearLayout.LayoutParams(
@@ -159,23 +131,23 @@ public class StudentAdmins extends AppCompatActivity {
             infoCol.setPadding(dpToPx(12), 0, 0, 0);
 
             TextView tvName = new TextView(this);
-            tvName.setText(admin.name);
+            tvName.setText(admin.getName());
             tvName.setTypeface(null, Typeface.BOLD);
             tvName.setTextSize(16);
-            tvName.setTextColor(Color.parseColor("#17112D"));
+            tvName.setTextColor(Color.parseColor("#18233F"));
 
             TextView tvId = new TextView(this);
-            tvId.setText(admin.id + " • " + admin.department + " • Students: " + admin.studentsAssigned);
+            tvId.setText(admin.getAdminId() + " • " + admin.getDepartment() + " • Students: " + admin.getStudentsAssignedCount());
             tvId.setTextSize(13);
-            tvId.setTextColor(Color.parseColor("#555555"));
+            tvId.setTextColor(Color.parseColor("#68738A"));
 
             infoCol.addView(tvName);
             infoCol.addView(tvId);
 
             TextView arrow = new TextView(this);
             arrow.setText("›");
-            arrow.setTextSize(27);
-            arrow.setTextColor(purple);
+            arrow.setTextSize(26);
+            arrow.setTextColor(Color.parseColor("#68738A"));
 
             card.addView(avatar);
             card.addView(infoCol);
@@ -183,15 +155,13 @@ public class StudentAdmins extends AppCompatActivity {
 
             card.setOnClickListener(v -> {
                 Intent intent = new Intent(StudentAdmins.this, StudentAdminDetails.class);
-                intent.putExtra("adminName", admin.name);
-                intent.putExtra("adminId", admin.id);
-                intent.putExtra("department", admin.department);
-                intent.putExtra("year", admin.year);
-                intent.putExtra("phone", admin.phone);
-                intent.putExtra("email", admin.email);
-                intent.putExtra("studentsAssigned", admin.studentsAssigned);
-                intent.putExtra("joinedDate", admin.joinedDate);
-                intent.putExtra("status", admin.status);
+                intent.putExtra("adminName", admin.getName());
+                intent.putExtra("adminId", admin.getAdminId());
+                intent.putExtra("department", admin.getDepartment());
+                intent.putExtra("year", admin.getYear());
+                intent.putExtra("phone", admin.getPhone());
+                intent.putExtra("email", admin.getEmail());
+                intent.putExtra("studentsAssigned", String.valueOf(admin.getStudentsAssignedCount()));
                 startActivity(intent);
             });
 

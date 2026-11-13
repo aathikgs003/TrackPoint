@@ -14,12 +14,15 @@ public class StudentProfileActivity extends AppCompatActivity {
 
     ImageView btnBack;
     Button btnLogout;
-    TextView tvStudentName, tvStudentEmail, tvStudentPhone, tvStudentDepartment, tvStudentYear, tvStudentSection, tvStudentRegNo;
+    TextView tvStudentName, tvStudentEmail, tvStudentPhone, tvStudentDepartment, tvStudentYear, tvStudentRegNo;
+    StudentRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_profile);
+
+        repository = new StudentRepository(this);
 
         btnBack = findViewById(R.id.btnBack);
         btnLogout = findViewById(R.id.btnLogout);
@@ -28,7 +31,6 @@ public class StudentProfileActivity extends AppCompatActivity {
         tvStudentRegNo = findViewById(R.id.tvStudentRegNo);
         tvStudentDepartment = findViewById(R.id.tvStudentDepartment);
         tvStudentYear = findViewById(R.id.tvStudentYear);
-        tvStudentSection = findViewById(R.id.tvStudentSection);
         tvStudentEmail = findViewById(R.id.tvStudentEmail);
         tvStudentPhone = findViewById(R.id.tvStudentPhone);
 
@@ -46,22 +48,19 @@ public class StudentProfileActivity extends AppCompatActivity {
     }
 
     private void loadProfileData() {
-        SharedPreferences prefs = getSharedPreferences("UserProfilePrefs", MODE_PRIVATE);
-        String name = prefs.getString("student_name", "Arun Kumar");
-        String email = prefs.getString("student_email", "arun@college.edu");
-        String phone = prefs.getString("student_phone", "98765 43210");
-        String regNo = prefs.getString("student_reg_no", "CSE22CS001");
-        String dept = prefs.getString("student_dept", "CSE");
-        String year = prefs.getString("student_year", "II Year");
-        String section = prefs.getString("student_section", "A");
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        String loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
 
-        if (tvStudentName != null) tvStudentName.setText(name);
-        if (tvStudentEmail != null) tvStudentEmail.setText(email);
-        if (tvStudentPhone != null) tvStudentPhone.setText(phone);
-        if (tvStudentRegNo != null) tvStudentRegNo.setText(regNo);
-        if (tvStudentDepartment != null) tvStudentDepartment.setText(dept);
-        if (tvStudentYear != null) tvStudentYear.setText(year);
-        if (tvStudentSection != null) tvStudentSection.setText(section);
+        StudentModel student = repository.getStudentByRegNo(loggedInRegNo);
+
+        if (student != null) {
+            if (tvStudentName != null) tvStudentName.setText(student.getName());
+            if (tvStudentRegNo != null) tvStudentRegNo.setText(student.getRegisterNumber());
+            if (tvStudentDepartment != null) tvStudentDepartment.setText(student.getDepartment());
+            if (tvStudentYear != null) tvStudentYear.setText(student.getYear());
+            if (tvStudentEmail != null) tvStudentEmail.setText(student.getEmail());
+            if (tvStudentPhone != null) tvStudentPhone.setText(student.getPhone());
+        }
     }
 
     private void showLogoutDialog() {

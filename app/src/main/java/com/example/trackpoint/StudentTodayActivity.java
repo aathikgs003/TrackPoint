@@ -36,6 +36,9 @@ public class StudentTodayActivity extends AppCompatActivity {
     String todayDateKey;
     String todayDateDisplay;
 
+    StudentRepository repository;
+    String loggedInRegNo = "CSE22CS001";
+
     private final ActivityResultLauncher<String> filePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
@@ -64,6 +67,11 @@ public class StudentTodayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_today_activity);
+
+        repository = new StudentRepository(this);
+
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
 
         btnBack = findViewById(R.id.btnBack);
         tvCurrentDate = findViewById(R.id.tvCurrentDate);
@@ -126,10 +134,15 @@ public class StudentTodayActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
         boolean isSubmitted = prefs.getBoolean("submitted_" + todayDateKey, false);
 
+        DailyActivityModel dbModel = repository.getDailyActivity(loggedInRegNo, todayDateKey);
+        if (dbModel != null) {
+            isSubmitted = true;
+        }
+
         if (isSubmitted) {
-            String fileName = prefs.getString("file_name_" + todayDateKey, "Document Uploaded");
-            String submitTime = prefs.getString("submit_time_" + todayDateKey, "Submitted Today");
-            String notes = prefs.getString("notes_" + todayDateKey, "No description added");
+            String fileName = dbModel != null ? dbModel.getFileName() : prefs.getString("file_name_" + todayDateKey, "Document Uploaded");
+            String submitTime = dbModel != null ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + todayDateKey, "Submitted Today");
+            String notes = dbModel != null ? dbModel.getNotes() : prefs.getString("notes_" + todayDateKey, "No description added");
 
             if (tvSubmittedFileName != null) tvSubmittedFileName.setText("📄 " + fileName);
             if (tvSubmittedTime != null) tvSubmittedTime.setText(submitTime);
@@ -164,6 +177,9 @@ public class StudentTodayActivity extends AppCompatActivity {
         editor.putString("date_display_" + todayDateKey, todayDateDisplay);
         editor.apply();
 
+        // Save into SQLite Database
+        repository.saveOrUpdateDailyActivity(loggedInRegNo, todayDateKey, fileName, notes, "Submitted at " + timeStr);
+
         Toast.makeText(this, "Today's activity submitted successfully!", Toast.LENGTH_LONG).show();
         loadSubmissionState();
     }
@@ -172,6 +188,12 @@ public class StudentTodayActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
         String notes = prefs.getString("notes_" + todayDateKey, "");
         String fileName = prefs.getString("file_name_" + todayDateKey, "");
+
+        DailyActivityModel dbModel = repository.getDailyActivity(loggedInRegNo, todayDateKey);
+        if (dbModel != null) {
+            notes = dbModel.getNotes();
+            fileName = dbModel.getFileName();
+        }
 
         if (etActivityNotes != null) {
             etActivityNotes.setText(notes);

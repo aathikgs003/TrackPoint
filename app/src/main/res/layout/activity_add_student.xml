@@ -109,6 +109,54 @@
                 android:inputType="textCapCharacters"
                 android:textSize="14sp"/>
 
+            <!-- EMAIL ADDRESS FOR LOGIN -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email Address (For Login) *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp"/>
+
+            <EditText
+                android:id="@+id/etStudentEmail"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/input_box"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:hint="Enter student login email (e.g. arun@gmail.com)"
+                android:textColor="#18233F"
+                android:textColorHint="#9299AA"
+                android:inputType="textEmailAddress"
+                android:textSize="14sp"/>
+
+            <!-- MOBILE NUMBER -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mobile Number *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp"/>
+
+            <EditText
+                android:id="@+id/etStudentPhone"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/input_box"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:hint="Enter 10-digit mobile number"
+                android:textColor="#18233F"
+                android:textColorHint="#9299AA"
+                android:inputType="phone"
+                android:textSize="14sp"/>
+
             <!-- DEPARTMENT -->
             <TextView
                 android:layout_width="wrap_content"
@@ -139,25 +187,6 @@
 
             <Spinner
                 android:id="@+id/spYear"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="18dp"
-                android:background="@drawable/input_box"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"/>
-
-            <!-- SECTION -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Section *"
-                android:textColor="#26334D"
-                android:textStyle="bold"
-                android:textSize="13sp"/>
-
-            <Spinner
-                android:id="@+id/spSection"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginTop="6dp"

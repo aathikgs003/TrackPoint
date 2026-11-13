@@ -43,7 +43,7 @@
 
     </LinearLayout>
 
-    <!-- REPORT CONTENT -->
+    <!-- CONTENT -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -58,12 +58,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- MONTH & YEAR SELECTOR CARD -->
+            <!-- FILTER CARD -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp"
+                android:padding="18dp"
                 android:background="@drawable/action_card"
                 android:elevation="2dp"
                 android:layout_marginBottom="16dp">
@@ -71,23 +71,136 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select Month &amp; Year *"
-                    android:textColor="#26334D"
-                    android:textSize="13sp"
+                    android:text="Filter Attendance Report"
+                    android:textColor="#18233F"
+                    android:textSize="15sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- FILTER 1: STUDENT SELECTOR -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Student"
+                    android:textColor="#68738A"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="4dp"/>
 
                 <Spinner
-                    android:id="@+id/spMonth"
+                    android:id="@+id/spStudent"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/input_box"
                     android:paddingStart="12dp"
-                    android:paddingEnd="12dp"/>
+                    android:paddingEnd="12dp"
+                    android:layout_marginBottom="14dp"/>
+
+                <!-- FILTER 2: TIME MODE TOGGLE (MONTHLY VS SPECIFIC DATE) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Report Type"
+                    android:textColor="#68738A"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="4dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="14dp">
+
+                    <Button
+                        android:id="@+id/btnMonthlyMode"
+                        android:layout_width="0dp"
+                        android:layout_height="46dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        android:text="Monthly"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="false"
+                        android:backgroundTint="#4935B8"
+                        app:cornerRadius="8dp"/>
+
+                    <Button
+                        android:id="@+id/btnDateMode"
+                        android:layout_width="0dp"
+                        android:layout_height="46dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        android:text="Specific Date"
+                        android:textColor="#4935B8"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="false"
+                        android:backgroundTint="#EAE5FF"
+                        app:cornerRadius="8dp"/>
+
+                </LinearLayout>
+
+                <!-- MONTH SELECTOR CONTAINER -->
+                <LinearLayout
+                    android:id="@+id/layoutMonthContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select Month &amp; Year"
+                        android:textColor="#68738A"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="4dp"/>
+
+                    <Spinner
+                        android:id="@+id/spMonth"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/input_box"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"/>
+
+                </LinearLayout>
+
+                <!-- SPECIFIC DATE CONTAINER -->
+                <LinearLayout
+                    android:id="@+id/layoutDateContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select Specific Date"
+                        android:textColor="#68738A"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvSelectDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:background="@drawable/input_box"
+                        android:text="📅   Select Date"
+                        android:textColor="#18233F"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <!-- SUMMARY CARD -->
+            <!-- PERCENTAGE SUMMARY CARD -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -142,15 +255,15 @@
                         android:id="@+id/tvTotalDays"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="22"
+                        android:text="22 Days"
                         android:textColor="#18233F"
-                        android:textSize="19sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="6dp"
                         android:text="Present"
                         android:textColor="#52627A"
                         android:textSize="12sp"/>
@@ -159,15 +272,15 @@
                         android:id="@+id/tvPresentDays"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="19"
-                        android:textColor="#16864B"
-                        android:textSize="19sp"
+                        android:text="19 Days"
+                        android:textColor="#10B23E"
+                        android:textSize="18sp"
                         android:textStyle="bold"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="6dp"
                         android:text="Absent"
                         android:textColor="#52627A"
                         android:textSize="12sp"/>
@@ -176,27 +289,27 @@
                         android:id="@+id/tvAbsentDays"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="3"
-                        android:textColor="#C43B48"
-                        android:textSize="19sp"
+                        android:text="3 Days"
+                        android:textColor="#D94343"
+                        android:textSize="18sp"
                         android:textStyle="bold"/>
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <!-- STUDENT WISE TITLE -->
+            <!-- ATTENDANCE DETAILS TITLE -->
             <TextView
+                android:id="@+id/tvReportListTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="10dp"
-                android:text="Student-wise Attendance"
+                android:text="Detailed Attendance Breakdown"
                 android:textColor="#26334D"
                 android:textSize="15sp"
                 android:textStyle="bold"/>
 
-            <!-- STUDENT ROWS -->
+            <!-- ATTENDANCE ROWS CONTAINER -->
             <LinearLayout
                 android:id="@+id/studentAttendanceList"
                 android:layout_width="match_parent"

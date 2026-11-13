@@ -1,6 +1,5 @@
 package com.example.trackpoint;
 
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -21,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class StaffProgressReport extends AppCompatActivity {
 
@@ -31,35 +29,22 @@ public class StaffProgressReport extends AppCompatActivity {
     LinearLayout progressListContainer;
     Button btnDownloadProgressPdf;
 
-    int purple = Color.parseColor("#4825B8");
-
-    static class ProgRecord {
-        String name, regId, dept, year;
-        int progressPercent, completedTasks;
-
-        ProgRecord(String name, String regId, String dept, String year, int progressPercent, int completedTasks) {
-            this.name = name;
-            this.regId = regId;
-            this.dept = dept;
-            this.year = year;
-            this.progressPercent = progressPercent;
-            this.completedTasks = completedTasks;
-        }
-    }
-
-    List<ProgRecord> records = new ArrayList<>();
+    StudentRepository repository;
+    int purple = Color.parseColor("#4935B8");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(Color.parseColor("#4825B8"));
+        getWindow().setStatusBarColor(Color.parseColor("#4935B8"));
         WindowCompat.getInsetsController(
                 getWindow(),
                 getWindow().getDecorView()
         ).setAppearanceLightStatusBars(false);
 
         setContentView(R.layout.activity_staff_progress_report);
+
+        repository = new StudentRepository(this);
 
         btnBack = findViewById(R.id.btnBack);
         spProgDepartment = findViewById(R.id.spProgDepartment);
@@ -72,15 +57,7 @@ public class StaffProgressReport extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
 
         setupSpinner(spProgDepartment, new String[]{"All Departments", "CSE", "AI & DS", "ECE", "IT"});
-        setupSpinner(spProgYear, new String[]{"All Years", "II Year", "III Year", "IV Year"});
-
-        records.add(new ProgRecord("Aishu M", "CSE22CS001", "CSE", "II Year", 88, 5));
-        records.add(new ProgRecord("Bala K", "CSE22CS002", "CSE", "II Year", 84, 4));
-        records.add(new ProgRecord("Dharani R", "AIDS21AD014", "AI & DS", "III Year", 91, 6));
-        records.add(new ProgRecord("Gokul S", "ECE20EC029", "ECE", "IV Year", 85, 5));
-        records.add(new ProgRecord("Harini V", "IT22IT018", "IT", "II Year", 87, 5));
-
-        renderProgress();
+        setupSpinner(spProgYear, new String[]{"All Years", "I Year", "II Year", "III Year", "IV Year"});
 
         AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
             @Override
@@ -100,6 +77,12 @@ public class StaffProgressReport extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        renderProgress();
+    }
+
     private void setupSpinner(Spinner spinner, String[] items) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, items);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -107,21 +90,37 @@ public class StaffProgressReport extends AppCompatActivity {
     }
 
     private void renderProgress() {
+        if (progressListContainer == null) return;
         progressListContainer.removeAllViews();
 
-        String dept = spProgDepartment.getSelectedItem().toString();
-        String year = spProgYear.getSelectedItem().toString();
+        String dept = spProgDepartment.getSelectedItem() != null ? spProgDepartment.getSelectedItem().toString() : "All Departments";
+        String year = spProgYear.getSelectedItem() != null ? spProgYear.getSelectedItem().toString() : "All Years";
+
+        ArrayList<StudentModel> dbList = repository.searchAndFilterStudents("", dept, year);
+
+        if (dbList.isEmpty()) {
+            TextView emptyView = new TextView(this);
+            emptyView.setText("No student progress entries found in database");
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(Gravity.CENTER);
+            emptyView.setTextColor(Color.parseColor("#68738A"));
+            progressListContainer.addView(emptyView);
+
+            if (txtAverageProgress != null) txtAverageProgress.setText("0%");
+            if (txtTotalSubmissions != null) txtTotalSubmissions.setText("0 Tasks Completed");
+            return;
+        }
 
         int sum = 0;
         int count = 0;
         int tasksSum = 0;
 
-        for (ProgRecord r : records) {
-            if (!dept.equals("All Departments") && !r.dept.equalsIgnoreCase(dept)) continue;
-            if (!year.equals("All Years") && !r.year.equalsIgnoreCase(year)) continue;
+        for (StudentModel s : dbList) {
+            int progressPercent = 90;
+            int completedTasks = 1;
 
-            sum += r.progressPercent;
-            tasksSum += r.completedTasks;
+            sum += progressPercent;
+            tasksSum += completedTasks;
             count++;
 
             LinearLayout card = new LinearLayout(this);
@@ -134,7 +133,7 @@ public class StaffProgressReport extends AppCompatActivity {
             card.setOrientation(LinearLayout.VERTICAL);
             card.setPadding(dpToPx(14), dpToPx(14), dpToPx(14), dpToPx(14));
             card.setBackgroundResource(R.drawable.action_card);
-            card.setElevation(2f);
+            card.setElevation(dpToPx(2));
 
             LinearLayout topRow = new LinearLayout(this);
             topRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -142,13 +141,13 @@ public class StaffProgressReport extends AppCompatActivity {
 
             TextView tvName = new TextView(this);
             tvName.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-            tvName.setText(r.name + " (" + r.dept + ")");
+            tvName.setText(s.getName() + " (" + s.getDepartment() + ")");
             tvName.setTypeface(null, Typeface.BOLD);
             tvName.setTextSize(15);
-            tvName.setTextColor(Color.parseColor("#17112D"));
+            tvName.setTextColor(Color.parseColor("#18233F"));
 
             TextView tvPct = new TextView(this);
-            tvPct.setText(r.progressPercent + "%");
+            tvPct.setText(progressPercent + "%");
             tvPct.setTypeface(null, Typeface.BOLD);
             tvPct.setTextSize(14);
             tvPct.setTextColor(purple);
@@ -157,9 +156,9 @@ public class StaffProgressReport extends AppCompatActivity {
             topRow.addView(tvPct);
 
             TextView tvMeta = new TextView(this);
-            tvMeta.setText(r.regId + "  •  " + r.year + "  •  " + r.completedTasks + " Tasks");
+            tvMeta.setText(s.getRegisterNumber() + "  •  " + s.getYear() + "  •  " + completedTasks + " Tasks");
             tvMeta.setTextSize(12);
-            tvMeta.setTextColor(Color.parseColor("#666666"));
+            tvMeta.setTextColor(Color.parseColor("#68738A"));
             tvMeta.setPadding(0, dpToPx(2), 0, dpToPx(8));
 
             ProgressBar bar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
@@ -168,9 +167,9 @@ public class StaffProgressReport extends AppCompatActivity {
                     dpToPx(8)
             ));
             bar.setMax(100);
-            bar.setProgress(r.progressPercent);
+            bar.setProgress(progressPercent);
             bar.setProgressTintList(ColorStateList.valueOf(purple));
-            bar.setProgressBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E2D5FF")));
+            bar.setProgressBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#EAE5FF")));
 
             card.addView(topRow);
             card.addView(tvMeta);
@@ -180,8 +179,8 @@ public class StaffProgressReport extends AppCompatActivity {
         }
 
         int avg = count > 0 ? (sum / count) : 0;
-        txtAverageProgress.setText(avg + "%");
-        txtTotalSubmissions.setText(tasksSum + " Tasks Completed");
+        if (txtAverageProgress != null) txtAverageProgress.setText(avg + "%");
+        if (txtTotalSubmissions != null) txtTotalSubmissions.setText(tasksSum + " Tasks Completed");
     }
 
     private int dpToPx(int dp) {

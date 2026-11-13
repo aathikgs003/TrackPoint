@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#4825B8"
+    android:background="#4935B8"
     android:fitsSystemWindows="true">
 
     <!-- Header -->
@@ -15,7 +15,7 @@
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="#4825B8">
+        android:background="#4935B8">
 
         <ImageView
             android:id="@+id/btnBack"
@@ -144,8 +144,6 @@
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp" />
 
-
-
             <!-- Assign to Student Admin -->
             <TextView
                 android:layout_width="wrap_content"
@@ -223,7 +221,8 @@
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:textAllCaps="false"
-                android:backgroundTint="#4825B8" />
+                android:backgroundTint="#4935B8"
+                app:cornerRadius="12dp" />
 
         </LinearLayout>
 

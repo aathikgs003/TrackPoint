@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#4825B8"
+    android:background="#4935B8"
     android:fitsSystemWindows="true">
 
     <!-- Header -->
@@ -16,12 +16,12 @@
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="#4825B8">
+        android:background="#4935B8">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:src="@drawable/back_symbol"
             app:tint="@color/white"
             android:contentDescription="Back" />
@@ -37,8 +37,8 @@
             android:gravity="center" />
 
         <View
-            android:layout_width="32dp"
-            android:layout_height="32dp" />
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
 
     </LinearLayout>
 
@@ -48,7 +48,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
-        android:background="@color/white">
+        android:background="#F5F6FC">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -56,21 +56,23 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Student Profile Header -->
+            <!-- Student Profile Header Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="12dp">
+                android:background="@drawable/action_card"
+                android:elevation="2dp"
+                android:padding="16dp">
 
                 <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:padding="12dp"
                     android:src="@drawable/profile_symbol"
-                    app:tint="#4825B8"
-                    android:background="#E2D5FF"
+                    app:tint="#4935B8"
+                    android:background="@drawable/card_purple"
                     android:contentDescription="Profile Avatar" />
 
                 <LinearLayout
@@ -84,10 +86,10 @@
                         android:id="@+id/txtStudentName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Aishu M"
+                        android:text="Arun Kumar"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
 
                     <TextView
                         android:id="@+id/txtStudentId"
@@ -95,7 +97,7 @@
                         android:layout_height="wrap_content"
                         android:text="CSE22CS001"
                         android:textSize="14sp"
-                        android:textColor="#666666"
+                        android:textColor="#68738A"
                         android:layout_marginTop="2dp" />
 
                     <TextView
@@ -104,8 +106,8 @@
                         android:text="Active"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        android:textColor="#168B43"
-                        android:background="#E9F9EF"
+                        android:textColor="#10B23E"
+                        android:background="@drawable/card_green"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
                         android:paddingTop="3dp"
@@ -121,9 +123,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#F8F7FC"
-                android:padding="14dp"
-                android:layout_marginTop="10dp">
+                android:background="@drawable/action_card"
+                android:elevation="2dp"
+                android:padding="16dp"
+                android:layout_marginTop="14dp">
 
                 <!-- Department -->
                 <LinearLayout
@@ -136,7 +139,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_department"
-                        app:tint="#4825B8" />
+                        app:tint="#4935B8" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -145,7 +148,7 @@
                         android:text="Department"
                         android:paddingStart="10dp"
                         android:textSize="14sp"
-                        android:textColor="#555555" />
+                        android:textColor="#68738A" />
 
                     <TextView
                         android:id="@+id/txtDepartment"
@@ -154,8 +157,10 @@
                         android:text="CSE"
                         android:textStyle="bold"
                         android:textSize="14sp"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginVertical="4dp"/>
 
                 <!-- Year -->
                 <LinearLayout
@@ -168,7 +173,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_academic_year"
-                        app:tint="#4825B8" />
+                        app:tint="#4935B8" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -177,19 +182,19 @@
                         android:text="Year"
                         android:paddingStart="10dp"
                         android:textSize="14sp"
-                        android:textColor="#555555" />
+                        android:textColor="#68738A" />
 
                     <TextView
                         android:id="@+id/txtYear"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="II Year"
+                        android:text="III Year"
                         android:textStyle="bold"
                         android:textSize="14sp"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
 
-
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginVertical="4dp"/>
 
                 <!-- Phone -->
                 <LinearLayout
@@ -202,7 +207,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_phone"
-                        app:tint="#4825B8" />
+                        app:tint="#4935B8" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -211,7 +216,7 @@
                         android:text="Phone"
                         android:paddingStart="10dp"
                         android:textSize="14sp"
-                        android:textColor="#555555" />
+                        android:textColor="#68738A" />
 
                     <TextView
                         android:id="@+id/txtPhone"
@@ -220,8 +225,10 @@
                         android:text="98765 43210"
                         android:textStyle="bold"
                         android:textSize="14sp"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginVertical="4dp"/>
 
                 <!-- Email -->
                 <LinearLayout
@@ -234,7 +241,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_email"
-                        app:tint="#4825B8" />
+                        app:tint="#4935B8" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -243,16 +250,16 @@
                         android:text="Email"
                         android:paddingStart="10dp"
                         android:textSize="14sp"
-                        android:textColor="#555555" />
+                        android:textColor="#68738A" />
 
                     <TextView
                         android:id="@+id/txtEmail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="aishu@college.edu"
+                        android:text="arun@college.edu"
                         android:textStyle="bold"
                         android:textSize="14sp"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -262,31 +269,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="18dp">
+                android:layout_marginTop="16dp">
 
                 <!-- Attendance -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="90dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="5dp"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:background="#EAF2FF"
+                    android:background="@drawable/card_blue"
+                    android:elevation="2dp"
                     android:padding="8dp">
 
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/attendance_symbol"
-                        app:tint="#2465D8" />
+                        app:tint="#247AE3" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Attendance"
                         android:textSize="12sp"
-                        android:textColor="#555555"
+                        android:textColor="#34415B"
                         android:layout_marginTop="4dp" />
 
                     <TextView
@@ -296,33 +304,34 @@
                         android:text="92%"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
 
                 <!-- Progress -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="90dp"
                     android:layout_weight="1"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="5dp"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:background="#F0EAFE"
+                    android:background="@drawable/card_purple"
+                    android:elevation="2dp"
                     android:padding="8dp">
 
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/progress_symbol"
-                        app:tint="#4825B8" />
+                        app:tint="#4935B8" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Progress"
                         android:textSize="12sp"
-                        android:textColor="#555555"
+                        android:textColor="#34415B"
                         android:layout_marginTop="4dp" />
 
                     <TextView
@@ -332,32 +341,33 @@
                         android:text="88%"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
 
                 <!-- Tasks -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="90dp"
                     android:layout_weight="1"
                     android:layout_marginStart="5dp"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:background="#E9F9EF"
+                    android:background="@drawable/card_green"
+                    android:elevation="2dp"
                     android:padding="8dp">
 
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/daily_progress_symbol"
-                        app:tint="#168B43" />
+                        app:tint="#10B23E" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tasks"
                         android:textSize="12sp"
-                        android:textColor="#555555"
+                        android:textColor="#34415B"
                         android:layout_marginTop="4dp" />
 
                     <TextView
@@ -367,7 +377,7 @@
                         android:text="5"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -376,13 +386,15 @@
             <Button
                 android:id="@+id/btnViewStudentWeeklySubmissions"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:layout_marginTop="18dp"
                 android:text="View Report Submissions ›"
                 android:textColor="@color/white"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
-                android:backgroundTint="#4825B8" />
+                android:textAllCaps="false"
+                android:backgroundTint="#4935B8"
+                app:cornerRadius="12dp" />
 
         </LinearLayout>
 

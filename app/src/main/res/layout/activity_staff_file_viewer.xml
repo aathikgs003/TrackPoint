@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#4825B8"
+    android:background="#4935B8"
     android:fitsSystemWindows="true">
 
     <!-- Header -->
@@ -16,12 +16,12 @@
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="#4825B8">
+        android:background="#4935B8">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:src="@drawable/back_symbol"
             app:tint="@color/white"
             android:contentDescription="Back" />
@@ -54,7 +54,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
-        android:background="#ECEEF5">
+        android:background="#F5F6FC">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -69,7 +69,7 @@
                 android:text="Student: Aishu M (CSE22CS001)"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#17112D"
+                android:textColor="#18233F"
                 android:layout_marginBottom="12dp" />
 
             <!-- Simulated Document / Image Preview Sheet -->
@@ -77,7 +77,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="440dp"
                 android:orientation="vertical"
-                android:background="@color/white"
+                android:background="@drawable/action_card"
                 android:elevation="4dp"
                 android:padding="20dp">
 
@@ -88,13 +88,13 @@
                     android:text="WEEKLY PROGRESS &amp; WORK REPORT"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#4825B8"
+                    android:textColor="#4935B8"
                     android:layout_marginBottom="10dp" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#DDDDDD"
+                    android:background="#EEEEF3"
                     android:layout_marginBottom="14dp" />
 
                 <TextView
@@ -105,7 +105,7 @@
                     android:text="Document content preview..."
                     android:textSize="14sp"
                     android:lineSpacingExtra="4dp"
-                    android:textColor="#222222" />
+                    android:textColor="#18233F" />
 
                 <TextView
                     android:id="@+id/txtDocFooter"
@@ -114,7 +114,7 @@
                     android:gravity="end"
                     android:text="Page 1 of 1 • Verified by TrackPoint"
                     android:textSize="11sp"
-                    android:textColor="#888888" />
+                    android:textColor="#68738A" />
 
             </LinearLayout>
 

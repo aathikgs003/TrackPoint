@@ -32,12 +32,10 @@ public class DailyProgress extends AppCompatActivity {
     static class ProgressStudent {
         String name;
         String year;
-        String section;
 
-        ProgressStudent(String name, String year, String section) {
+        ProgressStudent(String name, String year) {
             this.name = name;
             this.year = year;
-            this.section = section;
         }
     }
 
@@ -112,14 +110,11 @@ public class DailyProgress extends AppCompatActivity {
 
     private void loadSampleStudents() {
         allStudents.clear();
-        allStudents.add(new ProgressStudent("Arun Kumar", "III Year", "A"));
-        allStudents.add(new ProgressStudent("Divya S", "III Year", "A"));
-        allStudents.add(new ProgressStudent("Karthik R", "III Year", "B"));
-        allStudents.add(new ProgressStudent("Nithya P", "II Year", "A"));
-        allStudents.add(new ProgressStudent("Praveen M", "II Year", "B"));
-        allStudents.add(new ProgressStudent("Kaviya R", "II Year", "A"));
-        allStudents.add(new ProgressStudent("Suresh K", "I Year", "A"));
-        allStudents.add(new ProgressStudent("Meena T", "IV Year", "A"));
+        StudentRepository repo = new StudentRepository(this);
+        ArrayList<StudentModel> dbList = repo.getAllStudents();
+        for (StudentModel s : dbList) {
+            allStudents.add(new ProgressStudent(s.getName(), s.getYear()));
+        }
     }
 
     private void filterStudents() {

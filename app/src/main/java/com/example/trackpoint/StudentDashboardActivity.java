@@ -22,14 +22,28 @@ import java.util.Locale;
 
 public class StudentDashboardActivity extends AppCompatActivity {
 
+    TextView tvStudentGreeting, tvStudentRegNo;
+    TextView tvStudentAttendance, tvCompletedTasks, tvInProgressTasks, tvTotalTasks;
     TextView tvTodayDate, tvDashboardStatusTitle, tvDashboardSubmitTime, tvDashboardFileName;
     ImageView imgDashboardStatusIcon;
     LinearLayout cardTodayActivityStatus, layoutDashboardStatusBadge;
+
+    StudentRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_dashboard);
+
+        repository = new StudentRepository(this);
+
+        tvStudentGreeting = findViewById(R.id.tvStudentGreeting);
+        tvStudentRegNo = findViewById(R.id.tvStudentRegNo);
+
+        tvStudentAttendance = findViewById(R.id.tvStudentAttendance);
+        tvCompletedTasks = findViewById(R.id.tvCompletedTasks);
+        tvInProgressTasks = findViewById(R.id.tvInProgressTasks);
+        tvTotalTasks = findViewById(R.id.tvTotalTasks);
 
         // Header Logout Button
         findViewById(R.id.notificationButton).setOnClickListener(v -> showLogoutDialog());
@@ -62,7 +76,23 @@ public class StudentDashboardActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        loadStudentInfo();
         loadTodayActivityStatus();
+    }
+
+    private void loadStudentInfo() {
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        String loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
+
+        StudentModel student = repository.getStudentByRegNo(loggedInRegNo);
+        if (student != null) {
+            if (tvStudentGreeting != null) {
+                tvStudentGreeting.setText("Hello, " + student.getName() + " 👋");
+            }
+            if (tvStudentRegNo != null) {
+                tvStudentRegNo.setText("Reg No: " + student.getRegisterNumber());
+            }
+        }
     }
 
     private void loadTodayActivityStatus() {
@@ -81,6 +111,33 @@ public class StudentDashboardActivity extends AppCompatActivity {
         boolean isSubmitted = prefs.getBoolean("submitted_" + dateKeyStr, false);
         String fileName = prefs.getString("file_name_" + dateKeyStr, "Document Uploaded");
         String submitTime = prefs.getString("submit_time_" + dateKeyStr, "Submitted Today");
+
+        SharedPreferences attendancePrefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        String loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
+
+        String todayAttendanceStatus = attendancePrefs.getString("status_" + loggedInRegNo + "_" + dateKeyStr, "Present");
+        String attendancePercentStr = "Absent".equalsIgnoreCase(todayAttendanceStatus) ? "90%" : "95%";
+
+        if (tvStudentAttendance != null) {
+            tvStudentAttendance.setText(attendancePercentStr);
+        }
+
+        int completed = isSubmitted ? 1 : 0;
+        int inProgress = isSubmitted ? 0 : 1;
+        int totalTasks = 1;
+
+        if (tvCompletedTasks != null) {
+            tvCompletedTasks.setText(String.valueOf(completed));
+        }
+
+        if (tvInProgressTasks != null) {
+            tvInProgressTasks.setText(String.valueOf(inProgress));
+        }
+
+        if (tvTotalTasks != null) {
+            tvTotalTasks.setText(String.valueOf(totalTasks));
+        }
 
         if (isSubmitted) {
             if (tvDashboardStatusTitle != null) {

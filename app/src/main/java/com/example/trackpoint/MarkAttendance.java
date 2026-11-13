@@ -1,6 +1,7 @@
 package com.example.trackpoint;
 
 import android.app.DatePickerDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,20 +29,23 @@ public class MarkAttendance extends AppCompatActivity {
     Button btnAllPresent, btnAllAbsent, btnSubmitAttendance;
 
     LinearLayout attendanceList;
+    Calendar selectedCalendar;
+    StudentRepository repository;
 
     static class AttendanceStudent {
         String name;
+        String regNo;
         String year;
-        String section;
 
-        AttendanceStudent(String name, String year, String section) {
+        AttendanceStudent(String name, String regNo, String year) {
             this.name = name;
+            this.regNo = regNo;
             this.year = year;
-            this.section = section;
         }
     }
 
     ArrayList<AttendanceStudent> allStudents = new ArrayList<>();
+    ArrayList<AttendanceStudent> currentFilteredList = new ArrayList<>();
     ArrayList<Spinner> statusSpinners = new ArrayList<>();
 
     String[] attendanceOptions = {
@@ -52,6 +56,8 @@ public class MarkAttendance extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mark_attendance);
+
+        repository = new StudentRepository(this);
 
         btnBack = findViewById(R.id.btnBack);
         tvAttendanceDate = findViewById(R.id.tvAttendanceDate);
@@ -68,22 +74,20 @@ public class MarkAttendance extends AppCompatActivity {
                 "III Year", "IV Year"
         });
 
-        Calendar calendar = Calendar.getInstance();
-        updateDate(calendar);
+        selectedCalendar = Calendar.getInstance();
+        updateDate(selectedCalendar);
 
         tvAttendanceDate.setOnClickListener(v -> {
-            Calendar current = Calendar.getInstance();
-
             DatePickerDialog dialog = new DatePickerDialog(
                     this,
                     (view, year, month, day) -> {
-                        Calendar selected = Calendar.getInstance();
-                        selected.set(year, month, day);
-                        updateDate(selected);
+                        selectedCalendar.set(year, month, day);
+                        updateDate(selectedCalendar);
+                        filterStudents();
                     },
-                    current.get(Calendar.YEAR),
-                    current.get(Calendar.MONTH),
-                    current.get(Calendar.DAY_OF_MONTH)
+                    selectedCalendar.get(Calendar.YEAR),
+                    selectedCalendar.get(Calendar.MONTH),
+                    selectedCalendar.get(Calendar.DAY_OF_MONTH)
             );
 
             dialog.show();
@@ -117,24 +121,41 @@ public class MarkAttendance extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        btnSubmitAttendance.setOnClickListener(v -> {
-            Toast.makeText(this,
-                    "Attendance submitted successfully!",
-                    Toast.LENGTH_SHORT).show();
-            finish();
-        });
+        btnSubmitAttendance.setOnClickListener(v -> submitAttendanceData());
+    }
+
+    private void submitAttendanceData() {
+        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        String dateKey = keyFmt.format(selectedCalendar.getTime());
+
+        SharedPreferences prefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        for (int i = 0; i < statusSpinners.size(); i++) {
+            if (i < currentFilteredList.size()) {
+                AttendanceStudent s = currentFilteredList.get(i);
+                String statusVal = statusSpinners.get(i).getSelectedItem() != null ?
+                        statusSpinners.get(i).getSelectedItem().toString() : "Present";
+
+                editor.putString("status_" + s.regNo + "_" + dateKey, statusVal);
+
+                // Save into SQLite Database
+                repository.saveOrUpdateAttendance(s.regNo, dateKey, statusVal, "Student Admin");
+            }
+        }
+
+        editor.apply();
+
+        Toast.makeText(this, "Attendance submitted successfully for " + tvAttendanceDate.getText().toString(), Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     private void loadSampleStudents() {
         allStudents.clear();
-        allStudents.add(new AttendanceStudent("Arun Kumar", "III Year", "A"));
-        allStudents.add(new AttendanceStudent("Divya S", "III Year", "A"));
-        allStudents.add(new AttendanceStudent("Karthik R", "III Year", "B"));
-        allStudents.add(new AttendanceStudent("Nithya P", "II Year", "A"));
-        allStudents.add(new AttendanceStudent("Praveen M", "II Year", "B"));
-        allStudents.add(new AttendanceStudent("Kaviya R", "II Year", "A"));
-        allStudents.add(new AttendanceStudent("Suresh K", "I Year", "A"));
-        allStudents.add(new AttendanceStudent("Meena T", "IV Year", "A"));
+        ArrayList<StudentModel> dbList = repository.getAllStudents();
+        for (StudentModel s : dbList) {
+            allStudents.add(new AttendanceStudent(s.getName(), s.getRegisterNumber(), s.getYear()));
+        }
     }
 
     private void filterStudents() {
@@ -143,8 +164,7 @@ public class MarkAttendance extends AppCompatActivity {
         }
 
         String selectedYear = spYear.getSelectedItem().toString();
-
-        ArrayList<AttendanceStudent> filtered = new ArrayList<>();
+        currentFilteredList.clear();
 
         for (AttendanceStudent s : allStudents) {
             boolean matchesYear = selectedYear.equals("Select Year") ||
@@ -152,11 +172,11 @@ public class MarkAttendance extends AppCompatActivity {
                     s.year.equalsIgnoreCase(selectedYear);
 
             if (matchesYear) {
-                filtered.add(s);
+                currentFilteredList.add(s);
             }
         }
 
-        displayStudents(filtered);
+        displayStudents(currentFilteredList);
     }
 
     private void displayStudents(ArrayList<AttendanceStudent> list) {
@@ -176,6 +196,10 @@ public class MarkAttendance extends AppCompatActivity {
             return;
         }
 
+        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        String dateKey = keyFmt.format(selectedCalendar.getTime());
+        SharedPreferences prefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
+
         for (AttendanceStudent student : list) {
             View row = inflater.inflate(
                     R.layout.item_attendance,
@@ -189,15 +213,22 @@ public class MarkAttendance extends AppCompatActivity {
             name.setText(student.name);
             setSpinner(status, attendanceOptions);
 
+            String dbStatus = repository.getAttendanceStatus(student.regNo, dateKey);
+            String savedStatus = dbStatus != null ? dbStatus : prefs.getString("status_" + student.regNo + "_" + dateKey, "Present");
+
+            if ("Absent".equalsIgnoreCase(savedStatus)) {
+                status.setSelection(1);
+            } else {
+                status.setSelection(0);
+            }
+
             statusSpinners.add(status);
             attendanceList.addView(row);
         }
     }
 
     private void updateDate(Calendar calendar) {
-        SimpleDateFormat format =
-                new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-
+        SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         tvAttendanceDate.setText("📅   " + format.format(calendar.getTime()));
     }
 

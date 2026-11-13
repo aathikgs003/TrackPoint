@@ -20,7 +20,7 @@ public class StaffStudentDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(Color.parseColor("#4825B8"));
+        getWindow().setStatusBarColor(Color.parseColor("#4935B8"));
         WindowCompat.getInsetsController(
                 getWindow(),
                 getWindow().getDecorView()

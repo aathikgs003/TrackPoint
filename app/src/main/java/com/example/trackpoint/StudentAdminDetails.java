@@ -1,12 +1,12 @@
 package com.example.trackpoint;
 
-import android.os.Bundle;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -22,13 +22,14 @@ public class StudentAdminDetails extends AppCompatActivity {
 
     TextView txtAdminName, txtAdminId, txtAdminDepartment, txtAdminYear, txtAdminPhone, txtAdminEmail, txtStudentsAssigned;
 
+    StudentRepository repository;
+    String adminNameParam;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Handle phone status bar
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         WindowInsetsControllerCompat controller =
@@ -39,14 +40,12 @@ public class StudentAdminDetails extends AppCompatActivity {
 
         controller.setAppearanceLightStatusBars(false);
 
-        // Load XML layout
         setContentView(R.layout.activity_student_admin_details);
 
-        // Handle screen spacing
+        repository = new StudentRepository(this);
+
         LinearLayout rootLayout = findViewById(R.id.main);
-
         ViewCompat.setOnApplyWindowInsetsListener(rootLayout, (view, windowInsets) -> {
-
             Insets systemBars = windowInsets.getInsets(
                     WindowInsetsCompat.Type.systemBars()
             );
@@ -61,7 +60,6 @@ public class StudentAdminDetails extends AppCompatActivity {
             return windowInsets;
         });
 
-        // Admin Details
         btnBack = findViewById(R.id.btnBack);
         btnViewStudents = findViewById(R.id.btnViewStudents);
         btnAttendance = findViewById(R.id.btnAttendance);
@@ -76,45 +74,78 @@ public class StudentAdminDetails extends AppCompatActivity {
         txtStudentsAssigned = findViewById(R.id.txtStudentsAssigned);
 
         Intent intent = getIntent();
-
-        String adminName = intent != null ? intent.getStringExtra("adminName") : null;
-        String adminId = intent != null ? intent.getStringExtra("adminId") : null;
-        String department = intent != null ? intent.getStringExtra("department") : null;
-        String year = intent != null ? intent.getStringExtra("year") : null;
-        String phone = intent != null ? intent.getStringExtra("phone") : null;
-        String email = intent != null ? intent.getStringExtra("email") : null;
-        String studentsAssigned = intent != null ? intent.getStringExtra("studentsAssigned") : null;
-        int studentCount = intent != null ? intent.getIntExtra("studentCount", 0) : 0;
-
-        txtAdminName.setText(adminName != null ? adminName : "Arun Kumar");
-        txtAdminId.setText(adminId != null ? adminId : "SADM001");
-        txtAdminDepartment.setText(department != null ? department : "CSE");
-        txtAdminYear.setText(year != null ? year : "III Year");
-        txtAdminPhone.setText(phone != null ? phone : "98765 43201");
-        txtAdminEmail.setText(email != null ? email : "arun.admin@college.edu");
-        txtStudentsAssigned.setText(studentsAssigned != null ? studentsAssigned : (studentCount > 0 ? String.valueOf(studentCount) : "24"));
+        if (intent != null) {
+            adminNameParam = intent.getStringExtra("adminName");
+        }
 
         btnBack.setOnClickListener(v -> finish());
 
-        // View Students Button -> Opens Screen 5 with Admin Name
+        // View Students Button -> Opens StaffAdminStudents filtered by Admin Name
         btnViewStudents.setOnClickListener(v -> {
             Intent viewStudentsIntent = new Intent(
                     StudentAdminDetails.this, StaffAdminStudents.class
             );
-            viewStudentsIntent.putExtra("adminName", adminName);
+            viewStudentsIntent.putExtra("adminName", adminNameParam);
             startActivity(viewStudentsIntent);
         });
 
-        // Attendance & Progress Report Buttons
+        // Attendance Report Button
         btnAttendance.setOnClickListener(v -> {
-            startActivity(new Intent(StudentAdminDetails.this, StaffAttendanceReport.class));
+            Intent attIntent = new Intent(StudentAdminDetails.this, StaffAttendanceReport.class);
+            attIntent.putExtra("adminName", adminNameParam);
+            startActivity(attIntent);
         });
 
+        // Daily Progress Button
         btnProgress.setOnClickListener(v -> {
             Intent progressIntent = new Intent(StudentAdminDetails.this, StaffProgressHistory.class);
-            progressIntent.putExtra("adminName", adminName);
+            progressIntent.putExtra("adminName", adminNameParam);
             progressIntent.putExtra("dailyAdminMode", true);
             startActivity(progressIntent);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadAdminDetails();
+    }
+
+    private void loadAdminDetails() {
+        if (adminNameParam == null || adminNameParam.isEmpty()) {
+            adminNameParam = "Aathi";
+        }
+
+        StudentAdminModel admin = repository.getStudentAdminById(adminNameParam);
+
+        if (admin != null) {
+            if (txtAdminName != null) txtAdminName.setText(admin.getName());
+            if (txtAdminId != null) txtAdminId.setText(admin.getAdminId());
+            if (txtAdminDepartment != null) txtAdminDepartment.setText(admin.getDepartment());
+            if (txtAdminYear != null) txtAdminYear.setText(admin.getYear());
+            if (txtAdminPhone != null) txtAdminPhone.setText(admin.getPhone());
+            if (txtAdminEmail != null) txtAdminEmail.setText(admin.getEmail());
+
+            int realCount = repository.getAssignedStudentsCountForAdmin(admin.getName());
+            if (txtStudentsAssigned != null) txtStudentsAssigned.setText(String.valueOf(realCount));
+        } else {
+            Intent intent = getIntent();
+            String name = intent != null ? intent.getStringExtra("adminName") : "Aathi";
+            String id = intent != null ? intent.getStringExtra("adminId") : "SADM001";
+            String dept = intent != null ? intent.getStringExtra("department") : "CSE";
+            String year = intent != null ? intent.getStringExtra("year") : "III Year";
+            String phone = intent != null ? intent.getStringExtra("phone") : "98765 43201";
+            String email = intent != null ? intent.getStringExtra("email") : "aathi@gmail.com";
+
+            if (txtAdminName != null) txtAdminName.setText(name);
+            if (txtAdminId != null) txtAdminId.setText(id);
+            if (txtAdminDepartment != null) txtAdminDepartment.setText(dept);
+            if (txtAdminYear != null) txtAdminYear.setText(year);
+            if (txtAdminPhone != null) txtAdminPhone.setText(phone);
+            if (txtAdminEmail != null) txtAdminEmail.setText(email);
+
+            int realCount = repository.getAssignedStudentsCountForAdmin(name);
+            if (txtStudentsAssigned != null) txtStudentsAssigned.setText(String.valueOf(realCount));
+        }
     }
 }

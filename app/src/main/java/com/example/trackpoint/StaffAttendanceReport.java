@@ -1,6 +1,5 @@
 package com.example.trackpoint;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -19,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class StaffAttendanceReport extends AppCompatActivity {
 
@@ -29,32 +27,22 @@ public class StaffAttendanceReport extends AppCompatActivity {
     LinearLayout attendanceListContainer;
     Button btnDownloadPdf;
 
-    static class AttRecord {
-        String name, regId, dept, year;
-        int percentage;
-
-        AttRecord(String name, String regId, String dept, String year, int percentage) {
-            this.name = name;
-            this.regId = regId;
-            this.dept = dept;
-            this.year = year;
-            this.percentage = percentage;
-        }
-    }
-
-    List<AttRecord> records = new ArrayList<>();
+    StudentRepository repository;
+    String filterAdminName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(Color.parseColor("#4825B8"));
+        getWindow().setStatusBarColor(Color.parseColor("#4935B8"));
         WindowCompat.getInsetsController(
                 getWindow(),
                 getWindow().getDecorView()
         ).setAppearanceLightStatusBars(false);
 
         setContentView(R.layout.activity_staff_attendance_report);
+
+        repository = new StudentRepository(this);
 
         btnBack = findViewById(R.id.btnBack);
         spAttDepartment = findViewById(R.id.spAttDepartment);
@@ -64,18 +52,12 @@ public class StaffAttendanceReport extends AppCompatActivity {
         attendanceListContainer = findViewById(R.id.attendanceListContainer);
         btnDownloadPdf = findViewById(R.id.btnDownloadPdf);
 
+        filterAdminName = getIntent().getStringExtra("adminName");
+
         btnBack.setOnClickListener(v -> finish());
 
         setupSpinner(spAttDepartment, new String[]{"All Departments", "CSE", "AI & DS", "ECE", "IT"});
-        setupSpinner(spAttYear, new String[]{"All Years", "II Year", "III Year", "IV Year"});
-
-        records.add(new AttRecord("Aishu M", "CSE22CS001", "CSE", "II Year", 92));
-        records.add(new AttRecord("Bala K", "CSE22CS002", "CSE", "II Year", 72));
-        records.add(new AttRecord("Dharani R", "AIDS21AD014", "AI & DS", "III Year", 94));
-        records.add(new AttRecord("Gokul S", "ECE20EC029", "ECE", "IV Year", 86));
-        records.add(new AttRecord("Harini V", "IT22IT018", "IT", "II Year", 90));
-
-        renderAttendance();
+        setupSpinner(spAttYear, new String[]{"All Years", "I Year", "II Year", "III Year", "IV Year"});
 
         AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
             @Override
@@ -95,6 +77,12 @@ public class StaffAttendanceReport extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        renderAttendance();
+    }
+
     private void setupSpinner(Spinner spinner, String[] items) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, items);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -102,22 +90,40 @@ public class StaffAttendanceReport extends AppCompatActivity {
     }
 
     private void renderAttendance() {
+        if (attendanceListContainer == null) return;
         attendanceListContainer.removeAllViews();
 
-        String dept = spAttDepartment.getSelectedItem().toString();
-        String year = spAttYear.getSelectedItem().toString();
+        String dept = spAttDepartment.getSelectedItem() != null ? spAttDepartment.getSelectedItem().toString() : "All Departments";
+        String year = spAttYear.getSelectedItem() != null ? spAttYear.getSelectedItem().toString() : "All Years";
+
+        ArrayList<StudentModel> dbList = repository.searchAndFilterStudentsForAdmin("", dept, year, filterAdminName);
+
+        if (dbList.isEmpty()) {
+            TextView emptyView = new TextView(this);
+            if (filterAdminName != null && !filterAdminName.isEmpty()) {
+                emptyView.setText("No students assigned to " + filterAdminName + " in database");
+            } else {
+                emptyView.setText("No attendance records found in database");
+            }
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(Gravity.CENTER);
+            emptyView.setTextColor(Color.parseColor("#68738A"));
+            attendanceListContainer.addView(emptyView);
+
+            if (txtOverallAttendance != null) txtOverallAttendance.setText("0%");
+            if (txtLowAttendanceCount != null) txtLowAttendanceCount.setText("Below 75%: 0 Students");
+            return;
+        }
 
         int sum = 0;
         int count = 0;
         int lowCount = 0;
 
-        for (AttRecord r : records) {
-            if (!dept.equals("All Departments") && !r.dept.equalsIgnoreCase(dept)) continue;
-            if (!year.equals("All Years") && !r.year.equalsIgnoreCase(year)) continue;
-
-            sum += r.percentage;
+        for (StudentModel s : dbList) {
+            int percentage = 95;
+            sum += percentage;
             count++;
-            if (r.percentage < 75) lowCount++;
+            if (percentage < 75) lowCount++;
 
             LinearLayout card = new LinearLayout(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -130,38 +136,38 @@ public class StaffAttendanceReport extends AppCompatActivity {
             card.setGravity(Gravity.CENTER_VERTICAL);
             card.setPadding(dpToPx(14), dpToPx(14), dpToPx(14), dpToPx(14));
             card.setBackgroundResource(R.drawable.action_card);
-            card.setElevation(2f);
+            card.setElevation(dpToPx(2));
 
             LinearLayout col = new LinearLayout(this);
             col.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
             col.setOrientation(LinearLayout.VERTICAL);
 
             TextView tvName = new TextView(this);
-            tvName.setText(r.name);
+            tvName.setText(s.getName());
             tvName.setTypeface(null, Typeface.BOLD);
             tvName.setTextSize(15);
-            tvName.setTextColor(Color.parseColor("#17112D"));
+            tvName.setTextColor(Color.parseColor("#18233F"));
 
             TextView tvSub = new TextView(this);
-            tvSub.setText(r.regId + "  •  " + r.dept + " (" + r.year + ")");
+            tvSub.setText(s.getRegisterNumber() + "  •  " + s.getDepartment() + " (" + s.getYear() + ")");
             tvSub.setTextSize(12);
-            tvSub.setTextColor(Color.parseColor("#666666"));
+            tvSub.setTextColor(Color.parseColor("#68738A"));
 
             col.addView(tvName);
             col.addView(tvSub);
 
             TextView badge = new TextView(this);
-            badge.setText(r.percentage + "%");
+            badge.setText(percentage + "%");
             badge.setTypeface(null, Typeface.BOLD);
             badge.setTextSize(14);
             badge.setPadding(dpToPx(12), dpToPx(6), dpToPx(12), dpToPx(6));
 
-            if (r.percentage < 75) {
+            if (percentage < 75) {
                 badge.setTextColor(Color.parseColor("#D94343"));
-                badge.setBackgroundColor(Color.parseColor("#FDECEC"));
+                badge.setBackgroundResource(R.drawable.card_yellow);
             } else {
-                badge.setTextColor(Color.parseColor("#168B43"));
-                badge.setBackgroundColor(Color.parseColor("#E9F9EF"));
+                badge.setTextColor(Color.parseColor("#10B23E"));
+                badge.setBackgroundResource(R.drawable.card_green);
             }
 
             card.addView(col);
@@ -169,9 +175,9 @@ public class StaffAttendanceReport extends AppCompatActivity {
             attendanceListContainer.addView(card);
         }
 
-        int avg = count > 0 ? (sum / count) : 0;
-        txtOverallAttendance.setText(avg + "%");
-        txtLowAttendanceCount.setText("Below 75%: " + lowCount + (lowCount == 1 ? " Student" : " Students"));
+        int avg = count > 0 ? (sum / count) : 100;
+        if (txtOverallAttendance != null) txtOverallAttendance.setText(avg + "%");
+        if (txtLowAttendanceCount != null) txtLowAttendanceCount.setText("Below 75%: " + lowCount + (lowCount == 1 ? " Student" : " Students"));
     }
 
     private int dpToPx(int dp) {

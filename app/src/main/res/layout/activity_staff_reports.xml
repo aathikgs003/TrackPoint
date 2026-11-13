@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#4825B8"
+    android:background="#4935B8"
     android:fitsSystemWindows="true">
 
     <!-- Header -->
@@ -16,12 +16,12 @@
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="#4825B8">
+        android:background="#4935B8">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:src="@drawable/back_symbol"
             app:tint="@color/white"
             android:contentDescription="Back" />
@@ -37,8 +37,8 @@
             android:gravity="center" />
 
         <View
-            android:layout_width="32dp"
-            android:layout_height="32dp" />
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
 
     </LinearLayout>
 
@@ -60,7 +60,7 @@
             <LinearLayout
                 android:id="@+id/cardAttendanceReport"
                 android:layout_width="match_parent"
-                android:layout_height="68dp"
+                android:layout_height="76dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:background="@drawable/action_card"
@@ -72,30 +72,44 @@
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:padding="7dp"
-                    android:background="#F0EAFE"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="10dp"
+                    android:background="@drawable/card_purple"
                     android:src="@drawable/attendance_symbol"
-                    app:tint="#4825B8"
+                    app:tint="#4935B8"
                     android:contentDescription="Attendance Report" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Attendance Report"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#17112D"
-                    android:paddingStart="14dp" />
+                    android:orientation="vertical"
+                    android:layout_marginStart="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Attendance Report"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="#18233F" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Overall attendance rates &amp; logs"
+                        android:textSize="12sp"
+                        android:textColor="#68738A" />
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="›"
                     android:textSize="26sp"
-                    android:textColor="#4825B8" />
+                    android:textColor="#68738A" />
 
             </LinearLayout>
 
@@ -103,7 +117,7 @@
             <LinearLayout
                 android:id="@+id/cardProgressReport"
                 android:layout_width="match_parent"
-                android:layout_height="68dp"
+                android:layout_height="76dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:background="@drawable/action_card"
@@ -115,30 +129,44 @@
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:padding="7dp"
-                    android:background="#F0EAFE"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="10dp"
+                    android:background="@drawable/card_blue"
                     android:src="@drawable/progress_symbol"
-                    app:tint="#4825B8"
+                    app:tint="#247AE3"
                     android:contentDescription="Student Progress" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Student Progress"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#17112D"
-                    android:paddingStart="14dp" />
+                    android:orientation="vertical"
+                    android:layout_marginStart="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Student Progress"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="#18233F" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Student activity entries &amp; submissions"
+                        android:textSize="12sp"
+                        android:textColor="#68738A" />
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="›"
                     android:textSize="26sp"
-                    android:textColor="#4825B8" />
+                    android:textColor="#68738A" />
 
             </LinearLayout>
 

@@ -174,34 +174,6 @@
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginBottom="12dp"/>
 
-                <!-- SECTION -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
-
-                    <TextView
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:text="Section"
-                        android:textColor="#68738A"
-                        android:textSize="13sp"/>
-
-                    <TextView
-                        android:id="@+id/tvSection"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="A"
-                        android:textColor="#18233F"
-                        android:textSize="14sp"
-                        android:textStyle="bold"/>
-
-                </LinearLayout>
-
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginBottom="12dp"/>
-
                 <!-- EMAIL -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -254,6 +226,43 @@
                         android:textStyle="bold"/>
 
                 </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- CRUD ACTION BUTTONS: EDIT & DELETE -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <Button
+                    android:id="@+id/btnEditStudent"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Edit Student"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="false"
+                    android:backgroundTint="#4935B8"
+                    app:cornerRadius="12dp"/>
+
+                <Button
+                    android:id="@+id/btnDeleteStudent"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Delete"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="false"
+                    android:backgroundTint="#DC3545"
+                    app:cornerRadius="12dp"/>
 
             </LinearLayout>
 

@@ -19,18 +19,21 @@ public class AddStudentAdmin extends AppCompatActivity {
     Spinner spAdminDepartment, spAdminYear;
     Button btnSaveAdmin;
     ImageView btnBack;
+    StudentRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(Color.parseColor("#4825B8"));
+        getWindow().setStatusBarColor(Color.parseColor("#4935B8"));
         WindowCompat.getInsetsController(
                 getWindow(),
                 getWindow().getDecorView()
         ).setAppearanceLightStatusBars(false);
 
         setContentView(R.layout.activity_add_student_admin);
+
+        repository = new StudentRepository(this);
 
         etAdminName = findViewById(R.id.etAdminName);
         etAdminId = findViewById(R.id.etAdminId);
@@ -52,7 +55,7 @@ public class AddStudentAdmin extends AppCompatActivity {
         ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(
                 this,
                 R.layout.spinner_item,
-                new String[]{"Select Year", "II Year", "III Year", "IV Year"}
+                new String[]{"Select Year", "I Year", "II Year", "III Year", "IV Year"}
         );
         yearAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spAdminYear.setAdapter(yearAdapter);
@@ -72,18 +75,46 @@ public class AddStudentAdmin extends AppCompatActivity {
                 return;
             }
 
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("adminName", name);
-            resultIntent.putExtra("adminId", id);
-            resultIntent.putExtra("department", spAdminDepartment.getSelectedItem().toString());
-            resultIntent.putExtra("year", spAdminYear.getSelectedItem().toString());
-            resultIntent.putExtra("phone", phone);
-            resultIntent.putExtra("email", email);
-            resultIntent.putExtra("studentCount", 0);
-            setResult(RESULT_OK, resultIntent);
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                etAdminEmail.setError("Enter valid email address");
+                return;
+            }
 
-            Toast.makeText(this, "Student Admin " + name + " added!", Toast.LENGTH_SHORT).show();
-            finish();
+            if (repository.adminIdExists(id)) {
+                Toast.makeText(this, "Admin ID already exists in database!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String dept = spAdminDepartment.getSelectedItem().toString();
+            String year = spAdminYear.getSelectedItem().toString();
+
+            StudentAdminModel newAdmin = new StudentAdminModel(
+                    name,
+                    id,
+                    dept,
+                    year,
+                    email,
+                    phone.startsWith("+91") ? phone : "+91 " + phone
+            );
+            newAdmin.setStudentsAssignedCount(0);
+
+            long rowId = repository.addStudentAdmin(newAdmin);
+            if (rowId > 0) {
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("adminName", name);
+                resultIntent.putExtra("adminId", id);
+                resultIntent.putExtra("department", dept);
+                resultIntent.putExtra("year", year);
+                resultIntent.putExtra("phone", phone);
+                resultIntent.putExtra("email", email);
+                resultIntent.putExtra("studentCount", 0);
+                setResult(RESULT_OK, resultIntent);
+
+                Toast.makeText(this, "Student Admin " + name + " saved to database!", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(this, "Failed to save Student Admin to database", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

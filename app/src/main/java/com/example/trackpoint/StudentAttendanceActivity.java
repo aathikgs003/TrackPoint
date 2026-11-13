@@ -1,5 +1,6 @@
 package com.example.trackpoint;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -33,6 +34,8 @@ public class StudentAttendanceActivity extends AppCompatActivity {
     int todayMonth;
     int todayYear;
 
+    String studentId = "CSE22CS001";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,38 +64,22 @@ public class StudentAttendanceActivity extends AppCompatActivity {
 
         currentMonth = todayMonth;
         currentYear = todayYear;
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         loadTodayAttendance();
         updateCalendar();
-
-        if (btnPrevMonth != null) {
-            btnPrevMonth.setOnClickListener(v -> {
-                if (currentMonth == 0) {
-                    currentMonth = 11;
-                    currentYear--;
-                } else {
-                    currentMonth--;
-                }
-                updateCalendar();
-            });
-        }
-
-        if (btnNextMonth != null) {
-            btnNextMonth.setOnClickListener(v -> {
-                if (currentMonth == 11) {
-                    currentMonth = 0;
-                    currentYear++;
-                } else {
-                    currentMonth++;
-                }
-                updateCalendar();
-            });
-        }
     }
 
     private void loadTodayAttendance() {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMM d", Locale.getDefault());
-        String currentDateStr = sdf.format(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMM d, yyyy", Locale.getDefault());
+        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        Date today = new Date();
+
+        String currentDateStr = sdf.format(today);
+        String todayKeyStr = keyFmt.format(today);
 
         if (tvTodayDate != null) {
             tvTodayDate.setText(currentDateStr);
@@ -100,6 +87,9 @@ public class StudentAttendanceActivity extends AppCompatActivity {
 
         Calendar calendar = Calendar.getInstance();
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        SharedPreferences prefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
+        String savedTodayStatus = prefs.getString("status_" + studentId + "_" + todayKeyStr, null);
 
         if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
             if (tvTodayStatus != null) {
@@ -116,13 +106,29 @@ public class StudentAttendanceActivity extends AppCompatActivity {
             if (layoutTodayBadge != null) {
                 layoutTodayBadge.setBackgroundResource(R.drawable.card_purple);
             }
+        } else if ("Absent".equalsIgnoreCase(savedTodayStatus)) {
+            if (tvTodayStatus != null) {
+                tvTodayStatus.setText("ABSENT");
+                tvTodayStatus.setTextColor(Color.parseColor("#D94343"));
+            }
+            if (tvTodayNote != null) {
+                tvTodayNote.setText("Marked by Student Admin");
+            }
+            if (imgTodayStatusIcon != null) {
+                imgTodayStatusIcon.setImageResource(R.drawable.radio_button_symbol);
+                imgTodayStatusIcon.setColorFilter(Color.parseColor("#D94343"));
+            }
+            if (layoutTodayBadge != null) {
+                layoutTodayBadge.setBackgroundResource(R.drawable.card_yellow);
+            }
         } else {
+            // Default or marked Present
             if (tvTodayStatus != null) {
                 tvTodayStatus.setText("PRESENT");
                 tvTodayStatus.setTextColor(Color.parseColor("#10B23E"));
             }
             if (tvTodayNote != null) {
-                tvTodayNote.setText("Marked at 09:15 AM");
+                tvTodayNote.setText("Marked by Student Admin");
             }
             if (imgTodayStatusIcon != null) {
                 imgTodayStatusIcon.setImageResource(R.drawable.check_circle_symbol);
@@ -166,6 +172,9 @@ public class StudentAttendanceActivity extends AppCompatActivity {
             calendarGrid.addView(emptyView);
         }
 
+        SharedPreferences prefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
+        SimpleDateFormat dateKeyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+
         for (int day = 1; day <= totalDays; day++) {
             TextView dayView = new TextView(this);
             dayView.setText(String.valueOf(day));
@@ -191,6 +200,9 @@ public class StudentAttendanceActivity extends AppCompatActivity {
                 }
             }
 
+            String dateKeyStr = dateKeyFmt.format(cal.getTime());
+            String savedStatus = prefs.getString("status_" + studentId + "_" + dateKeyStr, null);
+
             String status;
 
             if (isFuture) {
@@ -208,7 +220,7 @@ public class StudentAttendanceActivity extends AppCompatActivity {
                     status = "Holiday (Weekend)";
                     dayView.setTextColor(Color.parseColor("#7A8294"));
                     dayView.setBackgroundResource(R.drawable.bg_day_holiday);
-                } else if (day == 8 || day == 18 || day == 22) {
+                } else if ("Absent".equalsIgnoreCase(savedStatus) || (savedStatus == null && (day == 8 || day == 18 || day == 22))) {
                     status = "Absent";
                     dayView.setTextColor(Color.parseColor("#D94343"));
                     dayView.setBackgroundResource(R.drawable.bg_day_absent);

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#4825B8"
+    android:background="#4935B8"
     android:fitsSystemWindows="true">
 
     <!-- Header -->
@@ -16,12 +16,12 @@
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="#4825B8">
+        android:background="#4935B8">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:src="@drawable/back_symbol"
             app:tint="@color/white"
             android:contentDescription="Back" />
@@ -37,8 +37,8 @@
             android:gravity="center" />
 
         <View
-            android:layout_width="32dp"
-            android:layout_height="32dp" />
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
 
     </LinearLayout>
 
@@ -47,7 +47,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
-        android:background="@color/white">
+        android:background="#F5F6FC">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,24 +61,28 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="16dp">
+                android:background="@drawable/action_card"
+                android:elevation="2dp"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:text="👤"
-                    android:textSize="45sp"
-                    android:gravity="center"
-                    android:background="#E2D5FF" />
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:padding="14dp"
+                    android:src="@drawable/profile_symbol"
+                    app:tint="#4935B8"
+                    android:background="@drawable/card_purple"
+                    android:contentDescription="Profile Icon" />
 
                 <TextView
                     android:id="@+id/txtAdminName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Admin Name"
-                    android:textSize="21sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="#17112D"
+                    android:textColor="#18233F"
                     android:layout_marginTop="12dp" />
 
                 <TextView
@@ -86,8 +90,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Admin ID"
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
+                    android:textSize="13sp"
+                    android:textColor="#68738A"
+                    android:layout_marginTop="2dp" />
 
             </LinearLayout>
 
@@ -96,10 +101,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#F8F7FC"
-                android:padding="14dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="14dp">
+                android:background="@drawable/action_card"
+                android:elevation="2dp"
+                android:padding="18dp"
+                android:layout_marginBottom="18dp">
 
                 <!-- Department -->
                 <LinearLayout
@@ -112,7 +117,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_department"
-                        app:tint="#4825B8"
+                        app:tint="#4935B8"
                         android:contentDescription="Department Icon" />
 
                     <TextView
@@ -121,8 +126,8 @@
                         android:layout_weight="1"
                         android:text="Department"
                         android:paddingStart="10dp"
-                        android:textSize="14sp"
-                        android:textColor="#555555" />
+                        android:textSize="13sp"
+                        android:textColor="#68738A" />
 
                     <TextView
                         android:id="@+id/txtAdminDepartment"
@@ -131,8 +136,10 @@
                         android:text="CSE"
                         android:textStyle="bold"
                         android:textSize="14sp"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginVertical="4dp"/>
 
                 <!-- Year -->
                 <LinearLayout
@@ -145,7 +152,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_academic_year"
-                        app:tint="#4825B8"
+                        app:tint="#4935B8"
                         android:contentDescription="Year Icon" />
 
                     <TextView
@@ -154,8 +161,8 @@
                         android:layout_weight="1"
                         android:text="Year"
                         android:paddingStart="10dp"
-                        android:textSize="14sp"
-                        android:textColor="#555555" />
+                        android:textSize="13sp"
+                        android:textColor="#68738A" />
 
                     <TextView
                         android:id="@+id/txtAdminYear"
@@ -164,8 +171,10 @@
                         android:text="III Year"
                         android:textStyle="bold"
                         android:textSize="14sp"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginVertical="4dp"/>
 
                 <!-- Phone -->
                 <LinearLayout
@@ -178,7 +187,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_phone"
-                        app:tint="#4825B8"
+                        app:tint="#4935B8"
                         android:contentDescription="Phone Icon" />
 
                     <TextView
@@ -187,8 +196,8 @@
                         android:layout_weight="1"
                         android:text="Phone"
                         android:paddingStart="10dp"
-                        android:textSize="14sp"
-                        android:textColor="#555555" />
+                        android:textSize="13sp"
+                        android:textColor="#68738A" />
 
                     <TextView
                         android:id="@+id/txtAdminPhone"
@@ -197,8 +206,10 @@
                         android:text="98765 43201"
                         android:textStyle="bold"
                         android:textSize="14sp"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginVertical="4dp"/>
 
                 <!-- Email -->
                 <LinearLayout
@@ -211,7 +222,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_email"
-                        app:tint="#4825B8"
+                        app:tint="#4935B8"
                         android:contentDescription="Email Icon" />
 
                     <TextView
@@ -220,8 +231,8 @@
                         android:layout_weight="1"
                         android:text="Email"
                         android:paddingStart="10dp"
-                        android:textSize="14sp"
-                        android:textColor="#555555" />
+                        android:textSize="13sp"
+                        android:textColor="#68738A" />
 
                     <TextView
                         android:id="@+id/txtAdminEmail"
@@ -230,8 +241,10 @@
                         android:text="arun@college.edu"
                         android:textStyle="bold"
                         android:textSize="14sp"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginVertical="4dp"/>
 
                 <!-- Students Assigned -->
                 <LinearLayout
@@ -244,7 +257,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/group_symbol"
-                        app:tint="#4825B8"
+                        app:tint="#4935B8"
                         android:contentDescription="Students Assigned Icon" />
 
                     <TextView
@@ -253,8 +266,8 @@
                         android:layout_weight="1"
                         android:text="Students Assigned"
                         android:paddingStart="10dp"
-                        android:textSize="14sp"
-                        android:textColor="#555555" />
+                        android:textSize="13sp"
+                        android:textColor="#68738A" />
 
                     <TextView
                         android:id="@+id/txtStudentsAssigned"
@@ -263,7 +276,7 @@
                         android:text="24"
                         android:textStyle="bold"
                         android:textSize="14sp"
-                        android:textColor="#17112D" />
+                        android:textColor="#18233F" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -272,31 +285,43 @@
             <Button
                 android:id="@+id/btnViewStudents"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:text="View Students"
                 android:layout_marginBottom="12dp"
-                android:backgroundTint="#4825B8"
-                android:textColor="#FFFFFF" />
+                android:backgroundTint="#4935B8"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
 
             <!-- Attendance Button -->
             <Button
                 android:id="@+id/btnAttendance"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:text="Attendance Report"
                 android:layout_marginBottom="12dp"
-                android:backgroundTint="#4825B8"
-                android:textColor="#FFFFFF" />
+                android:backgroundTint="#4935B8"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
 
             <!-- Daily Progress Button -->
             <Button
                 android:id="@+id/btnProgress"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:text="Daily Progress"
                 android:layout_marginBottom="16dp"
-                android:backgroundTint="#4825B8"
-                android:textColor="#FFFFFF" />
+                android:backgroundTint="#4935B8"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
 
         </LinearLayout>
 

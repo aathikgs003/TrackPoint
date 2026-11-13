@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#4825B8"
+    android:background="#4935B8"
     android:fitsSystemWindows="true">
 
     <!-- Header -->
@@ -16,12 +16,12 @@
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="#4825B8">
+        android:background="#4935B8">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:src="@drawable/back_symbol"
             app:tint="@color/white"
             android:contentDescription="Back" />
@@ -38,8 +38,8 @@
             android:gravity="center" />
 
         <View
-            android:layout_width="32dp"
-            android:layout_height="32dp" />
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
 
     </LinearLayout>
 
@@ -56,16 +56,16 @@
         <EditText
             android:id="@+id/searchSubmission"
             android:layout_width="match_parent"
-            android:layout_height="46dp"
+            android:layout_height="48dp"
             android:hint="Search student (Name / ID)..."
-            android:textColorHint="#777777"
+            android:textColorHint="#9299AA"
             android:drawableStart="@android:drawable/ic_menu_search"
             android:drawablePadding="8dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:background="@drawable/filter_box"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="@drawable/input_box"
             android:textSize="14sp"
-            android:textColor="#17112D"
+            android:textColor="#18233F"
             android:layout_marginBottom="10dp" />
 
         <!-- Filter Row: Student Admin Spinner and Custom Date Box -->
@@ -96,7 +96,7 @@
                 android:background="@drawable/filter_box"
                 android:drawableEnd="@drawable/ic_arrow_drop_down"
                 android:drawablePadding="6dp"
-                android:textColor="#17112D"
+                android:textColor="#18233F"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:clickable="true"

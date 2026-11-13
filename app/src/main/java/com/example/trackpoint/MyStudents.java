@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,35 +24,17 @@ public class MyStudents extends AppCompatActivity {
     TextView btnAddStudent;
     EditText etSearchStudent;
 
-    Spinner spDepartment, spYear, spSection;
+    Spinner spDepartment, spYear;
     LinearLayout studentList;
 
-    ArrayList<Student> students = new ArrayList<>();
-
-    // Student model
-    static class Student {
-
-        String name;
-        String registerNumber;
-        String department;
-        String year;
-        String section;
-
-        Student(String name, String registerNumber,
-                String department, String year, String section) {
-
-            this.name = name;
-            this.registerNumber = registerNumber;
-            this.department = department;
-            this.year = year;
-            this.section = section;
-        }
-    }
+    StudentRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mystudents);
+
+        repository = new StudentRepository(this);
 
         // Initialize views
         btnBack = findViewById(R.id.btnBack);
@@ -63,7 +44,6 @@ public class MyStudents extends AppCompatActivity {
 
         spDepartment = findViewById(R.id.spDepartment);
         spYear = findViewById(R.id.spYear);
-        spSection = findViewById(R.id.spSection);
 
         studentList = findViewById(R.id.studentList);
 
@@ -82,7 +62,7 @@ public class MyStudents extends AppCompatActivity {
         // Department dropdown
         setSpinner(spDepartment, new String[]{
                 "All Departments",
-                "CSE", "IT", "ECE", "EEE"
+                "CSE", "IT", "ECE", "EEE", "AI & DS"
         });
 
         // Year dropdown
@@ -90,17 +70,6 @@ public class MyStudents extends AppCompatActivity {
                 "All Years",
                 "I Year", "II Year", "III Year", "IV Year"
         });
-
-        // Section dropdown
-        setSpinner(spSection, new String[]{
-                "All Sections", "A", "B", "C"
-        });
-
-        // Load sample students
-        loadSampleStudents();
-
-        // Display initial student list
-        displayStudents(students);
 
         // Search functionality
         etSearchStudent.addTextChangedListener(new TextWatcher() {
@@ -128,50 +97,27 @@ public class MyStudents extends AppCompatActivity {
         // Year filter
         spYear.setOnItemSelectedListener(filterListener());
 
-        // Section filter
-        spSection.setOnItemSelectedListener(filterListener());
-    }
-
-    // Sample student data
-    private void loadSampleStudents() {
-
-        students.clear();
-
-        students.add(new Student(
-                "Arun Kumar", "CSE22CS001",
-                "CSE", "III Year", "A"
-        ));
-
-        students.add(new Student(
-                "Divya S", "CSE22CS002",
-                "CSE", "III Year", "A"
-        ));
-
-        students.add(new Student(
-                "Karthik R", "CSE22CS003",
-                "CSE", "III Year", "B"
-        ));
-
-        students.add(new Student(
-                "Nithya P", "CSE22CS004",
-                "CSE", "II Year", "A"
-        ));
-
-        students.add(new Student(
-                "Praveen M", "CSE22CS005",
-                "CSE", "II Year", "B"
-        ));
+        filterStudents();
     }
 
     // Display student rows
-    private void displayStudents(ArrayList<Student> list) {
-
+    private void displayStudents(ArrayList<StudentModel> list) {
+        if (studentList == null) return;
         studentList.removeAllViews();
+
+        if (list == null || list.isEmpty()) {
+            TextView emptyView = new TextView(this);
+            emptyView.setText("No students found in database");
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(android.view.Gravity.CENTER);
+            emptyView.setTextColor(android.graphics.Color.parseColor("#68738A"));
+            studentList.addView(emptyView);
+            return;
+        }
 
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        for (Student student : list) {
-
+        for (StudentModel student : list) {
             View row = inflater.inflate(
                     R.layout.item_student,
                     studentList,
@@ -179,21 +125,20 @@ public class MyStudents extends AppCompatActivity {
             );
 
             TextView name = row.findViewById(R.id.tvStudentName);
-
             TextView rollNumber = row.findViewById(R.id.tvRollNumber);
-
             View btnView = row.findViewById(R.id.btnViewStudent);
 
-            name.setText(student.name);
-            rollNumber.setText(student.registerNumber);
+            name.setText(student.getName());
+            rollNumber.setText(student.getRegisterNumber());
 
             btnView.setOnClickListener(v -> {
                 Intent intent = new Intent(MyStudents.this, StudentDetailsActivity.class);
-                intent.putExtra("student_name", student.name);
-                intent.putExtra("student_roll_no", student.registerNumber);
-                intent.putExtra("student_dept", student.department);
-                intent.putExtra("student_year", student.year);
-                intent.putExtra("student_section", student.section);
+                intent.putExtra("student_name", student.getName());
+                intent.putExtra("student_roll_no", student.getRegisterNumber());
+                intent.putExtra("student_dept", student.getDepartment());
+                intent.putExtra("student_year", student.getYear());
+                intent.putExtra("student_email", student.getEmail());
+                intent.putExtra("student_phone", student.getPhone());
                 startActivity(intent);
             });
 
@@ -201,57 +146,23 @@ public class MyStudents extends AppCompatActivity {
         }
     }
 
-    // Filter students
+    // Filter students via SQLite database
     private void filterStudents() {
-
-        if (spDepartment.getSelectedItem() == null ||
-                spYear.getSelectedItem() == null ||
-                spSection.getSelectedItem() == null) {
+        if (spDepartment == null || spDepartment.getSelectedItem() == null ||
+                spYear == null || spYear.getSelectedItem() == null) {
             return;
         }
 
-        String search = etSearchStudent.getText()
-                .toString().trim().toLowerCase();
-
+        String search = etSearchStudent.getText().toString().trim();
         String department = spDepartment.getSelectedItem().toString();
         String year = spYear.getSelectedItem().toString();
-        String section = spSection.getSelectedItem().toString();
 
-        ArrayList<Student> filteredList = new ArrayList<>();
-
-        for (Student student : students) {
-
-            boolean matchesSearch =
-                    student.name.toLowerCase().contains(search) ||
-                            student.registerNumber.toLowerCase().contains(search);
-
-            boolean matchesDepartment =
-                    department.equals("All Departments") ||
-                            student.department.equals(department);
-
-            boolean matchesYear =
-                    year.equals("All Years") ||
-                            student.year.equals(year);
-
-            boolean matchesSection =
-                    section.equals("All Sections") ||
-                            student.section.equals(section);
-
-            if (matchesSearch &&
-                    matchesDepartment &&
-                    matchesYear &&
-                    matchesSection) {
-
-                filteredList.add(student);
-            }
-        }
-
+        ArrayList<StudentModel> filteredList = repository.searchAndFilterStudents(search, department, year);
         displayStudents(filteredList);
     }
 
     // Shared spinner listener
     private AdapterView.OnItemSelectedListener filterListener() {
-
         return new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -272,7 +183,6 @@ public class MyStudents extends AppCompatActivity {
 
     // Set dropdown adapter
     private void setSpinner(Spinner spinner, String[] items) {
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 R.layout.spinner_item,
@@ -289,10 +199,6 @@ public class MyStudents extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        // Refresh when returning from Add Student
-        if (studentList != null && !students.isEmpty()) {
-            filterStudents();
-        }
+        filterStudents();
     }
 }

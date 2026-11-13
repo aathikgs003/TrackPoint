@@ -167,35 +167,6 @@
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginBottom="12dp"/>
 
-                <!-- SECTION -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="12dp">
-
-                    <TextView
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:text="Section"
-                        android:textColor="#68738A"
-                        android:textSize="13sp"/>
-
-                    <TextView
-                        android:id="@+id/tvStudentSection"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="A"
-                        android:textColor="#18233F"
-                        android:textSize="14sp"
-                        android:textStyle="bold"/>
-
-                </LinearLayout>
-
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEF3" android:layout_marginBottom="12dp"/>
-
                 <!-- EMAIL -->
                 <LinearLayout
                     android:layout_width="match_parent"

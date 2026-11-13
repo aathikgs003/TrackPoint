@@ -29,11 +29,7 @@ public class ProgressHistory extends AppCompatActivity {
     Calendar filterCalendar;
     String[] studentList = {
             "All Students",
-            "Arun Kumar",
-            "Divya S",
-            "Karthik R",
-            "Nithya P",
-            "Praveen M"
+            "Arun Kumar"
     };
 
     @Override
@@ -103,8 +99,6 @@ public class ProgressHistory extends AppCompatActivity {
         String dateKey = keyFmt.format(filterCalendar.getTime());
         String dateDisplay = displayFmt.format(filterCalendar.getTime());
 
-        String selectedStudent = spStudent.getSelectedItem() != null ? spStudent.getSelectedItem().toString() : "All Students";
-
         if (tvProgressResultsTitle != null) {
             tvProgressResultsTitle.setText("Uploads for " + dateDisplay);
         }
@@ -115,40 +109,10 @@ public class ProgressHistory extends AppCompatActivity {
         String arunNotes = prefs.getString("notes_" + dateKey, "Java activity & loops completed.");
         String arunTime = prefs.getString("submit_time_" + dateKey, "Submitted at 10:30 AM");
 
-        if ("All Students".equals(selectedStudent)) {
-            // Render for Arun Kumar (with real SharedPreferences data)
-            if (isArunSubmitted) {
-                layoutProgressContent.addView(createStudentUploadCard("Arun Kumar", dateDisplay, arunFileName, arunNotes, arunTime, true));
-            } else {
-                layoutProgressContent.addView(createStudentUploadCard("Arun Kumar", dateDisplay, "No File Uploaded", "No activity document or description submitted for this date.", "Not Submitted", false));
-            }
-
-            // Render for Divya S
-            layoutProgressContent.addView(createStudentUploadCard("Divya S", dateDisplay, "dbms_notes.pdf", "DBMS Normalization assignment notes submitted.", "Submitted at 11:15 AM", true));
-
-            // Render for Karthik R
-            layoutProgressContent.addView(createStudentUploadCard("Karthik R", dateDisplay, "No File Uploaded", "No activity document or description submitted for this date.", "Not Submitted", false));
-
-            // Render for Nithya P
-            layoutProgressContent.addView(createStudentUploadCard("Nithya P", dateDisplay, "ui_design_figma.png", "Mobile App UI Design screenshots uploaded.", "Submitted at 09:45 AM", true));
-
-            // Render for Praveen M
-            layoutProgressContent.addView(createStudentUploadCard("Praveen M", dateDisplay, "python_lab_report.pdf", "Python Data Structures lab report completed.", "Submitted at 02:10 PM", true));
-
-        } else if ("Arun Kumar".equals(selectedStudent)) {
-            if (isArunSubmitted) {
-                layoutProgressContent.addView(createStudentUploadCard("Arun Kumar", dateDisplay, arunFileName, arunNotes, arunTime, true));
-            } else {
-                layoutProgressContent.addView(createStudentUploadCard("Arun Kumar", dateDisplay, "No File Uploaded", "No activity document or description submitted for this date.", "Not Submitted", false));
-            }
-        } else if ("Divya S".equals(selectedStudent)) {
-            layoutProgressContent.addView(createStudentUploadCard("Divya S", dateDisplay, "dbms_notes.pdf", "DBMS Normalization assignment notes submitted.", "Submitted at 11:15 AM", true));
-        } else if ("Nithya P".equals(selectedStudent)) {
-            layoutProgressContent.addView(createStudentUploadCard("Nithya P", dateDisplay, "ui_design_figma.png", "Mobile App UI Design screenshots uploaded.", "Submitted at 09:45 AM", true));
-        } else if ("Praveen M".equals(selectedStudent)) {
-            layoutProgressContent.addView(createStudentUploadCard("Praveen M", dateDisplay, "python_lab_report.pdf", "Python Data Structures lab report completed.", "Submitted at 02:10 PM", true));
+        if (isArunSubmitted) {
+            layoutProgressContent.addView(createStudentUploadCard("Arun Kumar", dateDisplay, arunFileName, arunNotes, arunTime, true));
         } else {
-            layoutProgressContent.addView(createStudentUploadCard(selectedStudent, dateDisplay, "No File Uploaded", "No activity document or description submitted for this date.", "Not Submitted", false));
+            layoutProgressContent.addView(createStudentUploadCard("Arun Kumar", dateDisplay, "No File Uploaded", "No activity document or description submitted for this date.", "Not Submitted", false));
         }
     }
 
