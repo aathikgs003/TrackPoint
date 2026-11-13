@@ -20,17 +20,7 @@ public class StudentAdminDetails extends AppCompatActivity {
     ImageView btnBack;
     Button btnViewStudents, btnAttendance, btnProgress;
 
-    TextView txtAdminName, txtAdminId, txtStudentCount;
-
-    // Bottom Navigation
-    LinearLayout navHome, navAdmins, navStudents, navReports;
-
-    ImageView iconHome, iconAdmins, iconStudents, iconReports;
-
-    TextView textHome, textAdmins, textStudents, textReports;
-
-    int purple = Color.parseColor("#4825B8");
-    int grey = Color.parseColor("#888888");
+    TextView txtAdminName, txtAdminId, txtAdminDepartment, txtAdminYear, txtAdminPhone, txtAdminEmail, txtStudentsAssigned;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,17 +69,30 @@ public class StudentAdminDetails extends AppCompatActivity {
 
         txtAdminName = findViewById(R.id.txtAdminName);
         txtAdminId = findViewById(R.id.txtAdminId);
-        txtStudentCount = findViewById(R.id.txtStudentCount);
+        txtAdminDepartment = findViewById(R.id.txtAdminDepartment);
+        txtAdminYear = findViewById(R.id.txtAdminYear);
+        txtAdminPhone = findViewById(R.id.txtAdminPhone);
+        txtAdminEmail = findViewById(R.id.txtAdminEmail);
+        txtStudentsAssigned = findViewById(R.id.txtStudentsAssigned);
 
         Intent intent = getIntent();
 
-        String adminName = intent.getStringExtra("adminName");
-        String adminId = intent.getStringExtra("adminId");
-        int studentCount = intent.getIntExtra("studentCount", 0);
+        String adminName = intent != null ? intent.getStringExtra("adminName") : null;
+        String adminId = intent != null ? intent.getStringExtra("adminId") : null;
+        String department = intent != null ? intent.getStringExtra("department") : null;
+        String year = intent != null ? intent.getStringExtra("year") : null;
+        String phone = intent != null ? intent.getStringExtra("phone") : null;
+        String email = intent != null ? intent.getStringExtra("email") : null;
+        String studentsAssigned = intent != null ? intent.getStringExtra("studentsAssigned") : null;
+        int studentCount = intent != null ? intent.getIntExtra("studentCount", 0) : 0;
 
-        txtAdminName.setText(adminName);
-        txtAdminId.setText(adminId);
-        txtStudentCount.setText(String.valueOf(studentCount));
+        txtAdminName.setText(adminName != null ? adminName : "Arun Kumar");
+        txtAdminId.setText(adminId != null ? adminId : "SADM001");
+        txtAdminDepartment.setText(department != null ? department : "CSE");
+        txtAdminYear.setText(year != null ? year : "III Year");
+        txtAdminPhone.setText(phone != null ? phone : "98765 43201");
+        txtAdminEmail.setText(email != null ? email : "arun.admin@college.edu");
+        txtStudentsAssigned.setText(studentsAssigned != null ? studentsAssigned : (studentCount > 0 ? String.valueOf(studentCount) : "24"));
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -108,64 +111,10 @@ public class StudentAdminDetails extends AppCompatActivity {
         });
 
         btnProgress.setOnClickListener(v -> {
-            startActivity(new Intent(StudentAdminDetails.this, StaffProgressReport.class));
+            Intent progressIntent = new Intent(StudentAdminDetails.this, StaffProgressHistory.class);
+            progressIntent.putExtra("adminName", adminName);
+            progressIntent.putExtra("dailyAdminMode", true);
+            startActivity(progressIntent);
         });
-
-        // Bottom Navigation Layouts
-        navHome = findViewById(R.id.navHome);
-        navAdmins = findViewById(R.id.navAdmins);
-        navStudents = findViewById(R.id.navStudents);
-        navReports = findViewById(R.id.navReports);
-
-        // Bottom Navigation Icons
-        iconHome = findViewById(R.id.iconHome);
-        iconAdmins = findViewById(R.id.iconAdmins);
-        iconStudents = findViewById(R.id.iconStudents);
-        iconReports = findViewById(R.id.iconReports);
-
-        // Bottom Navigation Labels
-        textHome = findViewById(R.id.textHome);
-        textAdmins = findViewById(R.id.textAdmins);
-        textStudents = findViewById(R.id.textStudents);
-        textReports = findViewById(R.id.textReports);
-
-        // Highlight Admins as the active page
-        setActiveNavigation();
-
-        // Bottom Navigation Clicks
-        navHome.setOnClickListener(v -> {
-            Intent homeIntent = new Intent(
-                    StudentAdminDetails.this, StaffAdmin.class
-            );
-            startActivity(homeIntent);
-        });
-
-        navAdmins.setOnClickListener(v -> finish());
-
-        navStudents.setOnClickListener(v -> {
-            Intent studentsIntent = new Intent(
-                    StudentAdminDetails.this, StaffAdminStudents.class
-            );
-            startActivity(studentsIntent);
-        });
-
-        navReports.setOnClickListener(v -> {
-            startActivity(new Intent(this, StaffReports.class));
-        });
-    }
-
-    private void setActiveNavigation() {
-
-        iconHome.setColorFilter(grey);
-        textHome.setTextColor(grey);
-
-        iconAdmins.setColorFilter(purple);
-        textAdmins.setTextColor(purple);
-
-        iconStudents.setColorFilter(grey);
-        textStudents.setTextColor(grey);
-
-        iconReports.setColorFilter(grey);
-        textReports.setTextColor(grey);
     }
 }

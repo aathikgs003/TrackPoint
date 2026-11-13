@@ -146,8 +146,4 @@
 
     </ScrollView>
 
-    <!-- Bottom Navigation -->
-    <include
-        layout="@layout/view_staff_admin_bottom_navigation" />
-
 </LinearLayout>

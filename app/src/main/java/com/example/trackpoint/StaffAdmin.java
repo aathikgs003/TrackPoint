@@ -14,21 +14,17 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class StaffAdmin extends AppCompatActivity {
 
     TextView quickAdmins;
-
-    LinearLayout navHome, navAdmins, navStudents, navReports;
-
-    ImageView iconHome, iconAdmins, iconStudents, iconReports;
-
-    TextView textHome, textAdmins, textStudents, textReports;
-
-    int purple = Color.parseColor("#4825B8");
-    int grey = Color.parseColor("#888888");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,30 +43,15 @@ public class StaffAdmin extends AppCompatActivity {
         // Quick Access
         quickAdmins = findViewById(R.id.quickAdmins);
 
-        // Bottom Navigation Layouts
-        navHome = findViewById(R.id.navHome);
-        navAdmins = findViewById(R.id.navAdmins);
-        navStudents = findViewById(R.id.navStudents);
-        navReports = findViewById(R.id.navReports);
+        TextView txtDashboardDate = findViewById(R.id.txtDashboardDate);
+        if (txtDashboardDate != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("'Today, 'MMM dd, yyyy", Locale.US);
+            txtDashboardDate.setText(sdf.format(new Date()));
+        }
 
-        // Bottom Navigation Icons
-        iconHome = findViewById(R.id.iconHome);
-        iconAdmins = findViewById(R.id.iconAdmins);
-        iconStudents = findViewById(R.id.iconStudents);
-        iconReports = findViewById(R.id.iconReports);
-
-        // Bottom Navigation Labels
-        textHome = findViewById(R.id.textHome);
-        textAdmins = findViewById(R.id.textAdmins);
-        textStudents = findViewById(R.id.textStudents);
-        textReports = findViewById(R.id.textReports);
-
-        // Highlight Home as the active page
-        setActiveNavigation();
-
-        // Top Header - Notifications
-        findViewById(R.id.btnStaffNotifications).setOnClickListener(v -> {
-            startActivity(new Intent(StaffAdmin.this, StaffNotifications.class));
+        // Top Header - Logout
+        findViewById(R.id.btnStaffHeaderLogout).setOnClickListener(v -> {
+            showLogoutDialog();
         });
 
         // Top Header - Side Menu
@@ -113,11 +94,6 @@ public class StaffAdmin extends AppCompatActivity {
                 sidebar.dismiss();
             });
 
-            sidebarView.findViewById(R.id.menuStaffNotifications).setOnClickListener(item -> {
-                startActivity(new Intent(StaffAdmin.this, StaffNotifications.class));
-                sidebar.dismiss();
-            });
-
             sidebarView.findViewById(R.id.menuStaffProfile).setOnClickListener(item -> {
                 Toast.makeText(StaffAdmin.this, "Staff Admin: Academic Staff", Toast.LENGTH_SHORT).show();
                 sidebar.dismiss();
@@ -125,7 +101,7 @@ public class StaffAdmin extends AppCompatActivity {
 
             sidebarView.findViewById(R.id.menuStaffLogout).setOnClickListener(item -> {
                 sidebar.dismiss();
-                finish();
+                showLogoutDialog();
             });
         });
 
@@ -142,33 +118,26 @@ public class StaffAdmin extends AppCompatActivity {
             });
         }
 
-        // Bottom Navigation Clicks
-        navHome.setOnClickListener(v -> {});
-
-        navAdmins.setOnClickListener(v -> {
-            startActivity(new Intent(StaffAdmin.this, StudentAdmins.class));
-        });
-
-        navStudents.setOnClickListener(v -> {
-            startActivity(new Intent(StaffAdmin.this, StaffAdminStudents.class));
-        });
-
-        navReports.setOnClickListener(v -> {
-            startActivity(new Intent(StaffAdmin.this, StaffReports.class));
-        });
+        // Quick Access - Progress History
+        TextView quickProgressHistory = findViewById(R.id.quickProgressHistory);
+        if (quickProgressHistory != null) {
+            quickProgressHistory.setOnClickListener(v -> {
+                startActivity(new Intent(StaffAdmin.this, StaffProgressHistory.class));
+            });
+        }
     }
 
-    private void setActiveNavigation() {
-        iconHome.setColorFilter(purple);
-        textHome.setTextColor(purple);
-
-        iconAdmins.setColorFilter(grey);
-        textAdmins.setTextColor(grey);
-
-        iconStudents.setColorFilter(grey);
-        textStudents.setTextColor(grey);
-
-        iconReports.setColorFilter(grey);
-        textReports.setTextColor(grey);
+    private void showLogoutDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Logout Confirmation")
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    Intent intent = new Intent(StaffAdmin.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .show();
     }
 }

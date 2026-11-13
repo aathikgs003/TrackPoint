@@ -28,22 +28,22 @@ public class StudentAdmins extends AppCompatActivity {
     LinearLayout adminListContainer;
     Button btnAddAdmin;
 
-    // Bottom Navigation
-    LinearLayout navHome, navAdmins, navStudents, navReports;
-    ImageView iconHome, iconAdmins, iconStudents, iconReports;
-    TextView textHome, textAdmins, textStudents, textReports;
-
     int purple = Color.parseColor("#4825B8");
-    int grey = Color.parseColor("#888888");
 
     static class AdminModel {
-        String name, id;
-        int studentCount;
+        String name, id, department, year, phone, email, studentsAssigned, joinedDate, status;
 
-        AdminModel(String name, String id, int studentCount) {
+        AdminModel(String name, String id, String department, String year, String phone,
+                   String email, String studentsAssigned, String joinedDate, String status) {
             this.name = name;
             this.id = id;
-            this.studentCount = studentCount;
+            this.department = department;
+            this.year = year;
+            this.phone = phone;
+            this.email = email;
+            this.studentsAssigned = studentsAssigned;
+            this.joinedDate = joinedDate;
+            this.status = status;
         }
     }
 
@@ -53,10 +53,18 @@ public class StudentAdmins extends AppCompatActivity {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    String name = result.getData().getStringExtra("adminName");
-                    String id = result.getData().getStringExtra("adminId");
-                    int count = result.getData().getIntExtra("studentCount", 0);
-                    allAdmins.add(new AdminModel(name, id, count));
+                    Intent data = result.getData();
+                    allAdmins.add(new AdminModel(
+                            data.getStringExtra("adminName"),
+                            data.getStringExtra("adminId"),
+                            data.getStringExtra("department"),
+                            data.getStringExtra("year"),
+                            data.getStringExtra("phone"),
+                            data.getStringExtra("email"),
+                            "0",
+                            "Today",
+                            "Active"
+                    ));
                     renderAdminCards(searchAdmin.getText().toString().trim());
                 }
             }
@@ -81,11 +89,11 @@ public class StudentAdmins extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        // Initial Student Admins
-        allAdmins.add(new AdminModel("Arun Kumar", "SADM001", 24));
-        allAdmins.add(new AdminModel("Divya S", "SADM002", 28));
-        allAdmins.add(new AdminModel("Karthik R", "SADM003", 22));
-        allAdmins.add(new AdminModel("Nithya P", "SADM004", 22));
+        // Initial Student Admins with realistic details
+        allAdmins.add(new AdminModel("Arun Kumar", "SADM001", "CSE", "III Year", "98765 43201", "arun.admin@college.edu", "24", "Jan 10, 2025", "Active"));
+        allAdmins.add(new AdminModel("Divya S", "SADM002", "AI & DS", "III Year", "98765 43202", "divya.admin@college.edu", "28", "Jan 12, 2025", "Active"));
+        allAdmins.add(new AdminModel("Karthik R", "SADM003", "ECE", "IV Year", "98765 43203", "karthik.admin@college.edu", "22", "Jan 15, 2025", "Active"));
+        allAdmins.add(new AdminModel("Nithya P", "SADM004", "IT", "II Year", "98765 43204", "nithya.admin@college.edu", "22", "Jan 18, 2025", "Active"));
 
         renderAdminCards("");
 
@@ -108,31 +116,6 @@ public class StudentAdmins extends AppCompatActivity {
             Intent intent = new Intent(StudentAdmins.this, AddStudentAdmin.class);
             addAdminLauncher.launch(intent);
         });
-
-        // Bottom Navigation
-        navHome = findViewById(R.id.navHome);
-        navAdmins = findViewById(R.id.navAdmins);
-        navStudents = findViewById(R.id.navStudents);
-        navReports = findViewById(R.id.navReports);
-
-        iconHome = findViewById(R.id.iconHome);
-        iconAdmins = findViewById(R.id.iconAdmins);
-        iconStudents = findViewById(R.id.iconStudents);
-        iconReports = findViewById(R.id.iconReports);
-
-        textHome = findViewById(R.id.textHome);
-        textAdmins = findViewById(R.id.textAdmins);
-        textStudents = findViewById(R.id.textStudents);
-        textReports = findViewById(R.id.textReports);
-
-        setActiveNavigation();
-
-        navHome.setOnClickListener(v -> startActivity(new Intent(this, StaffAdmin.class)));
-        navAdmins.setOnClickListener(v -> {});
-        navStudents.setOnClickListener(v -> startActivity(new Intent(this, StaffAdminStudents.class)));
-        navReports.setOnClickListener(v -> {
-            startActivity(new Intent(this, StaffReports.class));
-        });
     }
 
     private void renderAdminCards(String query) {
@@ -142,7 +125,8 @@ public class StudentAdmins extends AppCompatActivity {
         for (AdminModel admin : allAdmins) {
             if (!q.isEmpty()
                     && !admin.name.toLowerCase().contains(q)
-                    && !admin.id.toLowerCase().contains(q)) {
+                    && !admin.id.toLowerCase().contains(q)
+                    && !admin.department.toLowerCase().contains(q)) {
                 continue;
             }
 
@@ -181,18 +165,12 @@ public class StudentAdmins extends AppCompatActivity {
             tvName.setTextColor(Color.parseColor("#17112D"));
 
             TextView tvId = new TextView(this);
-            tvId.setText(admin.id);
+            tvId.setText(admin.id + " • " + admin.department + " • Students: " + admin.studentsAssigned);
             tvId.setTextSize(13);
             tvId.setTextColor(Color.parseColor("#555555"));
 
-            TextView tvCount = new TextView(this);
-            tvCount.setText("Students: " + admin.studentCount);
-            tvCount.setTextSize(13);
-            tvCount.setTextColor(Color.parseColor("#555555"));
-
             infoCol.addView(tvName);
             infoCol.addView(tvId);
-            infoCol.addView(tvCount);
 
             TextView arrow = new TextView(this);
             arrow.setText("›");
@@ -207,7 +185,13 @@ public class StudentAdmins extends AppCompatActivity {
                 Intent intent = new Intent(StudentAdmins.this, StudentAdminDetails.class);
                 intent.putExtra("adminName", admin.name);
                 intent.putExtra("adminId", admin.id);
-                intent.putExtra("studentCount", admin.studentCount);
+                intent.putExtra("department", admin.department);
+                intent.putExtra("year", admin.year);
+                intent.putExtra("phone", admin.phone);
+                intent.putExtra("email", admin.email);
+                intent.putExtra("studentsAssigned", admin.studentsAssigned);
+                intent.putExtra("joinedDate", admin.joinedDate);
+                intent.putExtra("status", admin.status);
                 startActivity(intent);
             });
 
@@ -217,19 +201,5 @@ public class StudentAdmins extends AppCompatActivity {
 
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
-    }
-
-    private void setActiveNavigation() {
-        iconHome.setColorFilter(grey);
-        textHome.setTextColor(grey);
-
-        iconAdmins.setColorFilter(purple);
-        textAdmins.setTextColor(purple);
-
-        iconStudents.setColorFilter(grey);
-        textStudents.setTextColor(grey);
-
-        iconReports.setColorFilter(grey);
-        textReports.setTextColor(grey);
     }
 }

@@ -16,7 +16,7 @@ import androidx.core.view.WindowCompat;
 public class StaffAddStudentActivity extends AppCompatActivity {
 
     EditText etStudentName, etRegisterNumber, etPhone, etEmail;
-    Spinner spDepartment, spYear, spSection, spAssignAdmin;
+    Spinner spDepartment, spYear, spAssignAdmin;
     Button btnSaveStudent;
     ImageView btnBack;
 
@@ -39,7 +39,6 @@ public class StaffAddStudentActivity extends AppCompatActivity {
 
         spDepartment = findViewById(R.id.spDepartment);
         spYear = findViewById(R.id.spYear);
-        spSection = findViewById(R.id.spSection);
         spAssignAdmin = findViewById(R.id.spAssignAdmin);
 
         btnSaveStudent = findViewById(R.id.btnSaveStudent);
@@ -47,7 +46,6 @@ public class StaffAddStudentActivity extends AppCompatActivity {
 
         setSpinner(spDepartment, new String[]{"Select Department", "CSE", "AI & DS", "ECE", "IT", "MECH"});
         setSpinner(spYear, new String[]{"Select Year", "II Year", "III Year", "IV Year"});
-        setSpinner(spSection, new String[]{"Select Section", "A", "B", "C"});
         setSpinner(spAssignAdmin, new String[]{
                 "Select Student Admin", "Arun Kumar", "Divya S", "Karthik R", "Nithya P"
         });
@@ -63,7 +61,6 @@ public class StaffAddStudentActivity extends AppCompatActivity {
             if (name.isEmpty() || regNo.isEmpty() || phone.isEmpty() || email.isEmpty()
                     || spDepartment.getSelectedItemPosition() == 0
                     || spYear.getSelectedItemPosition() == 0
-                    || spSection.getSelectedItemPosition() == 0
                     || spAssignAdmin.getSelectedItemPosition() == 0) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
                 return;
@@ -71,7 +68,6 @@ public class StaffAddStudentActivity extends AppCompatActivity {
 
             String dept = spDepartment.getSelectedItem().toString();
             String year = spYear.getSelectedItem().toString();
-            String section = spSection.getSelectedItem().toString();
             String assignedAdmin = spAssignAdmin.getSelectedItem().toString();
 
             Intent resultIntent = new Intent();
@@ -79,7 +75,6 @@ public class StaffAddStudentActivity extends AppCompatActivity {
             resultIntent.putExtra("studentId", regNo);
             resultIntent.putExtra("department", dept);
             resultIntent.putExtra("year", year);
-            resultIntent.putExtra("section", section);
             resultIntent.putExtra("assignedAdmin", assignedAdmin);
             resultIntent.putExtra("phone", phone);
             resultIntent.putExtra("email", email);
@@ -93,10 +88,10 @@ public class StaffAddStudentActivity extends AppCompatActivity {
     private void setSpinner(Spinner spinner, String[] items) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item,
                 items
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
 }

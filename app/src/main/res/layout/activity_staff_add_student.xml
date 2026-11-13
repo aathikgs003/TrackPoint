@@ -144,24 +144,7 @@
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp" />
 
-            <!-- Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Section *"
-                android:textColor="#26334D"
-                android:textStyle="bold"
-                android:textSize="13sp" />
 
-            <Spinner
-                android:id="@+id/spSection"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="14dp"
-                android:background="@drawable/input_box"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp" />
 
             <!-- Assign to Student Admin -->
             <TextView

@@ -16,7 +16,7 @@ import androidx.core.view.WindowCompat;
 public class AddStudentAdmin extends AppCompatActivity {
 
     EditText etAdminName, etAdminId, etAdminEmail, etAdminPhone;
-    Spinner spAdminDepartment;
+    Spinner spAdminDepartment, spAdminYear;
     Button btnSaveAdmin;
     ImageView btnBack;
 
@@ -37,16 +37,25 @@ public class AddStudentAdmin extends AppCompatActivity {
         etAdminEmail = findViewById(R.id.etAdminEmail);
         etAdminPhone = findViewById(R.id.etAdminPhone);
         spAdminDepartment = findViewById(R.id.spAdminDepartment);
+        spAdminYear = findViewById(R.id.spAdminYear);
         btnSaveAdmin = findViewById(R.id.btnSaveAdmin);
         btnBack = findViewById(R.id.btnBack);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+        ArrayAdapter<String> deptAdapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item,
                 new String[]{"Select Department", "CSE", "AI & DS", "ECE", "IT", "MECH"}
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spAdminDepartment.setAdapter(adapter);
+        deptAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spAdminDepartment.setAdapter(deptAdapter);
+
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(
+                this,
+                R.layout.spinner_item,
+                new String[]{"Select Year", "II Year", "III Year", "IV Year"}
+        );
+        yearAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spAdminYear.setAdapter(yearAdapter);
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -57,7 +66,8 @@ public class AddStudentAdmin extends AppCompatActivity {
             String phone = etAdminPhone.getText().toString().trim();
 
             if (name.isEmpty() || id.isEmpty() || email.isEmpty() || phone.isEmpty()
-                    || spAdminDepartment.getSelectedItemPosition() == 0) {
+                    || spAdminDepartment.getSelectedItemPosition() == 0
+                    || spAdminYear.getSelectedItemPosition() == 0) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -65,6 +75,10 @@ public class AddStudentAdmin extends AppCompatActivity {
             Intent resultIntent = new Intent();
             resultIntent.putExtra("adminName", name);
             resultIntent.putExtra("adminId", id);
+            resultIntent.putExtra("department", spAdminDepartment.getSelectedItem().toString());
+            resultIntent.putExtra("year", spAdminYear.getSelectedItem().toString());
+            resultIntent.putExtra("phone", phone);
+            resultIntent.putExtra("email", email);
             resultIntent.putExtra("studentCount", 0);
             setResult(RESULT_OK, resultIntent);
 

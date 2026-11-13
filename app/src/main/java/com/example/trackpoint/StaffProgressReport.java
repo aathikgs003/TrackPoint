@@ -31,13 +31,7 @@ public class StaffProgressReport extends AppCompatActivity {
     LinearLayout progressListContainer;
     Button btnDownloadProgressPdf;
 
-    // Bottom Navigation
-    LinearLayout navHome, navAdmins, navStudents, navReports;
-    ImageView iconHome, iconAdmins, iconStudents, iconReports;
-    TextView textHome, textAdmins, textStudents, textReports;
-
     int purple = Color.parseColor("#4825B8");
-    int grey = Color.parseColor("#888888");
 
     static class ProgRecord {
         String name, regId, dept, year;
@@ -104,34 +98,11 @@ public class StaffProgressReport extends AppCompatActivity {
         btnDownloadProgressPdf.setOnClickListener(v -> {
             Toast.makeText(this, "Student_Progress_2026.pdf downloaded!", Toast.LENGTH_SHORT).show();
         });
-
-        // Bottom Navigation
-        navHome = findViewById(R.id.navHome);
-        navAdmins = findViewById(R.id.navAdmins);
-        navStudents = findViewById(R.id.navStudents);
-        navReports = findViewById(R.id.navReports);
-
-        iconHome = findViewById(R.id.iconHome);
-        iconAdmins = findViewById(R.id.iconAdmins);
-        iconStudents = findViewById(R.id.iconStudents);
-        iconReports = findViewById(R.id.iconReports);
-
-        textHome = findViewById(R.id.textHome);
-        textAdmins = findViewById(R.id.textAdmins);
-        textStudents = findViewById(R.id.textStudents);
-        textReports = findViewById(R.id.textReports);
-
-        setActiveNavigation();
-
-        navHome.setOnClickListener(v -> startActivity(new Intent(this, StaffAdmin.class)));
-        navAdmins.setOnClickListener(v -> startActivity(new Intent(this, StudentAdmins.class)));
-        navStudents.setOnClickListener(v -> startActivity(new Intent(this, StaffAdminStudents.class)));
-        navReports.setOnClickListener(v -> finish());
     }
 
     private void setupSpinner(Spinner spinner, String[] items) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, items);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, items);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
 
@@ -215,19 +186,5 @@ public class StaffProgressReport extends AppCompatActivity {
 
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
-    }
-
-    private void setActiveNavigation() {
-        iconHome.setColorFilter(grey);
-        textHome.setTextColor(grey);
-
-        iconAdmins.setColorFilter(grey);
-        textAdmins.setTextColor(grey);
-
-        iconStudents.setColorFilter(grey);
-        textStudents.setTextColor(grey);
-
-        iconReports.setColorFilter(purple);
-        textReports.setTextColor(purple);
     }
 }

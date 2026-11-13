@@ -121,9 +121,28 @@
                 android:layout_height="52dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="16dp"
-                android:background="@drawable/input_box"
+                android:background="@drawable/spinner_box"
                 android:paddingStart="12dp"
-                android:paddingEnd="12dp" />
+                android:paddingEnd="32dp" />
+
+            <!-- Year -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Year *"
+                android:textColor="#26334D"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+            <Spinner
+                android:id="@+id/spAdminYear"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/spinner_box"
+                android:paddingStart="12dp"
+                android:paddingEnd="32dp" />
 
             <!-- Email -->
             <TextView

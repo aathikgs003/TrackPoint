@@ -34,27 +34,20 @@ public class StaffAdminStudents extends AppCompatActivity {
     LinearLayout studentListContainer;
     Button btnAddStudent;
 
-    // Bottom Navigation
-    LinearLayout navHome, navAdmins, navStudents, navReports;
-    ImageView iconHome, iconAdmins, iconStudents, iconReports;
-    TextView textHome, textAdmins, textStudents, textReports;
-
     int purple = Color.parseColor("#4825B8");
-    int grey = Color.parseColor("#888888");
 
     String filterByAdminName = null;
 
     static class StudentModel {
-        String name, regId, department, year, section, assignedAdmin, phone, email, attendance, progress, tasks;
+        String name, regId, department, year, assignedAdmin, phone, email, attendance, progress, tasks;
 
-        StudentModel(String name, String regId, String department, String year, String section,
+        StudentModel(String name, String regId, String department, String year,
                      String assignedAdmin, String phone, String email,
                      String attendance, String progress, String tasks) {
             this.name = name;
             this.regId = regId;
             this.department = department;
             this.year = year;
-            this.section = section;
             this.assignedAdmin = assignedAdmin;
             this.phone = phone;
             this.email = email;
@@ -76,7 +69,6 @@ public class StaffAdminStudents extends AppCompatActivity {
                             data.getStringExtra("studentId"),
                             data.getStringExtra("department"),
                             data.getStringExtra("year"),
-                            data.getStringExtra("section"),
                             data.getStringExtra("assignedAdmin"),
                             data.getStringExtra("phone"),
                             data.getStringExtra("email"),
@@ -121,11 +113,11 @@ public class StaffAdminStudents extends AppCompatActivity {
         setupSpinner(spFilterYear, new String[]{"All Years", "II Year", "III Year", "IV Year"});
 
         // Sample Students across Departments, Years & Student Admins
-        allStudents.add(new StudentModel("Aishu M", "CSE22CS001", "CSE", "II Year", "A", "Arun Kumar", "98765 43210", "aishu@college.edu", "92%", "88%", "5"));
-        allStudents.add(new StudentModel("Bala K", "CSE22CS002", "CSE", "II Year", "A", "Arun Kumar", "98765 43211", "bala@college.edu", "89%", "84%", "4"));
-        allStudents.add(new StudentModel("Dharani R", "AIDS21AD014", "AI & DS", "III Year", "A", "Divya S", "98765 43212", "dharani@college.edu", "94%", "91%", "6"));
-        allStudents.add(new StudentModel("Gokul S", "ECE20EC029", "ECE", "IV Year", "B", "Karthik R", "98765 43213", "gokul@college.edu", "86%", "85%", "5"));
-        allStudents.add(new StudentModel("Harini V", "IT22IT018", "IT", "II Year", "B", "Nithya P", "98765 43214", "harini@college.edu", "90%", "87%", "5"));
+        allStudents.add(new StudentModel("Aishu M", "CSE22CS001", "CSE", "II Year", "Arun Kumar", "98765 43210", "aishu@college.edu", "92%", "88%", "5"));
+        allStudents.add(new StudentModel("Bala K", "CSE22CS002", "CSE", "II Year", "Arun Kumar", "98765 43211", "bala@college.edu", "89%", "84%", "4"));
+        allStudents.add(new StudentModel("Dharani R", "AIDS21AD014", "AI & DS", "III Year", "Divya S", "98765 43212", "dharani@college.edu", "94%", "91%", "6"));
+        allStudents.add(new StudentModel("Gokul S", "ECE20EC029", "ECE", "IV Year", "Karthik R", "98765 43213", "gokul@college.edu", "86%", "85%", "5"));
+        allStudents.add(new StudentModel("Harini V", "IT22IT018", "IT", "II Year", "Nithya P", "98765 43214", "harini@college.edu", "90%", "87%", "5"));
 
         applyFilters();
 
@@ -159,40 +151,15 @@ public class StaffAdminStudents extends AppCompatActivity {
             Intent intent = new Intent(StaffAdminStudents.this, StaffAddStudentActivity.class);
             addStudentLauncher.launch(intent);
         });
-
-        // Bottom Navigation
-        navHome = findViewById(R.id.navHome);
-        navAdmins = findViewById(R.id.navAdmins);
-        navStudents = findViewById(R.id.navStudents);
-        navReports = findViewById(R.id.navReports);
-
-        iconHome = findViewById(R.id.iconHome);
-        iconAdmins = findViewById(R.id.iconAdmins);
-        iconStudents = findViewById(R.id.iconStudents);
-        iconReports = findViewById(R.id.iconReports);
-
-        textHome = findViewById(R.id.textHome);
-        textAdmins = findViewById(R.id.textAdmins);
-        textStudents = findViewById(R.id.textStudents);
-        textReports = findViewById(R.id.textReports);
-
-        setActiveNavigation();
-
-        navHome.setOnClickListener(v -> startActivity(new Intent(this, StaffAdmin.class)));
-        navAdmins.setOnClickListener(v -> startActivity(new Intent(this, StudentAdmins.class)));
-        navStudents.setOnClickListener(v -> {});
-        navReports.setOnClickListener(v -> {
-            startActivity(new Intent(this, StaffReports.class));
-        });
     }
 
     private void setupSpinner(Spinner spinner, String[] items) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item,
                 items
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
 
@@ -294,7 +261,6 @@ public class StaffAdminStudents extends AppCompatActivity {
             intent.putExtra("studentId", student.regId);
             intent.putExtra("department", student.department);
             intent.putExtra("year", student.year);
-            intent.putExtra("section", student.section);
             intent.putExtra("phone", student.phone);
             intent.putExtra("email", student.email);
             intent.putExtra("attendance", student.attendance);
@@ -308,19 +274,5 @@ public class StaffAdminStudents extends AppCompatActivity {
 
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
-    }
-
-    private void setActiveNavigation() {
-        iconHome.setColorFilter(grey);
-        textHome.setTextColor(grey);
-
-        iconAdmins.setColorFilter(grey);
-        textAdmins.setTextColor(grey);
-
-        iconStudents.setColorFilter(purple);
-        textStudents.setTextColor(purple);
-
-        iconReports.setColorFilter(grey);
-        textReports.setTextColor(grey);
     }
 }

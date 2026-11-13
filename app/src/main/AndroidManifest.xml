@@ -130,9 +130,7 @@
             android:name=".StaffReports"
             android:exported="false" />
 
-        <activity
-            android:name=".StaffNotifications"
-            android:exported="false" />
+
 
         <activity
             android:name=".StaffAttendanceReport"
@@ -140,6 +138,18 @@
 
         <activity
             android:name=".StaffProgressReport"
+            android:exported="false" />
+
+        <activity
+            android:name=".StaffProgressHistory"
+            android:exported="false" />
+
+        <activity
+            android:name=".StaffSubmissionDetails"
+            android:exported="false" />
+
+        <activity
+            android:name=".StaffFileViewer"
             android:exported="false" />
 
     </application>

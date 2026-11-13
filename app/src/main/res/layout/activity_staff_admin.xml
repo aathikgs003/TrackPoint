@@ -52,14 +52,14 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/btnStaffNotifications"
+            android:id="@+id/btnStaffHeaderLogout"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/notification_symbol"
+            android:src="@drawable/logout_symbol"
             app:tint="@color/white"
             android:clickable="true"
             android:focusable="true"
-            android:contentDescription="Notifications" />
+            android:contentDescription="Logout" />
 
     </LinearLayout>
 
@@ -86,6 +86,7 @@
                 android:textColor="#17112D" />
 
             <TextView
+                android:id="@+id/txtDashboardDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Today, Jan 26, 2025"
@@ -373,12 +374,47 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/card_purple"
+                android:paddingStart="14dp"
+                android:paddingEnd="16dp"
+                android:layout_marginBottom="8dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/daily_progress_symbol"
+                    app:tint="#4825B8"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="Progress History Icon" />
+
+                <TextView
+                    android:id="@+id/quickProgressHistory"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="Progress History"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#4825B8" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="›"
+                    android:textSize="26sp"
+                    android:textColor="#4825B8" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>
-
-    <!-- Bottom Navigation -->
-    <include
-        layout="@layout/view_staff_admin_bottom_navigation" />
 
 </LinearLayout>
