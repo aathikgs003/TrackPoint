@@ -2,9 +2,9 @@ package com.example.trackpoint;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +23,7 @@ import java.util.Locale;
 public class StudentAdmin extends AppCompatActivity {
 
     TextView tvStudentCount, tvAttendance, tvProgressCount, tvPending;
+    TextView tvAdminGreeting, tvAdminSubDept;
     StudentRepository repository;
 
     @Override
@@ -36,6 +37,8 @@ public class StudentAdmin extends AppCompatActivity {
         tvAttendance = findViewById(R.id.tvAttendance);
         tvProgressCount = findViewById(R.id.tvProgressCount);
         tvPending = findViewById(R.id.tvPending);
+        tvAdminGreeting = findViewById(R.id.tvAdminGreeting);
+        tvAdminSubDept = findViewById(R.id.tvAdminSubDept);
 
         // My Students Navigation
         View.OnClickListener openStudents = v -> startActivity(new Intent(StudentAdmin.this, MyStudents.class));
@@ -86,11 +89,31 @@ public class StudentAdmin extends AppCompatActivity {
     }
 
     private void loadDynamicDashboardData() {
-        ArrayList<StudentModel> students = repository.getAllStudents();
-        int totalStudentCount = students.size();
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        String loggedInAdminName = sessionPrefs.getString("logged_in_admin_name", "Aathi");
+        String loggedInAdminId = sessionPrefs.getString("logged_in_admin_id", "SADM001");
+
+        StudentAdminModel admin = repository.getStudentAdminById(loggedInAdminId);
+        if (admin == null) {
+            admin = repository.getStudentAdminById(loggedInAdminName);
+        }
+
+        if (admin != null) {
+            loggedInAdminName = admin.getName();
+        }
+
+        if (tvAdminGreeting != null) {
+            tvAdminGreeting.setText(loggedInAdminName);
+        }
+        if (tvAdminSubDept != null && admin != null) {
+            tvAdminSubDept.setText(admin.getDepartment() + " Department");
+        }
+
+        ArrayList<StudentModel> assignedStudents = repository.searchAndFilterStudentsForAdmin("", "All Departments", "All Years", loggedInAdminName);
+        int assignedCount = assignedStudents.size();
 
         if (tvStudentCount != null) {
-            tvStudentCount.setText(String.valueOf(totalStudentCount));
+            tvStudentCount.setText(String.valueOf(assignedCount));
         }
 
         SimpleDateFormat dateKeyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
@@ -102,23 +125,26 @@ public class StudentAdmin extends AppCompatActivity {
         int submittedTodayCount = 0;
         int presentCount = 0;
 
-        for (StudentModel s : students) {
+        for (StudentModel s : assignedStudents) {
             String regNo = s.getRegisterNumber();
-            boolean isSubmitted = todayPrefs.getBoolean("submitted_" + todayKeyStr, false);
+            DailyActivityModel dbModel = repository.getDailyActivity(regNo, todayKeyStr);
+            boolean isSubmitted = (dbModel != null) || todayPrefs.getBoolean("submitted_" + regNo + "_" + todayKeyStr, false);
+
             if (isSubmitted) {
                 submittedTodayCount++;
             }
 
-            String status = attendancePrefs.getString("status_" + regNo + "_" + todayKeyStr, "Present");
+            String dbStatus = repository.getAttendanceStatus(regNo, todayKeyStr);
+            String status = dbStatus != null ? dbStatus : attendancePrefs.getString("status_" + regNo + "_" + todayKeyStr, "Present");
             if ("Present".equalsIgnoreCase(status)) {
                 presentCount++;
             }
         }
 
-        int pendingCount = totalStudentCount > 0 ? (totalStudentCount - submittedTodayCount) : 0;
+        int pendingCount = assignedCount > 0 ? (assignedCount - submittedTodayCount) : 0;
         if (pendingCount < 0) pendingCount = 0;
 
-        int attendancePercentage = totalStudentCount > 0 ? (int) Math.round(((double) presentCount / totalStudentCount) * 100) : 100;
+        int attendancePercentage = assignedCount > 0 ? (int) Math.round(((double) presentCount / assignedCount) * 100) : 100;
 
         if (tvAttendance != null) {
             tvAttendance.setText(attendancePercentage + "%");
@@ -136,6 +162,14 @@ public class StudentAdmin extends AppCompatActivity {
     private void showSidebar() {
         View sidebarView = LayoutInflater.from(StudentAdmin.this)
                 .inflate(R.layout.layout_student_sidebar, null);
+
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        String loggedInAdminName = sessionPrefs.getString("logged_in_admin_name", "Aathi");
+
+        TextView tvSidebarAdminName = sidebarView.findViewById(R.id.tvSidebarAdminName);
+        TextView tvSidebarAdminRole = sidebarView.findViewById(R.id.tvSidebarAdminRole);
+
+        if (tvSidebarAdminName != null) tvSidebarAdminName.setText(loggedInAdminName);
 
         PopupWindow sidebar = new PopupWindow(
                 sidebarView,

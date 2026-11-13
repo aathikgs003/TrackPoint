@@ -103,7 +103,8 @@ public class StaffAddStudentActivity extends AppCompatActivity {
                     year,
                     email,
                     phone.startsWith("+91") ? phone : "+91 " + phone,
-                    "123"
+                    "123",
+                    assignedAdmin
             );
 
             long rowId = repository.addStudent(newStudent);

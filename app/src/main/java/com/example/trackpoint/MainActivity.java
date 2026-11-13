@@ -61,10 +61,12 @@ public class MainActivity extends AppCompatActivity {
             StudentAdminModel studentAdmin = repository.authenticateStudentAdmin(email, password);
             if (studentAdmin != null || (email.equalsIgnoreCase("aathi@gmail.com") && password.equals("123"))) {
                 String adminId = studentAdmin != null ? studentAdmin.getAdminId() : "SADM001";
+                String adminName = studentAdmin != null ? studentAdmin.getName() : "Aathi";
 
                 SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
                 sessionPrefs.edit().putString("logged_in_role", "STUDENT_ADMIN")
-                        .putString("logged_in_admin_id", adminId).apply();
+                        .putString("logged_in_admin_id", adminId)
+                        .putString("logged_in_admin_name", adminName).apply();
 
                 Intent intent = new Intent(MainActivity.this, StudentAdmin.class);
                 startActivity(intent);

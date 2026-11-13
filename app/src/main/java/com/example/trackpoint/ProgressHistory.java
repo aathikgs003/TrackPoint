@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -27,15 +28,18 @@ public class ProgressHistory extends AppCompatActivity {
     LinearLayout layoutProgressContent;
 
     Calendar filterCalendar;
-    String[] studentList = {
-            "All Students",
-            "Arun Kumar"
-    };
+    StudentRepository repository;
+    String loggedInAdminName = "Aathi";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress_history);
+
+        repository = new StudentRepository(this);
+
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        loggedInAdminName = sessionPrefs.getString("logged_in_admin_name", "Aathi");
 
         btnBack = findViewById(R.id.btnBack);
         spStudent = findViewById(R.id.spStudent);
@@ -45,7 +49,14 @@ public class ProgressHistory extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        setSpinner(spStudent, studentList);
+        ArrayList<StudentModel> assignedStudents = repository.searchAndFilterStudentsForAdmin("", "All Departments", "All Years", loggedInAdminName);
+        ArrayList<String> studentNames = new ArrayList<>();
+        studentNames.add("All Assigned Students");
+        for (StudentModel s : assignedStudents) {
+            studentNames.add(s.getName());
+        }
+
+        setSpinner(spStudent, studentNames.toArray(new String[0]));
 
         filterCalendar = Calendar.getInstance();
         updateDateDisplay();
@@ -62,6 +73,12 @@ public class ProgressHistory extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
+        renderProgressResults();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         renderProgressResults();
     }
 
@@ -103,16 +120,49 @@ public class ProgressHistory extends AppCompatActivity {
             tvProgressResultsTitle.setText("Uploads for " + dateDisplay);
         }
 
-        SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
-        boolean isArunSubmitted = prefs.getBoolean("submitted_" + dateKey, false);
-        String arunFileName = prefs.getString("file_name_" + dateKey, "assignment_java.pdf");
-        String arunNotes = prefs.getString("notes_" + dateKey, "Java activity & loops completed.");
-        String arunTime = prefs.getString("submit_time_" + dateKey, "Submitted at 10:30 AM");
+        String selectedStudent = spStudent.getSelectedItem() != null ? spStudent.getSelectedItem().toString() : "All Assigned Students";
+        ArrayList<StudentModel> assignedStudents = repository.searchAndFilterStudentsForAdmin("", "All Departments", "All Years", loggedInAdminName);
 
-        if (isArunSubmitted) {
-            layoutProgressContent.addView(createStudentUploadCard("Arun Kumar", dateDisplay, arunFileName, arunNotes, arunTime, true));
-        } else {
-            layoutProgressContent.addView(createStudentUploadCard("Arun Kumar", dateDisplay, "No File Uploaded", "No activity document or description submitted for this date.", "Not Submitted", false));
+        if (assignedStudents.isEmpty()) {
+            TextView emptyView = new TextView(this);
+            emptyView.setText("No students assigned to " + loggedInAdminName + " in database");
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(android.view.Gravity.CENTER);
+            emptyView.setTextColor(android.graphics.Color.parseColor("#68738A"));
+            layoutProgressContent.addView(emptyView);
+            return;
+        }
+
+        SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
+        int renderedCount = 0;
+
+        for (StudentModel s : assignedStudents) {
+            if (!selectedStudent.equals("All Assigned Students") && !s.getName().equalsIgnoreCase(selectedStudent)) {
+                continue;
+            }
+
+            DailyActivityModel dbModel = repository.getDailyActivity(s.getRegisterNumber(), dateKey);
+            boolean isSubmitted = (dbModel != null) || prefs.getBoolean("submitted_" + s.getRegisterNumber() + "_" + dateKey, false);
+
+            String fileName = dbModel != null ? dbModel.getFileName() : prefs.getString("file_name_" + s.getRegisterNumber() + "_" + dateKey, "No File Uploaded");
+            String notes = dbModel != null ? dbModel.getNotes() : prefs.getString("notes_" + s.getRegisterNumber() + "_" + dateKey, "No activity document or description submitted for this date.");
+            String timeStr = dbModel != null ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + s.getRegisterNumber() + "_" + dateKey, "Not Submitted");
+
+            if (isSubmitted) {
+                layoutProgressContent.addView(createStudentUploadCard(s.getName(), dateDisplay, fileName, notes, timeStr, true));
+            } else {
+                layoutProgressContent.addView(createStudentUploadCard(s.getName(), dateDisplay, "No File Uploaded", "No activity document or description submitted for this date.", "Not Submitted", false));
+            }
+            renderedCount++;
+        }
+
+        if (renderedCount == 0) {
+            TextView emptyView = new TextView(this);
+            emptyView.setText("No progress records found for selected filter");
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(android.view.Gravity.CENTER);
+            emptyView.setTextColor(android.graphics.Color.parseColor("#68738A"));
+            layoutProgressContent.addView(emptyView);
         }
     }
 

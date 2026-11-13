@@ -54,6 +54,20 @@ public class StudentModel {
         this.updatedAt = "";
     }
 
+    public StudentModel(String name, String registerNumber, String department, String year, String email, String phone, String password, String assignedAdmin) {
+        this.name = name;
+        this.registerNumber = registerNumber;
+        this.department = department;
+        this.year = year;
+        this.email = email;
+        this.phone = phone;
+        this.password = password != null && !password.isEmpty() ? password : "123";
+        this.assignedAdmin = assignedAdmin != null ? assignedAdmin : "Aathi";
+        this.serverId = "";
+        this.isSynced = false;
+        this.updatedAt = "";
+    }
+
     public StudentModel(long id, String name, String registerNumber, String department, String year, String email, String phone, String password, String assignedAdmin, String serverId, boolean isSynced, String updatedAt) {
         this.id = id;
         this.name = name;

@@ -131,18 +131,18 @@ public class StudentTodayActivity extends AppCompatActivity {
     }
 
     private void loadSubmissionState() {
-        SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
-        boolean isSubmitted = prefs.getBoolean("submitted_" + todayDateKey, false);
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
 
         DailyActivityModel dbModel = repository.getDailyActivity(loggedInRegNo, todayDateKey);
-        if (dbModel != null) {
-            isSubmitted = true;
-        }
+
+        SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
+        boolean isSubmitted = (dbModel != null) || prefs.getBoolean("submitted_" + loggedInRegNo + "_" + todayDateKey, false);
 
         if (isSubmitted) {
-            String fileName = dbModel != null ? dbModel.getFileName() : prefs.getString("file_name_" + todayDateKey, "Document Uploaded");
-            String submitTime = dbModel != null ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + todayDateKey, "Submitted Today");
-            String notes = dbModel != null ? dbModel.getNotes() : prefs.getString("notes_" + todayDateKey, "No description added");
+            String fileName = dbModel != null ? dbModel.getFileName() : prefs.getString("file_name_" + loggedInRegNo + "_" + todayDateKey, "Document Uploaded");
+            String submitTime = dbModel != null ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + loggedInRegNo + "_" + todayDateKey, "Submitted Today");
+            String notes = dbModel != null ? dbModel.getNotes() : prefs.getString("notes_" + loggedInRegNo + "_" + todayDateKey, "No description added");
 
             if (tvSubmittedFileName != null) tvSubmittedFileName.setText("📄 " + fileName);
             if (tvSubmittedTime != null) tvSubmittedTime.setText(submitTime);
@@ -164,17 +164,20 @@ public class StudentTodayActivity extends AppCompatActivity {
             return;
         }
 
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
+
         String fileName = selectedFileUri != null ? getFileNameFromUri(selectedFileUri) : "Activity Notes Submitted";
         SimpleDateFormat timeFmt = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         String timeStr = timeFmt.format(new Date());
 
         SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("submitted_" + todayDateKey, true);
-        editor.putString("file_name_" + todayDateKey, fileName);
-        editor.putString("notes_" + todayDateKey, notes);
-        editor.putString("submit_time_" + todayDateKey, "Submitted at " + timeStr);
-        editor.putString("date_display_" + todayDateKey, todayDateDisplay);
+        editor.putBoolean("submitted_" + loggedInRegNo + "_" + todayDateKey, true);
+        editor.putString("file_name_" + loggedInRegNo + "_" + todayDateKey, fileName);
+        editor.putString("notes_" + loggedInRegNo + "_" + todayDateKey, notes);
+        editor.putString("submit_time_" + loggedInRegNo + "_" + todayDateKey, "Submitted at " + timeStr);
+        editor.putString("date_display_" + loggedInRegNo + "_" + todayDateKey, todayDateDisplay);
         editor.apply();
 
         // Save into SQLite Database
@@ -185,9 +188,12 @@ public class StudentTodayActivity extends AppCompatActivity {
     }
 
     private void prepareEditMode() {
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
+
         SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
-        String notes = prefs.getString("notes_" + todayDateKey, "");
-        String fileName = prefs.getString("file_name_" + todayDateKey, "");
+        String notes = prefs.getString("notes_" + loggedInRegNo + "_" + todayDateKey, "");
+        String fileName = prefs.getString("file_name_" + loggedInRegNo + "_" + todayDateKey, "");
 
         DailyActivityModel dbModel = repository.getDailyActivity(loggedInRegNo, todayDateKey);
         if (dbModel != null) {
@@ -222,14 +228,20 @@ public class StudentTodayActivity extends AppCompatActivity {
     }
 
     private void deleteTodayActivity() {
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
+
         SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.remove("submitted_" + todayDateKey);
-        editor.remove("file_name_" + todayDateKey);
-        editor.remove("notes_" + todayDateKey);
-        editor.remove("submit_time_" + todayDateKey);
-        editor.remove("date_display_" + todayDateKey);
+        editor.remove("submitted_" + loggedInRegNo + "_" + todayDateKey);
+        editor.remove("file_name_" + loggedInRegNo + "_" + todayDateKey);
+        editor.remove("notes_" + loggedInRegNo + "_" + todayDateKey);
+        editor.remove("submit_time_" + loggedInRegNo + "_" + todayDateKey);
+        editor.remove("date_display_" + loggedInRegNo + "_" + todayDateKey);
         editor.apply();
+
+        // Remove from SQLite Database
+        repository.deleteDailyActivity(loggedInRegNo, todayDateKey);
 
         selectedFileUri = null;
         if (etActivityNotes != null) etActivityNotes.setText("");

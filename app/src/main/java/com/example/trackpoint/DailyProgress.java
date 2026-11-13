@@ -111,7 +111,17 @@ public class DailyProgress extends AppCompatActivity {
     private void loadSampleStudents() {
         allStudents.clear();
         StudentRepository repo = new StudentRepository(this);
-        ArrayList<StudentModel> dbList = repo.getAllStudents();
+        android.content.SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        String role = sessionPrefs.getString("logged_in_role", "STUDENT_ADMIN");
+        String loggedInAdminName = sessionPrefs.getString("logged_in_admin_name", "Aathi");
+
+        ArrayList<StudentModel> dbList;
+        if ("STUDENT_ADMIN".equalsIgnoreCase(role)) {
+            dbList = repo.searchAndFilterStudentsForAdmin("", "All Departments", "All Years", loggedInAdminName);
+        } else {
+            dbList = repo.getAllStudents();
+        }
+
         for (StudentModel s : dbList) {
             allStudents.add(new ProgressStudent(s.getName(), s.getYear()));
         }

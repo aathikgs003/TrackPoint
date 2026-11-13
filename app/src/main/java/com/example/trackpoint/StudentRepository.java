@@ -476,6 +476,62 @@ public class StudentRepository {
         return null;
     }
 
+    public int[] getAttendanceStatsForStudent(String studentRegNo, String datePrefix) {
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        int total = 0;
+        int present = 0;
+        int absent = 0;
+
+        try {
+            StringBuilder selection = new StringBuilder(DatabaseHelper.COLUMN_REG_NO + " = ?");
+            ArrayList<String> args = new ArrayList<>();
+            args.add(studentRegNo);
+
+            if (datePrefix != null && !datePrefix.isEmpty()) {
+                selection.append(" AND ").append(DatabaseHelper.COLUMN_DATE_KEY).append(" LIKE ?");
+                args.add(datePrefix + "%");
+            }
+
+            cursor = db.query(DatabaseHelper.TABLE_ATTENDANCE, new String[]{DatabaseHelper.COLUMN_STATUS},
+                    selection.toString(), args.toArray(new String[0]), null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    total++;
+                    String status = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_STATUS));
+                    if ("Present".equalsIgnoreCase(status)) {
+                        present++;
+                    } else if ("Absent".equalsIgnoreCase(status)) {
+                        absent++;
+                    }
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
+        return new int[]{total, present, absent};
+    }
+
+    public int[] getAttendanceStatsForAdmin(String adminName, String datePrefix) {
+        ArrayList<StudentModel> assigned = searchAndFilterStudentsForAdmin("", "All Departments", "All Years", adminName);
+        int total = 0;
+        int present = 0;
+        int absent = 0;
+
+        for (StudentModel s : assigned) {
+            int[] stats = getAttendanceStatsForStudent(s.getRegisterNumber(), datePrefix);
+            total += stats[0];
+            present += stats[1];
+            absent += stats[2];
+        }
+
+        return new int[]{total, present, absent};
+    }
+
     // --- DAILY ACTIVITIES OPERATIONS IN SQLITE ---
 
     public boolean saveOrUpdateDailyActivity(String studentRegNo, String dateKey, String fileName, String notes, String submitTime) {
@@ -507,6 +563,21 @@ public class StudentRepository {
                 db.insert(DatabaseHelper.TABLE_DAILY_ACTIVITIES, null, values);
             }
             return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteDailyActivity(String studentRegNo, String dateKey) {
+        if (studentRegNo == null || dateKey == null) return false;
+
+        SQLiteDatabase db = getDatabase();
+        try {
+            int rows = db.delete(DatabaseHelper.TABLE_DAILY_ACTIVITIES,
+                    DatabaseHelper.COLUMN_REG_NO + " = ? AND " + DatabaseHelper.COLUMN_DATE_KEY + " = ?",
+                    new String[]{studentRegNo, dateKey});
+            return rows > 0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

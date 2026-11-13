@@ -26,6 +26,7 @@
             android:contentDescription="TrackPoint Logo"/>
 
         <TextView
+            android:id="@+id/tvSidebarAdminName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TrackPoint"
@@ -34,6 +35,7 @@
             android:textStyle="bold"/>
 
         <TextView
+            android:id="@+id/tvSidebarAdminRole"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"

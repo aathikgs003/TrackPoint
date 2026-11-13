@@ -27,6 +27,7 @@
             android:contentDescription="Student Logo"/>
 
         <TextView
+            android:id="@+id/tvStudentSidebarName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Student"
@@ -35,10 +36,11 @@
             android:textStyle="bold"/>
 
         <TextView
+            android:id="@+id/tvStudentSidebarSub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="CSE Department - II Year"
+            android:text="CSE Department - III Year"
             android:textColor="#DDD8FF"
             android:textSize="12sp"/>
     </LinearLayout>

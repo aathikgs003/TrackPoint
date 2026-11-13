@@ -49,7 +49,7 @@ public class MarkAttendance extends AppCompatActivity {
     ArrayList<Spinner> statusSpinners = new ArrayList<>();
 
     String[] attendanceOptions = {
-            "Present", "Absent"
+            "Not Mentioned", "Present", "Absent"
     };
 
     @Override
@@ -70,7 +70,7 @@ public class MarkAttendance extends AppCompatActivity {
         attendanceList = findViewById(R.id.attendanceList);
 
         setSpinner(spYear, new String[]{
-                "Select Year", "I Year", "II Year",
+                "All Years", "I Year", "II Year",
                 "III Year", "IV Year"
         });
 
@@ -109,13 +109,13 @@ public class MarkAttendance extends AppCompatActivity {
 
         btnAllPresent.setOnClickListener(v -> {
             for (Spinner spinner : statusSpinners) {
-                spinner.setSelection(0);
+                spinner.setSelection(1); // Selection 1 is "Present"
             }
         });
 
         btnAllAbsent.setOnClickListener(v -> {
             for (Spinner spinner : statusSpinners) {
-                spinner.setSelection(1);
+                spinner.setSelection(2); // Selection 2 is "Absent"
             }
         });
 
@@ -134,13 +134,16 @@ public class MarkAttendance extends AppCompatActivity {
         for (int i = 0; i < statusSpinners.size(); i++) {
             if (i < currentFilteredList.size()) {
                 AttendanceStudent s = currentFilteredList.get(i);
-                String statusVal = statusSpinners.get(i).getSelectedItem() != null ?
-                        statusSpinners.get(i).getSelectedItem().toString() : "Present";
+                String selectedOption = statusSpinners.get(i).getSelectedItem() != null ?
+                        statusSpinners.get(i).getSelectedItem().toString() : "Not Mentioned";
 
-                editor.putString("status_" + s.regNo + "_" + dateKey, statusVal);
+                // "Not Mentioned" converts to "Absent" in database and system pages!
+                String finalStatusVal = "Present".equalsIgnoreCase(selectedOption) ? "Present" : "Absent";
+
+                editor.putString("status_" + s.regNo + "_" + dateKey, finalStatusVal);
 
                 // Save into SQLite Database
-                repository.saveOrUpdateAttendance(s.regNo, dateKey, statusVal, "Student Admin");
+                repository.saveOrUpdateAttendance(s.regNo, dateKey, finalStatusVal, "Student Admin");
             }
         }
 
@@ -152,7 +155,17 @@ public class MarkAttendance extends AppCompatActivity {
 
     private void loadSampleStudents() {
         allStudents.clear();
-        ArrayList<StudentModel> dbList = repository.getAllStudents();
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        String role = sessionPrefs.getString("logged_in_role", "STUDENT_ADMIN");
+        String loggedInAdminName = sessionPrefs.getString("logged_in_admin_name", "Aathi");
+
+        ArrayList<StudentModel> dbList;
+        if ("STUDENT_ADMIN".equalsIgnoreCase(role)) {
+            dbList = repository.searchAndFilterStudentsForAdmin("", "All Departments", "All Years", loggedInAdminName);
+        } else {
+            dbList = repository.getAllStudents();
+        }
+
         for (StudentModel s : dbList) {
             allStudents.add(new AttendanceStudent(s.getName(), s.getRegisterNumber(), s.getYear()));
         }
@@ -214,12 +227,14 @@ public class MarkAttendance extends AppCompatActivity {
             setSpinner(status, attendanceOptions);
 
             String dbStatus = repository.getAttendanceStatus(student.regNo, dateKey);
-            String savedStatus = dbStatus != null ? dbStatus : prefs.getString("status_" + student.regNo + "_" + dateKey, "Present");
+            String savedStatus = dbStatus != null ? dbStatus : prefs.getString("status_" + student.regNo + "_" + dateKey, null);
 
-            if ("Absent".equalsIgnoreCase(savedStatus)) {
-                status.setSelection(1);
+            if ("Present".equalsIgnoreCase(savedStatus)) {
+                status.setSelection(1); // Present
+            } else if ("Absent".equalsIgnoreCase(savedStatus)) {
+                status.setSelection(2); // Absent
             } else {
-                status.setSelection(0);
+                status.setSelection(0); // Not Mentioned
             }
 
             statusSpinners.add(status);

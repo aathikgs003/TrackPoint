@@ -22,13 +22,14 @@ import java.util.Locale;
 
 public class StudentDashboardActivity extends AppCompatActivity {
 
-    TextView tvStudentGreeting, tvStudentRegNo;
+    TextView tvStudentGreeting, tvStudentRegNo, tvHeaderSubDeptYear;
     TextView tvStudentAttendance, tvCompletedTasks, tvInProgressTasks, tvTotalTasks;
     TextView tvTodayDate, tvDashboardStatusTitle, tvDashboardSubmitTime, tvDashboardFileName;
     ImageView imgDashboardStatusIcon;
     LinearLayout cardTodayActivityStatus, layoutDashboardStatusBadge;
 
     StudentRepository repository;
+    String loggedInRegNo = "CSE22CS001";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class StudentDashboardActivity extends AppCompatActivity {
 
         tvStudentGreeting = findViewById(R.id.tvStudentGreeting);
         tvStudentRegNo = findViewById(R.id.tvStudentRegNo);
+        tvHeaderSubDeptYear = findViewById(R.id.tvHeaderSubDeptYear);
 
         tvStudentAttendance = findViewById(R.id.tvStudentAttendance);
         tvCompletedTasks = findViewById(R.id.tvCompletedTasks);
@@ -82,7 +84,7 @@ public class StudentDashboardActivity extends AppCompatActivity {
 
     private void loadStudentInfo() {
         SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
-        String loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
+        loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
 
         StudentModel student = repository.getStudentByRegNo(loggedInRegNo);
         if (student != null) {
@@ -91,6 +93,9 @@ public class StudentDashboardActivity extends AppCompatActivity {
             }
             if (tvStudentRegNo != null) {
                 tvStudentRegNo.setText("Reg No: " + student.getRegisterNumber());
+            }
+            if (tvHeaderSubDeptYear != null) {
+                tvHeaderSubDeptYear.setText(student.getDepartment() + " Department - " + student.getYear());
             }
         }
     }
@@ -107,16 +112,22 @@ public class StudentDashboardActivity extends AppCompatActivity {
             tvTodayDate.setText(dateDisplayStr);
         }
 
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
+
         SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
-        boolean isSubmitted = prefs.getBoolean("submitted_" + dateKeyStr, false);
-        String fileName = prefs.getString("file_name_" + dateKeyStr, "Document Uploaded");
-        String submitTime = prefs.getString("submit_time_" + dateKeyStr, "Submitted Today");
+        DailyActivityModel dbModel = repository.getDailyActivity(loggedInRegNo, dateKeyStr);
+        boolean isSubmitted = (dbModel != null) || prefs.getBoolean("submitted_" + loggedInRegNo + "_" + dateKeyStr, false);
+
+        String fileName = dbModel != null ? dbModel.getFileName() : prefs.getString("file_name_" + loggedInRegNo + "_" + dateKeyStr, "Document Uploaded");
+        String submitTime = dbModel != null ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + loggedInRegNo + "_" + dateKeyStr, "Submitted Today");
 
         SharedPreferences attendancePrefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
-        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
-        String loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
+        String todayAttendanceStatus = repository.getAttendanceStatus(loggedInRegNo, dateKeyStr);
+        if (todayAttendanceStatus == null) {
+            todayAttendanceStatus = attendancePrefs.getString("status_" + loggedInRegNo + "_" + dateKeyStr, "Present");
+        }
 
-        String todayAttendanceStatus = attendancePrefs.getString("status_" + loggedInRegNo + "_" + dateKeyStr, "Present");
         String attendancePercentStr = "Absent".equalsIgnoreCase(todayAttendanceStatus) ? "90%" : "95%";
 
         if (tvStudentAttendance != null) {
@@ -189,6 +200,15 @@ public class StudentDashboardActivity extends AppCompatActivity {
     private void showSidebar() {
         View sidebarView = LayoutInflater.from(this)
                 .inflate(R.layout.layout_user_student_sidebar, null);
+
+        TextView tvStudentSidebarName = sidebarView.findViewById(R.id.tvStudentSidebarName);
+        TextView tvStudentSidebarSub = sidebarView.findViewById(R.id.tvStudentSidebarSub);
+
+        StudentModel currentStudent = repository.getStudentByRegNo(loggedInRegNo);
+        if (currentStudent != null) {
+            if (tvStudentSidebarName != null) tvStudentSidebarName.setText(currentStudent.getName());
+            if (tvStudentSidebarSub != null) tvStudentSidebarSub.setText(currentStudent.getDepartment() + " Department - " + currentStudent.getYear());
+        }
 
         PopupWindow sidebar = new PopupWindow(
                 sidebarView,

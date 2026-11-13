@@ -2,6 +2,7 @@ package com.example.trackpoint;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -41,17 +42,18 @@ public class StaffProgressHistory extends AppCompatActivity {
     SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
     String selectedDateStr = "";
     String preFilterStudentId = null;
+    String preFilterStudentName = null;
     String filterAdminName = null;
 
     static class SubmissionModel {
         String studentName, regId, dept, year, assignedAdmin;
         String formattedDate, dateLabel, notes, fileType, fileName, fileSize;
-        boolean isThisWeek;
+        boolean isSubmitted;
 
         SubmissionModel(String studentName, String regId, String dept, String year,
                         String assignedAdmin, String formattedDate, String dateLabel,
                         String notes, String fileType, String fileName, String fileSize,
-                        boolean isThisWeek) {
+                        boolean isSubmitted) {
             this.studentName = studentName;
             this.regId = regId;
             this.dept = dept;
@@ -63,7 +65,7 @@ public class StaffProgressHistory extends AppCompatActivity {
             this.fileType = fileType;
             this.fileName = fileName;
             this.fileSize = fileSize;
-            this.isThisWeek = isThisWeek;
+            this.isSubmitted = isSubmitted;
         }
     }
 
@@ -110,7 +112,7 @@ public class StaffProgressHistory extends AppCompatActivity {
         boolean dailyAdminMode = getIntent().getBooleanExtra("dailyAdminMode", false);
         filterAdminName = getIntent().getStringExtra("adminName");
         preFilterStudentId = getIntent().getStringExtra("studentId");
-        String preFilterStudentName = getIntent().getStringExtra("studentName");
+        preFilterStudentName = getIntent().getStringExtra("studentName");
 
         String todayFormatted = sdf.format(filterCalendar.getTime());
 
@@ -126,6 +128,7 @@ public class StaffProgressHistory extends AppCompatActivity {
             selectedDateStr = "";
         } else if (preFilterStudentName != null && !preFilterStudentName.isEmpty()) {
             txtHeaderTitle.setText(preFilterStudentName + " - History");
+            spHistAdmin.setVisibility(View.GONE);
             selectedDateStr = todayFormatted;
             btnCustomDate.setText(todayFormatted);
         } else {
@@ -186,16 +189,78 @@ public class StaffProgressHistory extends AppCompatActivity {
     private void loadSubmissionsFromDatabase() {
         allSubmissions.clear();
 
-        ArrayList<StudentModel> students = repository.searchAndFilterStudentsForAdmin("", "All Departments", "All Years", filterAdminName);
+        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        String todayKeyStr = keyFmt.format(filterCalendar.getTime());
         String todayFormatted = sdf.format(filterCalendar.getTime());
 
+        SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
+
+        if (preFilterStudentId != null && !preFilterStudentId.isEmpty()) {
+            StudentModel s = repository.getStudentByRegNo(preFilterStudentId);
+            if (s != null) {
+                DailyActivityModel dbModel = repository.getDailyActivity(s.getRegisterNumber(), todayKeyStr);
+                boolean isSub = (dbModel != null) || prefs.getBoolean("submitted_" + s.getRegisterNumber() + "_" + todayKeyStr, false);
+
+                String notes = dbModel != null && dbModel.getNotes() != null && !dbModel.getNotes().isEmpty() ? dbModel.getNotes() : prefs.getString("notes_" + s.getRegisterNumber() + "_" + todayKeyStr, "No activity document or description submitted for this date.");
+                String fileName = dbModel != null && dbModel.getFileName() != null && !dbModel.getFileName().isEmpty() ? dbModel.getFileName() : prefs.getString("file_name_" + s.getRegisterNumber() + "_" + todayKeyStr, "No File Uploaded");
+                String submitTime = dbModel != null && dbModel.getSubmitTime() != null && !dbModel.getSubmitTime().isEmpty() ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + s.getRegisterNumber() + "_" + todayKeyStr, "Not Submitted");
+                String admin = s.getAssignedAdmin() != null ? s.getAssignedAdmin() : "Aathi";
+
+                String fileType = isSub && !fileName.equals("No File Uploaded") ? (fileName.endsWith(".png") || fileName.endsWith(".jpg") ? "Image" : "PDF") : "None";
+
+                allSubmissions.add(new SubmissionModel(
+                        s.getName(), s.getRegisterNumber(), s.getDepartment(), s.getYear(), admin,
+                        todayFormatted, isSub ? submitTime : "Not Submitted",
+                        notes,
+                        fileType, isSub ? fileName : "No File Uploaded", "1.2 MB", isSub
+                ));
+            }
+            return;
+        }
+
+        if (preFilterStudentName != null && !preFilterStudentName.isEmpty()) {
+            ArrayList<StudentModel> students = repository.getAllStudents();
+            for (StudentModel s : students) {
+                if (s.getName().equalsIgnoreCase(preFilterStudentName)) {
+                    DailyActivityModel dbModel = repository.getDailyActivity(s.getRegisterNumber(), todayKeyStr);
+                    boolean isSub = (dbModel != null) || prefs.getBoolean("submitted_" + s.getRegisterNumber() + "_" + todayKeyStr, false);
+
+                    String notes = dbModel != null && dbModel.getNotes() != null && !dbModel.getNotes().isEmpty() ? dbModel.getNotes() : prefs.getString("notes_" + s.getRegisterNumber() + "_" + todayKeyStr, "No activity document or description submitted for this date.");
+                    String fileName = dbModel != null && dbModel.getFileName() != null && !dbModel.getFileName().isEmpty() ? dbModel.getFileName() : prefs.getString("file_name_" + s.getRegisterNumber() + "_" + todayKeyStr, "No File Uploaded");
+                    String submitTime = dbModel != null && dbModel.getSubmitTime() != null && !dbModel.getSubmitTime().isEmpty() ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + s.getRegisterNumber() + "_" + todayKeyStr, "Not Submitted");
+                    String admin = s.getAssignedAdmin() != null ? s.getAssignedAdmin() : "Aathi";
+
+                    String fileType = isSub && !fileName.equals("No File Uploaded") ? (fileName.endsWith(".png") || fileName.endsWith(".jpg") ? "Image" : "PDF") : "None";
+
+                    allSubmissions.add(new SubmissionModel(
+                            s.getName(), s.getRegisterNumber(), s.getDepartment(), s.getYear(), admin,
+                            todayFormatted, isSub ? submitTime : "Not Submitted",
+                            notes,
+                            fileType, isSub ? fileName : "No File Uploaded", "1.2 MB", isSub
+                    ));
+                    break;
+                }
+            }
+            return;
+        }
+
+        ArrayList<StudentModel> students = repository.searchAndFilterStudentsForAdmin("", "All Departments", "All Years", filterAdminName);
         for (StudentModel s : students) {
+            DailyActivityModel dbModel = repository.getDailyActivity(s.getRegisterNumber(), todayKeyStr);
+            boolean isSub = (dbModel != null) || prefs.getBoolean("submitted_" + s.getRegisterNumber() + "_" + todayKeyStr, false);
+
+            String notes = dbModel != null && dbModel.getNotes() != null && !dbModel.getNotes().isEmpty() ? dbModel.getNotes() : prefs.getString("notes_" + s.getRegisterNumber() + "_" + todayKeyStr, "No activity document or description submitted for this date.");
+            String fileName = dbModel != null && dbModel.getFileName() != null && !dbModel.getFileName().isEmpty() ? dbModel.getFileName() : prefs.getString("file_name_" + s.getRegisterNumber() + "_" + todayKeyStr, "No File Uploaded");
+            String submitTime = dbModel != null && dbModel.getSubmitTime() != null && !dbModel.getSubmitTime().isEmpty() ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + s.getRegisterNumber() + "_" + todayKeyStr, "Not Submitted");
             String admin = s.getAssignedAdmin() != null ? s.getAssignedAdmin() : "Aathi";
+
+            String fileType = isSub && !fileName.equals("No File Uploaded") ? (fileName.endsWith(".png") || fileName.endsWith(".jpg") ? "Image" : "PDF") : "None";
+
             allSubmissions.add(new SubmissionModel(
                     s.getName(), s.getRegisterNumber(), s.getDepartment(), s.getYear(), admin,
-                    todayFormatted, "Today, 10:30 AM",
-                    "Daily activity document uploaded and verified.",
-                    "PDF", "daily_record.pdf", "1.2 MB", true
+                    todayFormatted, isSub ? submitTime : "Not Submitted",
+                    notes,
+                    fileType, isSub ? fileName : "No File Uploaded", "1.2 MB", isSub
             ));
         }
     }
@@ -214,7 +279,9 @@ public class StaffProgressHistory extends AppCompatActivity {
 
         if (allSubmissions.isEmpty()) {
             TextView emptyView = new TextView(this);
-            if (filterAdminName != null && !filterAdminName.isEmpty()) {
+            if (preFilterStudentName != null && !preFilterStudentName.isEmpty()) {
+                emptyView.setText("No submissions found for " + preFilterStudentName);
+            } else if (filterAdminName != null && !filterAdminName.isEmpty()) {
                 emptyView.setText("No submissions for " + filterAdminName + "'s assigned students");
             } else {
                 emptyView.setText("No submissions found in database");
@@ -227,6 +294,14 @@ public class StaffProgressHistory extends AppCompatActivity {
         }
 
         for (SubmissionModel sub : allSubmissions) {
+            if (preFilterStudentId != null && !preFilterStudentId.isEmpty() && !sub.regId.equalsIgnoreCase(preFilterStudentId)) {
+                continue;
+            }
+
+            if (preFilterStudentName != null && !preFilterStudentName.isEmpty() && !sub.studentName.equalsIgnoreCase(preFilterStudentName)) {
+                continue;
+            }
+
             if (!query.isEmpty()
                     && !sub.studentName.toLowerCase().contains(query)
                     && !sub.regId.toLowerCase().contains(query)) {
@@ -312,6 +387,7 @@ public class StaffProgressHistory extends AppCompatActivity {
             intent.putExtra("fileName", sub.fileName);
             intent.putExtra("fileSize", sub.fileSize);
             intent.putExtra("fileType", sub.fileType);
+            intent.putExtra("isSubmitted", sub.isSubmitted);
             startActivity(intent);
         });
 

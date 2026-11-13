@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.graphics.Color;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +14,10 @@ public class StaffStudentDetails extends AppCompatActivity {
     ImageView btnBack;
     TextView txtStudentName, txtStudentId, txtDepartment, txtYear, txtPhone, txtEmail;
     TextView txtAttendance, txtProgress, txtTasks;
+
+    StudentRepository repository;
+    String currentStudentId = "CSE22CS001";
+    String currentStudentName = "Arun Kumar";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +30,8 @@ public class StaffStudentDetails extends AppCompatActivity {
         ).setAppearanceLightStatusBars(false);
 
         setContentView(R.layout.activity_staff_student_details);
+
+        repository = new StudentRepository(this);
 
         btnBack = findViewById(R.id.btnBack);
         txtStudentName = findViewById(R.id.txtStudentName);
@@ -41,26 +46,59 @@ public class StaffStudentDetails extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null) {
-            txtStudentName.setText(intent.getStringExtra("studentName"));
-            txtStudentId.setText(intent.getStringExtra("studentId"));
-            txtDepartment.setText(intent.getStringExtra("department"));
-            txtYear.setText(intent.getStringExtra("year"));
-            txtPhone.setText(intent.getStringExtra("phone"));
-            txtEmail.setText(intent.getStringExtra("email"));
-            txtAttendance.setText(intent.getStringExtra("attendance"));
-            txtProgress.setText(intent.getStringExtra("progress"));
-            txtTasks.setText(intent.getStringExtra("tasks"));
+            String sId = intent.getStringExtra("studentId");
+            if (sId == null) sId = intent.getStringExtra("student_roll_no");
+            if (sId != null && !sId.isEmpty()) currentStudentId = sId;
+
+            String sName = intent.getStringExtra("studentName");
+            if (sName == null) sName = intent.getStringExtra("student_name");
+            if (sName != null && !sName.isEmpty()) currentStudentName = sName;
         }
 
         btnBack.setOnClickListener(v -> finish());
 
         findViewById(R.id.btnViewStudentWeeklySubmissions).setOnClickListener(v -> {
             Intent historyIntent = new Intent(StaffStudentDetails.this, StaffProgressHistory.class);
-            historyIntent.putExtra("studentId", txtStudentId.getText().toString());
-            historyIntent.putExtra("studentName", txtStudentName.getText().toString());
+            historyIntent.putExtra("studentId", currentStudentId);
+            historyIntent.putExtra("studentName", currentStudentName);
             historyIntent.putExtra("weeklyOnly", true);
             startActivity(historyIntent);
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadStudentDetails();
+    }
+
+    private void loadStudentDetails() {
+        StudentModel student = repository.getStudentByRegNo(currentStudentId);
+
+        if (student != null) {
+            currentStudentName = student.getName();
+            if (txtStudentName != null) txtStudentName.setText(student.getName());
+            if (txtStudentId != null) txtStudentId.setText(student.getRegisterNumber());
+            if (txtDepartment != null) txtDepartment.setText(student.getDepartment());
+            if (txtYear != null) txtYear.setText(student.getYear());
+            if (txtPhone != null) txtPhone.setText(student.getPhone());
+            if (txtEmail != null) txtEmail.setText(student.getEmail());
+            if (txtAttendance != null) txtAttendance.setText("95%");
+            if (txtProgress != null) txtProgress.setText("90%");
+            if (txtTasks != null) txtTasks.setText("1");
+        } else {
+            Intent intent = getIntent();
+            if (intent != null) {
+                if (txtStudentName != null) txtStudentName.setText(intent.getStringExtra("studentName"));
+                if (txtStudentId != null) txtStudentId.setText(intent.getStringExtra("studentId"));
+                if (txtDepartment != null) txtDepartment.setText(intent.getStringExtra("department"));
+                if (txtYear != null) txtYear.setText(intent.getStringExtra("year"));
+                if (txtPhone != null) txtPhone.setText(intent.getStringExtra("phone"));
+                if (txtEmail != null) txtEmail.setText(intent.getStringExtra("email"));
+                if (txtAttendance != null) txtAttendance.setText(intent.getStringExtra("attendance"));
+                if (txtProgress != null) txtProgress.setText(intent.getStringExtra("progress"));
+                if (txtTasks != null) txtTasks.setText(intent.getStringExtra("tasks"));
+            }
+        }
     }
 }

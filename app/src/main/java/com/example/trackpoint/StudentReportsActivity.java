@@ -15,9 +15,9 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Map;
 
 public class StudentReportsActivity extends AppCompatActivity {
 
@@ -29,10 +29,18 @@ public class StudentReportsActivity extends AppCompatActivity {
     Calendar filterCalendar;
     boolean isFilterBySingleDate = true;
 
+    StudentRepository repository;
+    String loggedInRegNo = "CSE22CS001";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_reports);
+
+        repository = new StudentRepository(this);
+
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
 
         btnBack = findViewById(R.id.btnBack);
         tvFilterDate = findViewById(R.id.tvFilterDate);
@@ -79,7 +87,11 @@ public class StudentReportsActivity extends AppCompatActivity {
 
             renderReport();
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         renderReport();
     }
 
@@ -131,36 +143,36 @@ public class StudentReportsActivity extends AppCompatActivity {
             String dateKey = keyFmt.format(filterCalendar.getTime());
             String dateDisplay = displayFmt.format(filterCalendar.getTime());
 
-            boolean isSubmitted = prefs.getBoolean("submitted_" + dateKey, false);
+            DailyActivityModel dbModel = repository.getDailyActivity(loggedInRegNo, dateKey);
+            boolean isSubmitted = (dbModel != null) || prefs.getBoolean("submitted_" + loggedInRegNo + "_" + dateKey, false);
 
             if (isSubmitted) {
-                String fileName = prefs.getString("file_name_" + dateKey, "Document Uploaded");
-                String notes = prefs.getString("notes_" + dateKey, "No description provided");
-                String submitTime = prefs.getString("submit_time_" + dateKey, "Submitted");
+                String fileName = dbModel != null ? dbModel.getFileName() : prefs.getString("file_name_" + loggedInRegNo + "_" + dateKey, "Document Uploaded");
+                String notes = dbModel != null ? dbModel.getNotes() : prefs.getString("notes_" + loggedInRegNo + "_" + dateKey, "No description provided");
+                String submitTime = dbModel != null ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + loggedInRegNo + "_" + dateKey, "Submitted Today");
 
                 layoutReportContent.addView(createReportCardView(dateDisplay, fileName, notes, submitTime, true));
             } else {
                 layoutReportContent.addView(createReportCardView(dateDisplay, "No File Uploaded", "No activity document or description was submitted for this date.", "Not Submitted", false));
             }
         } else {
-            // Show all stored history entries
-            Map<String, ?> allPrefs = prefs.getAll();
-            int count = 0;
+            // Show user-specific history entries
+            SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+            SimpleDateFormat displayFmt = new SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.getDefault());
 
-            for (Map.Entry<String, ?> entry : allPrefs.entrySet()) {
-                if (entry.getKey().startsWith("submitted_") && Boolean.TRUE.equals(entry.getValue())) {
-                    String dateKey = entry.getKey().replace("submitted_", "");
-                    String fileName = prefs.getString("file_name_" + dateKey, "Document Uploaded");
-                    String notes = prefs.getString("notes_" + dateKey, "No description provided");
-                    String submitTime = prefs.getString("submit_time_" + dateKey, "Submitted");
-                    String dateDisplay = prefs.getString("date_display_" + dateKey, dateKey);
+            String todayKeyStr = keyFmt.format(Calendar.getInstance().getTime());
+            String todayDisplayStr = displayFmt.format(Calendar.getInstance().getTime());
 
-                    layoutReportContent.addView(createReportCardView(dateDisplay, fileName, notes, submitTime, true));
-                    count++;
-                }
-            }
+            DailyActivityModel dbModel = repository.getDailyActivity(loggedInRegNo, todayKeyStr);
+            boolean isSubmitted = (dbModel != null) || prefs.getBoolean("submitted_" + loggedInRegNo + "_" + todayKeyStr, false);
 
-            if (count == 0) {
+            if (isSubmitted) {
+                String fileName = dbModel != null ? dbModel.getFileName() : prefs.getString("file_name_" + loggedInRegNo + "_" + todayKeyStr, "Document Uploaded");
+                String notes = dbModel != null ? dbModel.getNotes() : prefs.getString("notes_" + loggedInRegNo + "_" + todayKeyStr, "No description provided");
+                String submitTime = dbModel != null ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + loggedInRegNo + "_" + todayKeyStr, "Submitted Today");
+
+                layoutReportContent.addView(createReportCardView(todayDisplayStr, fileName, notes, submitTime, true));
+            } else {
                 layoutReportContent.addView(createReportCardView("All History", "No Submissions Found", "No activity documents have been submitted yet.", "No Data", false));
             }
         }

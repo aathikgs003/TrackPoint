@@ -1,6 +1,7 @@
 package com.example.trackpoint;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +29,8 @@ public class MyStudents extends AppCompatActivity {
     LinearLayout studentList;
 
     StudentRepository repository;
+    String loggedInAdminName = "Aathi";
+    String userRole = "STUDENT_ADMIN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,10 @@ public class MyStudents extends AppCompatActivity {
         setContentView(R.layout.activity_mystudents);
 
         repository = new StudentRepository(this);
+
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        userRole = sessionPrefs.getString("logged_in_role", "STUDENT_ADMIN");
+        loggedInAdminName = sessionPrefs.getString("logged_in_admin_name", "Aathi");
 
         // Initialize views
         btnBack = findViewById(R.id.btnBack);
@@ -107,7 +114,11 @@ public class MyStudents extends AppCompatActivity {
 
         if (list == null || list.isEmpty()) {
             TextView emptyView = new TextView(this);
-            emptyView.setText("No students found in database");
+            if ("STUDENT_ADMIN".equalsIgnoreCase(userRole)) {
+                emptyView.setText("No students assigned to " + loggedInAdminName + " in database");
+            } else {
+                emptyView.setText("No students found in database");
+            }
             emptyView.setPadding(16, 32, 16, 32);
             emptyView.setGravity(android.view.Gravity.CENTER);
             emptyView.setTextColor(android.graphics.Color.parseColor("#68738A"));
@@ -157,7 +168,13 @@ public class MyStudents extends AppCompatActivity {
         String department = spDepartment.getSelectedItem().toString();
         String year = spYear.getSelectedItem().toString();
 
-        ArrayList<StudentModel> filteredList = repository.searchAndFilterStudents(search, department, year);
+        ArrayList<StudentModel> filteredList;
+        if ("STUDENT_ADMIN".equalsIgnoreCase(userRole)) {
+            filteredList = repository.searchAndFilterStudentsForAdmin(search, department, year, loggedInAdminName);
+        } else {
+            filteredList = repository.searchAndFilterStudents(search, department, year);
+        }
+
         displayStudents(filteredList);
     }
 

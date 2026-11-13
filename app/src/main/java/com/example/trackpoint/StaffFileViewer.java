@@ -14,6 +14,7 @@ public class StaffFileViewer extends AppCompatActivity {
 
     ImageView btnBack, btnViewerDownload;
     TextView txtViewerFileName, txtViewerStudent, txtDocHeader, txtDocBody, txtDocFooter;
+    StudentRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,8 @@ public class StaffFileViewer extends AppCompatActivity {
 
         setContentView(R.layout.activity_staff_file_viewer);
 
+        repository = new StudentRepository(this);
+
         btnBack = findViewById(R.id.btnBack);
         btnViewerDownload = findViewById(R.id.btnViewerDownload);
         txtViewerFileName = findViewById(R.id.txtViewerFileName);
@@ -38,28 +41,35 @@ public class StaffFileViewer extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
 
         Intent intent = getIntent();
-        String studentName = intent.getStringExtra("studentName");
-        String regId = intent.getStringExtra("regId");
-        String fileType = intent.getStringExtra("fileType");
-        String fileName = intent.getStringExtra("fileName");
-        String notes = intent.getStringExtra("notes");
+        String studentName = intent != null ? intent.getStringExtra("studentName") : "";
+        String regId = intent != null ? intent.getStringExtra("regId") : "";
+        String fileType = intent != null ? intent.getStringExtra("fileType") : "PDF";
+        String fileName = intent != null ? intent.getStringExtra("fileName") : "daily_record.pdf";
+        String notes = intent != null ? intent.getStringExtra("notes") : "";
 
-        txtViewerFileName.setText(fileName);
-        txtViewerStudent.setText("Student: " + studentName + " (" + regId + ")");
-
-        if ("Image".equalsIgnoreCase(fileType)) {
-            txtDocHeader.setText("IMAGE SCREENSHOT PREVIEW");
-            txtDocBody.setText("Attached Screenshot: " + fileName + "\n\nSummary:\n" + notes);
-            txtDocFooter.setText("High-Resolution Image Preview");
-        } else {
-            txtDocHeader.setText("PDF SUBMISSION REPORT");
-            txtDocBody.setText("Document: " + fileName + "\n\nWork Summary:\n" + notes +
-                    "\n\nStatus: Submitted & logged in TrackPoint.");
-            txtDocFooter.setText("Page 1 of 1 • PDF Document");
+        if (regId != null && !regId.isEmpty()) {
+            StudentModel s = repository.getStudentByRegNo(regId);
+            if (s != null) {
+                studentName = s.getName();
+            }
         }
 
-        btnViewerDownload.setOnClickListener(v -> {
-            Toast.makeText(this, "Saved " + fileName + " to Downloads", Toast.LENGTH_SHORT).show();
-        });
+        if (txtViewerFileName != null) txtViewerFileName.setText(fileName != null ? fileName : "Document");
+        if (txtViewerStudent != null) txtViewerStudent.setText("Student: " + (studentName != null ? studentName : "") + " (" + (regId != null ? regId : "") + ")");
+
+        if ("Image".equalsIgnoreCase(fileType)) {
+            if (txtDocHeader != null) txtDocHeader.setText("IMAGE SCREENSHOT PREVIEW");
+            if (txtDocBody != null) txtDocBody.setText("Attached Screenshot: " + fileName + "\n\nSummary:\n" + (notes != null ? notes : ""));
+            if (txtDocFooter != null) txtDocFooter.setText("High-Resolution Image Preview");
+        } else {
+            if (txtDocHeader != null) txtDocHeader.setText("PDF SUBMISSION REPORT");
+            if (txtDocBody != null) txtDocBody.setText("Document: " + fileName + "\n\nWork Summary:\n" + (notes != null ? notes : "") + "\n\nStatus: Submitted & logged in TrackPoint.");
+            if (txtDocFooter != null) txtDocFooter.setText("Page 1 of 1 • PDF Document");
+        }
+
+        final String downloadName = fileName;
+        if (btnViewerDownload != null) {
+            btnViewerDownload.setOnClickListener(v -> Toast.makeText(this, "Saved " + downloadName + " to Downloads", Toast.LENGTH_SHORT).show());
+        }
     }
 }

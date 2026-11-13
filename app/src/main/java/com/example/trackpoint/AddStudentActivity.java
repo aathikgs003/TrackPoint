@@ -1,6 +1,7 @@
 package com.example.trackpoint;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -104,6 +105,9 @@ public class AddStudentActivity extends AppCompatActivity {
                 return;
             }
 
+            SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+            String loggedInAdminName = sessionPrefs.getString("logged_in_admin_name", "Aathi");
+
             if (isEditMode) {
                 if (existingStudent == null) {
                     existingStudent = repository.getStudentByRegNo(registerNumber);
@@ -124,7 +128,7 @@ public class AddStudentActivity extends AppCompatActivity {
                         Toast.makeText(this, "Failed to update student", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    StudentModel updatedStudent = new StudentModel(name, registerNumber, department, year, email, phone.startsWith("+91") ? phone : "+91 " + phone, "123");
+                    StudentModel updatedStudent = new StudentModel(name, registerNumber, department, year, email, phone.startsWith("+91") ? phone : "+91 " + phone, "123", loggedInAdminName);
                     repository.addStudent(updatedStudent);
                     Toast.makeText(this, "Student " + name + " updated successfully!", Toast.LENGTH_SHORT).show();
                     finish();
@@ -142,12 +146,13 @@ public class AddStudentActivity extends AppCompatActivity {
                         year,
                         email,
                         phone.startsWith("+91") ? phone : "+91 " + phone,
-                        "123"
+                        "123",
+                        loggedInAdminName
                 );
 
                 long result = repository.addStudent(newStudent);
                 if (result > 0) {
-                    Toast.makeText(this, "Student " + name + " saved successfully!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Student " + name + " assigned to " + loggedInAdminName + " successfully!", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
                     Toast.makeText(this, "Failed to save student to database", Toast.LENGTH_SHORT).show();

@@ -91,7 +91,6 @@
                         android:id="@+id/txtSubStudentName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Aishu M"
                         android:textSize="17sp"
                         android:textStyle="bold"
                         android:textColor="#18233F" />
@@ -100,7 +99,6 @@
                         android:id="@+id/txtSubRegDept"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="CSE22CS001 • CSE • II Year"
                         android:textSize="13sp"
                         android:textColor="#68738A" />
                 </LinearLayout>
@@ -134,7 +132,6 @@
                         android:id="@+id/txtSubAdmin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Arun Kumar"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="#4935B8" />
@@ -157,7 +154,6 @@
                         android:id="@+id/txtSubDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Today, 10:15 AM"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="#18233F" />
@@ -182,7 +178,6 @@
                 android:background="@drawable/action_card"
                 android:elevation="2dp"
                 android:padding="14dp"
-                android:text="Daily progress notes appear here..."
                 android:textSize="14sp"
                 android:textColor="#18233F"
                 android:layout_marginBottom="16dp" />
@@ -234,7 +229,6 @@
                         android:id="@+id/txtFileName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="daily_record.pdf"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="#18233F" />
@@ -243,7 +237,6 @@
                         android:id="@+id/txtFileSize"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1.2 MB • Tap to View Fullscreen"
                         android:textSize="12sp"
                         android:textColor="#4935B8" />
                 </LinearLayout>

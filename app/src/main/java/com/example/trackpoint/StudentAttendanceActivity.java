@@ -34,12 +34,19 @@ public class StudentAttendanceActivity extends AppCompatActivity {
     int todayMonth;
     int todayYear;
 
+    StudentRepository repository;
     String studentId = "CSE22CS001";
+    String assignedAdminName = "Aathi";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_attendance);
+
+        repository = new StudentRepository(this);
+
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        studentId = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
 
         btnBack = findViewById(R.id.btnBack);
 
@@ -56,6 +63,31 @@ public class StudentAttendanceActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
+        // Month Navigation
+        if (btnPrevMonth != null) {
+            btnPrevMonth.setOnClickListener(v -> {
+                if (currentMonth == 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                } else {
+                    currentMonth--;
+                }
+                updateCalendar();
+            });
+        }
+
+        if (btnNextMonth != null) {
+            btnNextMonth.setOnClickListener(v -> {
+                if (currentMonth == 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                } else {
+                    currentMonth++;
+                }
+                updateCalendar();
+            });
+        }
+
         // Initialize today's date info
         Calendar todayCal = Calendar.getInstance();
         todayDay = todayCal.get(Calendar.DAY_OF_MONTH);
@@ -69,8 +101,21 @@ public class StudentAttendanceActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        loadStudentDetails();
         loadTodayAttendance();
         updateCalendar();
+    }
+
+    private void loadStudentDetails() {
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        studentId = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
+
+        StudentModel student = repository.getStudentByRegNo(studentId);
+        if (student != null && student.getAssignedAdmin() != null && !student.getAssignedAdmin().isEmpty()) {
+            assignedAdminName = student.getAssignedAdmin();
+        } else {
+            assignedAdminName = "Aathi";
+        }
     }
 
     private void loadTodayAttendance() {
@@ -89,7 +134,8 @@ public class StudentAttendanceActivity extends AppCompatActivity {
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
         SharedPreferences prefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
-        String savedTodayStatus = prefs.getString("status_" + studentId + "_" + todayKeyStr, null);
+        String dbStatus = repository.getAttendanceStatus(studentId, todayKeyStr);
+        String savedTodayStatus = dbStatus != null ? dbStatus : prefs.getString("status_" + studentId + "_" + todayKeyStr, null);
 
         if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
             if (tvTodayStatus != null) {
@@ -106,13 +152,28 @@ public class StudentAttendanceActivity extends AppCompatActivity {
             if (layoutTodayBadge != null) {
                 layoutTodayBadge.setBackgroundResource(R.drawable.card_purple);
             }
+        } else if ("Present".equalsIgnoreCase(savedTodayStatus)) {
+            if (tvTodayStatus != null) {
+                tvTodayStatus.setText("PRESENT");
+                tvTodayStatus.setTextColor(Color.parseColor("#10B23E"));
+            }
+            if (tvTodayNote != null) {
+                tvTodayNote.setText("Marked by " + assignedAdminName);
+            }
+            if (imgTodayStatusIcon != null) {
+                imgTodayStatusIcon.setImageResource(R.drawable.check_circle_symbol);
+                imgTodayStatusIcon.setColorFilter(Color.parseColor("#10B23E"));
+            }
+            if (layoutTodayBadge != null) {
+                layoutTodayBadge.setBackgroundResource(R.drawable.card_green);
+            }
         } else if ("Absent".equalsIgnoreCase(savedTodayStatus)) {
             if (tvTodayStatus != null) {
                 tvTodayStatus.setText("ABSENT");
                 tvTodayStatus.setTextColor(Color.parseColor("#D94343"));
             }
             if (tvTodayNote != null) {
-                tvTodayNote.setText("Marked by Student Admin");
+                tvTodayNote.setText("Marked by " + assignedAdminName);
             }
             if (imgTodayStatusIcon != null) {
                 imgTodayStatusIcon.setImageResource(R.drawable.radio_button_symbol);
@@ -122,20 +183,20 @@ public class StudentAttendanceActivity extends AppCompatActivity {
                 layoutTodayBadge.setBackgroundResource(R.drawable.card_yellow);
             }
         } else {
-            // Default or marked Present
+            // Not Marked yet by Student Admin in database: White card!
             if (tvTodayStatus != null) {
-                tvTodayStatus.setText("PRESENT");
-                tvTodayStatus.setTextColor(Color.parseColor("#10B23E"));
+                tvTodayStatus.setText("NOT MARKED");
+                tvTodayStatus.setTextColor(Color.parseColor("#68738A"));
             }
             if (tvTodayNote != null) {
-                tvTodayNote.setText("Marked by Student Admin");
+                tvTodayNote.setText("Attendance not entered yet by " + assignedAdminName);
             }
             if (imgTodayStatusIcon != null) {
-                imgTodayStatusIcon.setImageResource(R.drawable.check_circle_symbol);
-                imgTodayStatusIcon.setColorFilter(Color.parseColor("#10B23E"));
+                imgTodayStatusIcon.setImageResource(R.drawable.pending_symbol);
+                imgTodayStatusIcon.setColorFilter(Color.parseColor("#68738A"));
             }
             if (layoutTodayBadge != null) {
-                layoutTodayBadge.setBackgroundResource(R.drawable.card_green);
+                layoutTodayBadge.setBackgroundResource(R.drawable.action_card);
             }
         }
     }
@@ -201,7 +262,8 @@ public class StudentAttendanceActivity extends AppCompatActivity {
             }
 
             String dateKeyStr = dateKeyFmt.format(cal.getTime());
-            String savedStatus = prefs.getString("status_" + studentId + "_" + dateKeyStr, null);
+            String dbStatus = repository.getAttendanceStatus(studentId, dateKeyStr);
+            String savedStatus = dbStatus != null ? dbStatus : prefs.getString("status_" + studentId + "_" + dateKeyStr, null);
 
             String status;
 
@@ -220,14 +282,19 @@ public class StudentAttendanceActivity extends AppCompatActivity {
                     status = "Holiday (Weekend)";
                     dayView.setTextColor(Color.parseColor("#7A8294"));
                     dayView.setBackgroundResource(R.drawable.bg_day_holiday);
-                } else if ("Absent".equalsIgnoreCase(savedStatus) || (savedStatus == null && (day == 8 || day == 18 || day == 22))) {
+                } else if ("Present".equalsIgnoreCase(savedStatus)) {
+                    status = "Present";
+                    dayView.setTextColor(Color.parseColor("#10B23E"));
+                    dayView.setBackgroundResource(R.drawable.bg_day_present);
+                } else if ("Absent".equalsIgnoreCase(savedStatus)) {
                     status = "Absent";
                     dayView.setTextColor(Color.parseColor("#D94343"));
                     dayView.setBackgroundResource(R.drawable.bg_day_absent);
                 } else {
-                    status = "Present";
-                    dayView.setTextColor(Color.parseColor("#10B23E"));
-                    dayView.setBackgroundResource(R.drawable.bg_day_present);
+                    // Not Marked in DB yet: White card cell!
+                    status = "Not Marked";
+                    dayView.setTextColor(Color.parseColor("#18233F"));
+                    dayView.setBackgroundResource(R.drawable.action_card);
                 }
             }
 
