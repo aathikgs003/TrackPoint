@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#4935B8"
+    android:fitsSystemWindows="true">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#4935B8">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/back_symbol"
+            app:tint="@color/white"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:id="@+id/txtHeaderTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Staff Admins"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <View
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
+    </LinearLayout>
+
+    <!-- Body -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#F5F6FC">
+
+        <EditText
+            android:id="@+id/searchStaffAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Search Staff Admin..."
+            android:textColorHint="#9299AA"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="@drawable/input_box"
+            android:textColor="#18233F"
+            android:textSize="14sp"
+            android:layout_marginBottom="12dp" />
+
+        <Spinner
+            android:id="@+id/spFilterStaffDept"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="@drawable/spinner_box"
+            android:paddingStart="12dp"
+            android:paddingEnd="32dp"
+            android:layout_marginBottom="14dp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/staffAdminListContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAssignStaffAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:text="+ Add / Assign Staff Admin"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:backgroundTint="#4935B8"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+
+</LinearLayout>

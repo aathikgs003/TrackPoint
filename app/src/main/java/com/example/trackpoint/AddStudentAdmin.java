@@ -3,11 +3,14 @@ package com.example.trackpoint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,19 +47,47 @@ public class AddStudentAdmin extends AppCompatActivity {
         btnSaveAdmin = findViewById(R.id.btnSaveAdmin);
         btnBack = findViewById(R.id.btnBack);
 
-        ArrayAdapter<String> deptAdapter = new ArrayAdapter<>(
+        ArrayAdapter<String> deptAdapter = new ArrayAdapter<String>(
                 this,
                 R.layout.spinner_item,
                 new String[]{"Select Department", "CSE", "AI & DS", "ECE", "IT", "MECH"}
-        );
+        ) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getView(position, convertView, parent);
+                view.setTextColor(position == 0 ? Color.parseColor("#888888") : Color.parseColor("#18233F"));
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+                view.setTextColor(position == 0 ? Color.parseColor("#888888") : Color.parseColor("#17112D"));
+                return view;
+            }
+        };
         deptAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spAdminDepartment.setAdapter(deptAdapter);
 
-        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<String>(
                 this,
                 R.layout.spinner_item,
                 new String[]{"Select Year", "I Year", "II Year", "III Year", "IV Year"}
-        );
+        ) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getView(position, convertView, parent);
+                view.setTextColor(position == 0 ? Color.parseColor("#888888") : Color.parseColor("#18233F"));
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+                view.setTextColor(position == 0 ? Color.parseColor("#888888") : Color.parseColor("#17112D"));
+                return view;
+            }
+        };
         yearAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spAdminYear.setAdapter(yearAdapter);
 
@@ -68,10 +99,18 @@ public class AddStudentAdmin extends AppCompatActivity {
             String email = etAdminEmail.getText().toString().trim();
             String phone = etAdminPhone.getText().toString().trim();
 
-            if (name.isEmpty() || id.isEmpty() || email.isEmpty() || phone.isEmpty()
-                    || spAdminDepartment.getSelectedItemPosition() == 0
-                    || spAdminYear.getSelectedItemPosition() == 0) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            if (name.isEmpty() || id.isEmpty() || email.isEmpty() || phone.isEmpty()) {
+                Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (spAdminDepartment.getSelectedItemPosition() == 0) {
+                Toast.makeText(this, "Please select a department", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (spAdminYear.getSelectedItemPosition() == 0) {
+                Toast.makeText(this, "Please select a year", Toast.LENGTH_SHORT).show();
                 return;
             }
 

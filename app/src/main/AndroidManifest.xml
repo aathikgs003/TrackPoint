@@ -152,10 +152,51 @@
             android:name=".StaffFileViewer"
             android:exported="false" />
 
+        <!-- Staff Profile Activity -->
         <activity
             android:name=".StaffProfileActivity"
             android:exported="false" />
 
+        <!-- Super Admin Portal Activities -->
+        <activity
+            android:name=".SuperAdminDashboard"
+            android:exported="false" />
+
+        <activity
+            android:name=".SuperAdminDepartments"
+            android:exported="false" />
+
+        <activity
+            android:name=".SuperAdminDepartmentDetails"
+            android:exported="false" />
+
+        <activity
+            android:name=".SuperAdminStaffAdmins"
+            android:exported="false" />
+
+        <activity
+            android:name=".SuperAdminStudentAdmins"
+            android:exported="false" />
+
+        <activity
+            android:name=".SuperAdminProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SuperAdminStaffDetails"
+            android:exported="false" />
+
+        <activity
+            android:name=".SuperAdminStudents"
+            android:exported="false" />
+
+        <activity
+            android:name=".SuperAddStaffAdmin"
+            android:exported="false" />
+
+        <activity
+            android:name=".SuperAddStudentAdmin"
+            android:exported="false" />
     </application>
 
 </manifest>

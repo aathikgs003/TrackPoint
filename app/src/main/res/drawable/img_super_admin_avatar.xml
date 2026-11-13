@@ -1,0 +1,74 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <!-- Circle Background -->
+    <path
+        android:fillColor="#ECE6FF"
+        android:pathData="M60,60m-58,0a58,58 0 1,0 116,0a58,58 0 1,0 -116,0"/>
+
+    <!-- Shoulders / Shirt (Cyan / Teal) -->
+    <path
+        android:fillColor="#00BAAD"
+        android:pathData="M30,110 C30,86 42,80 60,80 C78,80 90,86 90,110 Z"/>
+
+    <!-- Neck -->
+    <path
+        android:fillColor="#F6BF9B"
+        android:pathData="M52,68 H68 V80 H52 Z"/>
+
+    <!-- Collar (White V-shape) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M48,80 L60,94 L72,80 L66,80 L60,88 L54,80 Z"/>
+
+    <!-- Tie (Dark Navy) -->
+    <path
+        android:fillColor="#17112D"
+        android:pathData="M57,85 L63,85 L64,104 L60,108 L56,104 Z"/>
+
+    <!-- Head / Face -->
+    <path
+        android:fillColor="#FCD1B0"
+        android:pathData="M42,42 C42,28 48,22 60,22 C72,22 78,28 78,42 C78,58 72,66 60,66 C48,66 42,58 42,42 Z"/>
+
+    <!-- Ears -->
+    <path
+        android:fillColor="#F6BF9B"
+        android:pathData="M39,40 C37,40 37,48 39,48 Z"/>
+    <path
+        android:fillColor="#F6BF9B"
+        android:pathData="M81,40 C83,40 83,48 81,48 Z"/>
+
+    <!-- Hair (Dark Brown / Black) -->
+    <path
+        android:fillColor="#241B2E"
+        android:pathData="M40,36 C40,24 48,18 60,18 C72,18 80,24 80,36 C77,30 70,26 60,26 C50,26 43,30 40,36 Z"/>
+
+    <!-- Eyebrows & Eyes -->
+    <path
+        android:fillColor="#241B2E"
+        android:pathData="M49,37 C51,36 54,36 56,37 C56,38 51,38 49,37 Z"/>
+    <path
+        android:fillColor="#241B2E"
+        android:pathData="M64,37 C66,36 69,36 71,37 C71,38 66,38 64,37 Z"/>
+
+    <!-- Eyes (Dots) -->
+    <path
+        android:fillColor="#241B2E"
+        android:pathData="M52,42m-2.5,0a2.5,2.5 0 1,0 5,0a2.5,2.5 0 1,0 -5,0"/>
+    <path
+        android:fillColor="#241B2E"
+        android:pathData="M68,42m-2.5,0a2.5,2.5 0 1,0 5,0a2.5,2.5 0 1,0 -5,0"/>
+
+    <!-- Smile -->
+    <path
+        android:strokeColor="#C87E60"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M54,54 Q60,58 66,54"/>
+
+</vector>

@@ -1,3 +1,4 @@
+
 package com.example.trackpoint;
 
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
+
     EditText edtEmail;
     EditText edtPassword;
     Button btnLogin;
@@ -35,7 +37,9 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() && !email.equalsIgnoreCase("CSE22CS001") && !email.equalsIgnoreCase("SADM001")) {
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                    && !email.equalsIgnoreCase("CSE22CS001")
+                    && !email.equalsIgnoreCase("SADM001")) {
                 edtEmail.setError("Enter valid email or ID");
                 return;
             }
@@ -85,6 +89,18 @@ public class MainActivity extends AppCompatActivity {
                         .putString("logged_in_reg_no", regNo).apply();
 
                 Intent intent = new Intent(MainActivity.this, StudentDashboardActivity.class);
+                startActivity(intent);
+                edtEmail.setText("");
+                edtPassword.setText("");
+                return;
+            }
+
+            // 4. Super Admin Role
+            if (email.equalsIgnoreCase("admin@gmail.com") && password.equals("123")) {
+                SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+                sessionPrefs.edit().putString("logged_in_role", "SUPER_ADMIN").apply();
+
+                Intent intent = new Intent(MainActivity.this, SuperAdminDashboard.class);
                 startActivity(intent);
                 edtEmail.setText("");
                 edtPassword.setText("");
