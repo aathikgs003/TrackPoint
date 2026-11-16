@@ -169,12 +169,14 @@ public class StaffProgressHistory extends AppCompatActivity {
 
                         selectedDateStr = sdf.format(filterCalendar.getTime());
                         btnCustomDate.setText(selectedDateStr);
+                        loadSubmissionsFromDatabase();
                         applyFilters();
                     },
                     filterCalendar.get(Calendar.YEAR),
                     filterCalendar.get(Calendar.MONTH),
                     filterCalendar.get(Calendar.DAY_OF_MONTH)
             );
+            dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
             dialog.show();
         });
     }
@@ -276,22 +278,10 @@ public class StaffProgressHistory extends AppCompatActivity {
         historyListContainer.removeAllViews();
 
         String query = searchSubmission.getText().toString().toLowerCase().trim();
+        String selectedAdmin = (spHistAdmin != null && spHistAdmin.getVisibility() == View.VISIBLE && spHistAdmin.getSelectedItem() != null)
+                ? spHistAdmin.getSelectedItem().toString() : "All Admins";
 
-        if (allSubmissions.isEmpty()) {
-            TextView emptyView = new TextView(this);
-            if (preFilterStudentName != null && !preFilterStudentName.isEmpty()) {
-                emptyView.setText("No submissions found for " + preFilterStudentName);
-            } else if (filterAdminName != null && !filterAdminName.isEmpty()) {
-                emptyView.setText("No submissions for " + filterAdminName + "'s assigned students");
-            } else {
-                emptyView.setText("No submissions found in database");
-            }
-            emptyView.setPadding(16, 32, 16, 32);
-            emptyView.setGravity(Gravity.CENTER);
-            emptyView.setTextColor(Color.parseColor("#68738A"));
-            historyListContainer.addView(emptyView);
-            return;
-        }
+        int cardCount = 0;
 
         for (SubmissionModel sub : allSubmissions) {
             if (preFilterStudentId != null && !preFilterStudentId.isEmpty() && !sub.regId.equalsIgnoreCase(preFilterStudentId)) {
@@ -302,6 +292,10 @@ public class StaffProgressHistory extends AppCompatActivity {
                 continue;
             }
 
+            if (!selectedAdmin.equals("All Admins") && !sub.assignedAdmin.equalsIgnoreCase(selectedAdmin)) {
+                continue;
+            }
+
             if (!query.isEmpty()
                     && !sub.studentName.toLowerCase().contains(query)
                     && !sub.regId.toLowerCase().contains(query)) {
@@ -309,6 +303,24 @@ public class StaffProgressHistory extends AppCompatActivity {
             }
 
             addSubmissionCard(sub);
+            cardCount++;
+        }
+
+        if (cardCount == 0) {
+            TextView emptyView = new TextView(this);
+            String displayDate = selectedDateStr.isEmpty() ? "selected date" : selectedDateStr;
+            if (preFilterStudentName != null && !preFilterStudentName.isEmpty()) {
+                emptyView.setText("No activity found for " + preFilterStudentName + " on " + displayDate);
+            } else if (filterAdminName != null && !filterAdminName.isEmpty()) {
+                emptyView.setText("No activity found for " + filterAdminName + "'s assigned students on " + displayDate);
+            } else {
+                emptyView.setText("No activity found for " + displayDate);
+            }
+            emptyView.setPadding(dpToPx(16), dpToPx(32), dpToPx(16), dpToPx(32));
+            emptyView.setGravity(Gravity.CENTER);
+            emptyView.setTextSize(14);
+            emptyView.setTextColor(Color.parseColor("#68738A"));
+            historyListContainer.addView(emptyView);
         }
     }
 

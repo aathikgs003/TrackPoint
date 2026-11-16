@@ -103,6 +103,7 @@ public class ProgressHistory extends AppCompatActivity {
                 filterCalendar.get(Calendar.MONTH),
                 filterCalendar.get(Calendar.DAY_OF_MONTH)
         );
+        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         dialog.show();
     }
 
