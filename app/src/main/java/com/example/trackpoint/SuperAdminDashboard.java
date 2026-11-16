@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +20,9 @@ import java.util.Date;
 import java.util.Locale;
 
 public class SuperAdminDashboard extends AppCompatActivity {
+
+    TextView txtCountDepartments, txtCountStaffAdmins, txtCountStudentAdmins, txtCountTotalStudents;
+    StudentRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +36,41 @@ public class SuperAdminDashboard extends AppCompatActivity {
 
         setContentView(R.layout.activity_super_admin);
 
+        repository = new StudentRepository(this);
+
+        txtCountDepartments = findViewById(R.id.txtCountDepartments);
+        txtCountStaffAdmins = findViewById(R.id.txtCountStaffAdmins);
+        txtCountStudentAdmins = findViewById(R.id.txtCountStudentAdmins);
+        txtCountTotalStudents = findViewById(R.id.txtCountTotalStudents);
+
         TextView txtSuperDashboardDate = findViewById(R.id.txtSuperDashboardDate);
-        SimpleDateFormat sdf = new SimpleDateFormat("'Today, 'MMM dd, yyyy", Locale.US);
-        txtSuperDashboardDate.setText(sdf.format(new Date()));
+        if (txtSuperDashboardDate != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("'Today, 'MMM dd, yyyy", Locale.US);
+            txtSuperDashboardDate.setText(sdf.format(new Date()));
+        }
 
         findViewById(R.id.btnSuperHeaderLogout).setOnClickListener(v -> showLogoutDialog());
+
+        // Card Click Listeners
+        View cardDepts = findViewById(R.id.cardSuperDepartments);
+        if (cardDepts != null) {
+            cardDepts.setOnClickListener(v -> startActivity(new Intent(SuperAdminDashboard.this, SuperAdminDepartments.class)));
+        }
+
+        View cardStaff = findViewById(R.id.cardSuperStaffAdmins);
+        if (cardStaff != null) {
+            cardStaff.setOnClickListener(v -> startActivity(new Intent(SuperAdminDashboard.this, SuperAdminStaffAdmins.class)));
+        }
+
+        View cardStudentAdmins = findViewById(R.id.cardSuperStudentAdmins);
+        if (cardStudentAdmins != null) {
+            cardStudentAdmins.setOnClickListener(v -> startActivity(new Intent(SuperAdminDashboard.this, SuperAdminStudentAdmins.class)));
+        }
+
+        View cardTotalStudents = findViewById(R.id.cardSuperTotalStudents);
+        if (cardTotalStudents != null) {
+            cardTotalStudents.setOnClickListener(v -> startActivity(new Intent(SuperAdminDashboard.this, SuperAdminStudents.class)));
+        }
 
         // Sidebar Menu
         findViewById(R.id.btnSuperMenu).setOnClickListener(v -> {
@@ -103,6 +135,23 @@ public class SuperAdminDashboard extends AppCompatActivity {
                 showLogoutDialog();
             });
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadSuperAdminDashboardMetrics();
+    }
+
+    private void loadSuperAdminDashboardMetrics() {
+        int staffCount = repository.getAllStaffAdmins().size();
+        int studentAdminCount = repository.getAllStudentAdmins().size();
+        int studentCount = repository.getAllStudents().size();
+
+        if (txtCountStaffAdmins != null) txtCountStaffAdmins.setText(String.valueOf(staffCount));
+        if (txtCountStudentAdmins != null) txtCountStudentAdmins.setText(String.valueOf(studentAdminCount));
+        if (txtCountTotalStudents != null) txtCountTotalStudents.setText(String.valueOf(studentCount));
+        if (txtCountDepartments != null) txtCountDepartments.setText("5");
     }
 
     private void showLogoutDialog() {

@@ -21,6 +21,7 @@ public class SuperAddStaffAdmin extends AppCompatActivity {
     private EditText edtStaffName, edtStaffId, edtStaffEmail, edtStaffPhone;
     private Spinner spStaffDept;
     private Button btnSaveStaffAdmin;
+    private StudentRepository repository;
 
     private static final String[] DEPARTMENTS = {"Select Department", "CSE", "AI & DS", "ECE", "IT", "MECH"};
 
@@ -35,6 +36,8 @@ public class SuperAddStaffAdmin extends AppCompatActivity {
         ).setAppearanceLightStatusBars(false);
 
         setContentView(R.layout.activity_super_add_staff_admin);
+
+        repository = new StudentRepository(this);
 
         ImageView btnBack = findViewById(R.id.btnBack);
         edtStaffName = findViewById(R.id.edtStaffName);
@@ -118,15 +121,22 @@ public class SuperAddStaffAdmin extends AppCompatActivity {
             phone = "98765 00000";
         }
 
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("staffName", name);
-        resultIntent.putExtra("staffId", id);
-        resultIntent.putExtra("department", dept);
-        resultIntent.putExtra("email", email);
-        resultIntent.putExtra("phone", phone);
+        StaffAdminModel newStaff = new StaffAdminModel(name, id, dept, email, phone.startsWith("+91") ? phone : "+91 " + phone);
+        long rowId = repository.addStaffAdmin(newStaff);
 
-        setResult(RESULT_OK, resultIntent);
-        Toast.makeText(this, name + " assigned to " + dept, Toast.LENGTH_SHORT).show();
-        finish();
+        if (rowId > 0) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("staffName", name);
+            resultIntent.putExtra("staffId", id);
+            resultIntent.putExtra("department", dept);
+            resultIntent.putExtra("email", email);
+            resultIntent.putExtra("phone", phone);
+
+            setResult(RESULT_OK, resultIntent);
+            Toast.makeText(this, name + " saved to " + dept + " in SQLite database!", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            Toast.makeText(this, "Failed to save Staff Admin", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -66,6 +66,28 @@ public class StudentRepository {
         return null;
     }
 
+    public ArrayList<StaffAdminModel> getAllStaffAdmins() {
+        ArrayList<StaffAdminModel> list = new ArrayList<>();
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_STAFF_ADMINS, null, null, null, null, null, DatabaseHelper.COLUMN_NAME + " ASC");
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    StaffAdminModel s = StaffAdminModel.fromCursor(cursor);
+                    if (s != null) {
+                        list.add(s);
+                    }
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+        return list;
+    }
+
     public StaffAdminModel authenticateStaffAdmin(String emailOrId, String password) {
         if (emailOrId == null || password == null) return null;
         SQLiteDatabase db = getDatabase();

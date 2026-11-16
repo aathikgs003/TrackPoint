@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // 4. Super Admin Role
-            if (email.equalsIgnoreCase("admin@gmail.com") && password.equals("123")) {
+            if ((email.equalsIgnoreCase("admin@gmail.com") || email.equalsIgnoreCase("superadmin@gmail.com")) && password.equals("123")) {
                 SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
                 sessionPrefs.edit().putString("logged_in_role", "SUPER_ADMIN").apply();
 

@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SuperAdminStudents extends AppCompatActivity {
 
@@ -30,29 +29,9 @@ public class SuperAdminStudents extends AppCompatActivity {
     Spinner spSuperStudentDept, spSuperStudentYear;
     LinearLayout superStudentListContainer;
 
+    StudentRepository repository;
     int purple = Color.parseColor("#4935B8");
     String lockedDepartment = null;
-
-    static class CollegeStudentModel {
-        String name, regId, department, year, assignedAdmin, phone, email, attendance, progress, tasks;
-
-        CollegeStudentModel(String name, String regId, String department, String year,
-                            String assignedAdmin, String phone, String email,
-                            String attendance, String progress, String tasks) {
-            this.name = name;
-            this.regId = regId;
-            this.department = department;
-            this.year = year;
-            this.assignedAdmin = assignedAdmin;
-            this.phone = phone;
-            this.email = email;
-            this.attendance = attendance;
-            this.progress = progress;
-            this.tasks = tasks;
-        }
-    }
-
-    List<CollegeStudentModel> students = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +42,8 @@ public class SuperAdminStudents extends AppCompatActivity {
                 .setAppearanceLightStatusBars(false);
 
         setContentView(R.layout.activity_super_admin_students);
+
+        repository = new StudentRepository(this);
 
         btnBack = findViewById(R.id.btnBack);
         txtHeaderTitle = findViewById(R.id.txtHeaderTitle);
@@ -82,15 +63,7 @@ public class SuperAdminStudents extends AppCompatActivity {
         }
 
         setupSpinner(spSuperStudentDept, new String[]{"All Departments", "CSE", "AI & DS", "ECE", "IT", "MECH"});
-        setupSpinner(spSuperStudentYear, new String[]{"All Years", "II Year", "III Year", "IV Year"});
-
-        students.add(new CollegeStudentModel("Aishu M", "CSE22CS001", "CSE", "II Year", "Arun Kumar", "98765 43210", "aishu@college.edu", "92%", "88%", "5"));
-        students.add(new CollegeStudentModel("Bala K", "CSE22CS002", "CSE", "II Year", "Arun Kumar", "98765 43211", "bala@college.edu", "89%", "84%", "4"));
-        students.add(new CollegeStudentModel("Dharani R", "AIDS21AD014", "AI & DS", "III Year", "Divya S", "98765 43212", "dharani@college.edu", "94%", "91%", "6"));
-        students.add(new CollegeStudentModel("Gokul S", "ECE20EC029", "ECE", "IV Year", "Karthik R", "98765 43213", "gokul@college.edu", "86%", "85%", "5"));
-        students.add(new CollegeStudentModel("Harini V", "IT22IT018", "IT", "II Year", "Nithya P", "98765 43214", "harini@college.edu", "90%", "87%", "5"));
-
-        renderList();
+        setupSpinner(spSuperStudentYear, new String[]{"All Years", "I Year", "II Year", "III Year", "IV Year"});
 
         AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
             @Override
@@ -118,6 +91,12 @@ public class SuperAdminStudents extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        renderList();
+    }
+
     private void setupSpinner(Spinner spinner, String[] items) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, items);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -125,16 +104,26 @@ public class SuperAdminStudents extends AppCompatActivity {
     }
 
     private void renderList() {
+        if (superStudentListContainer == null) return;
         superStudentListContainer.removeAllViews();
+
         String dept = (lockedDepartment != null && !lockedDepartment.isEmpty()) ? lockedDepartment : spSuperStudentDept.getSelectedItem().toString();
         String year = spSuperStudentYear.getSelectedItem().toString();
         String query = searchSuperStudent.getText().toString().toLowerCase().trim();
 
-        for (CollegeStudentModel s : students) {
-            if (!dept.equals("All Departments") && !s.department.equalsIgnoreCase(dept)) continue;
-            if (!year.equals("All Years") && !s.year.equalsIgnoreCase(year)) continue;
-            if (!query.isEmpty() && !s.name.toLowerCase().contains(query) && !s.regId.toLowerCase().contains(query)) continue;
+        ArrayList<StudentModel> dbList = repository.searchAndFilterStudents(query, dept, year);
 
+        if (dbList.isEmpty()) {
+            TextView emptyView = new TextView(this);
+            emptyView.setText("No students found in database");
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(Gravity.CENTER);
+            emptyView.setTextColor(Color.parseColor("#68738A"));
+            superStudentListContainer.addView(emptyView);
+            return;
+        }
+
+        for (StudentModel s : dbList) {
             LinearLayout card = new LinearLayout(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -159,18 +148,19 @@ public class SuperAdminStudents extends AppCompatActivity {
             info.setPadding(dpToPx(12), 0, 0, 0);
 
             TextView tvName = new TextView(this);
-            tvName.setText(s.name);
+            tvName.setText(s.getName());
             tvName.setTypeface(null, Typeface.BOLD);
             tvName.setTextSize(16);
             tvName.setTextColor(Color.parseColor("#18233F"));
 
             TextView tvMeta = new TextView(this);
-            tvMeta.setText(s.regId + "  •  " + s.department + " (" + s.year + ")");
+            tvMeta.setText(s.getRegisterNumber() + "  •  " + s.getDepartment() + " (" + s.getYear() + ")");
             tvMeta.setTextSize(12);
             tvMeta.setTextColor(Color.parseColor("#68738A"));
 
             TextView tvAdmin = new TextView(this);
-            tvAdmin.setText("Student Admin: " + s.assignedAdmin);
+            String admin = s.getAssignedAdmin() != null ? s.getAssignedAdmin() : "Aathi";
+            tvAdmin.setText("Student Admin: " + admin);
             tvAdmin.setTextSize(12);
             tvAdmin.setTextColor(purple);
 
@@ -180,25 +170,21 @@ public class SuperAdminStudents extends AppCompatActivity {
 
             TextView arrow = new TextView(this);
             arrow.setText("›");
-            arrow.setTextSize(27);
-            arrow.setTextColor(purple);
+            arrow.setTextSize(26);
+            arrow.setTextColor(Color.parseColor("#68738A"));
 
             card.addView(avatar);
             card.addView(info);
             card.addView(arrow);
 
-            // Reuse existing StaffStudentDetails screen
             card.setOnClickListener(v -> {
                 Intent intent = new Intent(this, StaffStudentDetails.class);
-                intent.putExtra("studentName", s.name);
-                intent.putExtra("studentId", s.regId);
-                intent.putExtra("department", s.department);
-                intent.putExtra("year", s.year);
-                intent.putExtra("phone", s.phone);
-                intent.putExtra("email", s.email);
-                intent.putExtra("attendance", s.attendance);
-                intent.putExtra("progress", s.progress);
-                intent.putExtra("tasks", s.tasks);
+                intent.putExtra("studentName", s.getName());
+                intent.putExtra("studentId", s.getRegisterNumber());
+                intent.putExtra("department", s.getDepartment());
+                intent.putExtra("year", s.getYear());
+                intent.putExtra("phone", s.getPhone());
+                intent.putExtra("email", s.getEmail());
                 startActivity(intent);
             });
 

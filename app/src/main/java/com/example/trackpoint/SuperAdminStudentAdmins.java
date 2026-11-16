@@ -16,16 +16,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SuperAdminStudentAdmins extends AppCompatActivity {
 
@@ -36,29 +31,10 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
     Spinner spFilterDept, spFilterStaff;
     Button btnAssignStudentAdmin;
 
+    StudentRepository repository;
     int purple = Color.parseColor("#4935B8");
     String lockedDept = null;
     String lockedStaff = null;
-
-    static class SuperStudentAdminModel {
-        String name, id, department, year, assignedStaffAdmin, phone, email, studentsCount;
-
-        SuperStudentAdminModel(String name, String id, String department, String year,
-                               String assignedStaffAdmin, String phone, String email, String studentsCount) {
-            this.name = name;
-            this.id = id;
-            this.department = department;
-            this.year = year;
-            this.assignedStaffAdmin = assignedStaffAdmin;
-            this.phone = phone;
-            this.email = email;
-            this.studentsCount = studentsCount;
-        }
-    }
-
-    List<SuperStudentAdminModel> list = new ArrayList<>();
-
-    private ActivityResultLauncher<Intent> addStudentAdminLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +46,8 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
 
         setContentView(R.layout.activity_super_admin_student_admins);
 
+        repository = new StudentRepository(this);
+
         btnBack = findViewById(R.id.btnBack);
         txtHeaderTitle = findViewById(R.id.txtHeaderTitle);
         searchStudentAdmin = findViewById(R.id.searchStudentAdmin);
@@ -78,26 +56,6 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
         spFilterStaff = findViewById(R.id.spFilterStaff);
         studentAdminListContainer = findViewById(R.id.studentAdminListContainer);
         btnAssignStudentAdmin = findViewById(R.id.btnAssignStudentAdmin);
-
-        addStudentAdminLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        Intent data = result.getData();
-                        String name = data.getStringExtra("adminName");
-                        String id = data.getStringExtra("adminId");
-                        String dept = data.getStringExtra("department");
-                        String year = data.getStringExtra("year");
-                        String staff = data.getStringExtra("assignedStaffAdmin");
-                        String phone = data.getStringExtra("phone");
-                        String email = data.getStringExtra("email");
-                        if (phone == null || phone.isEmpty()) phone = "98765 00000";
-                        if (email == null || email.isEmpty()) email = "student@college.edu";
-                        list.add(new SuperStudentAdminModel(name, id, dept, year, staff, phone, email, "0"));
-                        renderList();
-                    }
-                }
-        );
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -114,14 +72,6 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
 
         setupSpinner(spFilterDept, new String[]{"All Depts", "CSE", "AI & DS", "ECE", "IT", "MECH"});
         setupSpinner(spFilterStaff, new String[]{"All Staff Admins", "Prof. Ramesh K", "Dr. Raja", "Prof. Meena R", "Prof. Vijay S", "Prof. Anitha P"});
-
-        list.add(new SuperStudentAdminModel("Arun Kumar", "SADM001", "CSE", "III Year", "Dr. Raja", "98765 43201", "arun.admin@college.edu", "24"));
-        list.add(new SuperStudentAdminModel("Priya M", "SADM005", "CSE", "II Year", "Prof. Ramesh K", "98765 43205", "priya.admin@college.edu", "22"));
-        list.add(new SuperStudentAdminModel("Divya S", "SADM002", "AI & DS", "III Year", "Prof. Meena R", "98765 43202", "divya.admin@college.edu", "28"));
-        list.add(new SuperStudentAdminModel("Karthik R", "SADM003", "ECE", "IV Year", "Prof. Vijay S", "98765 43203", "karthik.admin@college.edu", "22"));
-        list.add(new SuperStudentAdminModel("Nithya P", "SADM004", "IT", "II Year", "Prof. Anitha P", "98765 43204", "nithya.admin@college.edu", "22"));
-
-        renderList();
 
         AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
             @Override
@@ -156,8 +106,14 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
             if (lockedStaff != null && !lockedStaff.isEmpty()) {
                 intent.putExtra("preselectedStaff", lockedStaff);
             }
-            addStudentAdminLauncher.launch(intent);
+            startActivity(intent);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        renderList();
     }
 
     private void setupSpinner(Spinner spinner, String[] items) {
@@ -167,15 +123,27 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
     }
 
     private void renderList() {
+        if (studentAdminListContainer == null) return;
         studentAdminListContainer.removeAllViews();
+
         String deptFilter = (lockedDept != null) ? lockedDept : spFilterDept.getSelectedItem().toString();
-        String staffFilter = (lockedStaff != null) ? lockedStaff : spFilterStaff.getSelectedItem().toString();
         String query = searchStudentAdmin.getText().toString().toLowerCase().trim();
 
-        for (SuperStudentAdminModel admin : list) {
-            if (!deptFilter.equals("All Depts") && !admin.department.equalsIgnoreCase(deptFilter)) continue;
-            if (!staffFilter.equals("All Staff Admins") && !admin.assignedStaffAdmin.equalsIgnoreCase(staffFilter)) continue;
-            if (!query.isEmpty() && !admin.name.toLowerCase().contains(query) && !admin.id.toLowerCase().contains(query)) continue;
+        ArrayList<StudentAdminModel> dbList = repository.getAllStudentAdmins();
+
+        if (dbList.isEmpty()) {
+            TextView emptyView = new TextView(this);
+            emptyView.setText("No Student Admins found in database");
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(Gravity.CENTER);
+            emptyView.setTextColor(Color.parseColor("#68738A"));
+            studentAdminListContainer.addView(emptyView);
+            return;
+        }
+
+        for (StudentAdminModel admin : dbList) {
+            if (!deptFilter.equals("All Depts") && !admin.getDepartment().equalsIgnoreCase(deptFilter)) continue;
+            if (!query.isEmpty() && !admin.getName().toLowerCase().contains(query) && !admin.getAdminId().toLowerCase().contains(query)) continue;
 
             LinearLayout card = new LinearLayout(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -201,18 +169,18 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
             info.setPadding(dpToPx(12), 0, 0, 0);
 
             TextView tvName = new TextView(this);
-            tvName.setText(admin.name + " (" + admin.id + ")");
+            tvName.setText(admin.getName() + " (" + admin.getAdminId() + ")");
             tvName.setTypeface(null, Typeface.BOLD);
             tvName.setTextSize(15);
             tvName.setTextColor(Color.parseColor("#18233F"));
 
             TextView tvDept = new TextView(this);
-            tvDept.setText(admin.department + " • " + admin.year + "  |  Students: " + admin.studentsCount);
+            tvDept.setText(admin.getDepartment() + " • " + admin.getYear() + "  |  Students: " + admin.getStudentsAssignedCount());
             tvDept.setTextSize(12);
             tvDept.setTextColor(Color.parseColor("#68738A"));
 
             TextView tvStaff = new TextView(this);
-            tvStaff.setText("Staff Admin: " + admin.assignedStaffAdmin);
+            tvStaff.setText("Student Administrator");
             tvStaff.setTextSize(12);
             tvStaff.setTextColor(purple);
 
@@ -222,25 +190,22 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
 
             TextView arrow = new TextView(this);
             arrow.setText("›");
-            arrow.setTextSize(27);
-            arrow.setTextColor(purple);
+            arrow.setTextSize(26);
+            arrow.setTextColor(Color.parseColor("#68738A"));
 
             card.addView(avatar);
             card.addView(info);
             card.addView(arrow);
 
-            // Reuse existing StudentAdminDetails screen
             card.setOnClickListener(v -> {
                 Intent intent = new Intent(this, StudentAdminDetails.class);
-                intent.putExtra("adminName", admin.name);
-                intent.putExtra("adminId", admin.id);
-                intent.putExtra("department", admin.department);
-                intent.putExtra("year", admin.year);
-                intent.putExtra("phone", admin.phone);
-                intent.putExtra("email", admin.email);
-                intent.putExtra("studentsAssigned", admin.studentsCount);
-                intent.putExtra("joinedDate", "Jan 10, 2025");
-                intent.putExtra("status", "Active");
+                intent.putExtra("adminName", admin.getName());
+                intent.putExtra("adminId", admin.getAdminId());
+                intent.putExtra("department", admin.getDepartment());
+                intent.putExtra("year", admin.getYear());
+                intent.putExtra("phone", admin.getPhone());
+                intent.putExtra("email", admin.getEmail());
+                intent.putExtra("studentsAssigned", String.valueOf(admin.getStudentsAssignedCount()));
                 startActivity(intent);
             });
 

@@ -18,16 +18,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SuperAddStudentAdmin extends AppCompatActivity {
 
     private EditText edtStudentAdminName, edtStudentAdminId, edtStudentAdminPhone, edtStudentAdminEmail;
     private Spinner spStudentAdminDept, spStudentAdminYear, spAssignedStaffAdmin;
     private Button btnSaveStudentAdmin;
+    private StudentRepository repository;
 
     private static final String[] DEPARTMENTS = {"Select Department", "CSE", "AI & DS", "ECE", "IT", "MECH"};
-    private static final String[] YEARS = {"Select Year", "II Year", "III Year", "IV Year"};
+    private static final String[] YEARS = {"Select Year", "I Year", "II Year", "III Year", "IV Year"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,8 @@ public class SuperAddStudentAdmin extends AppCompatActivity {
         ).setAppearanceLightStatusBars(false);
 
         setContentView(R.layout.activity_super_add_student_admin);
+
+        repository = new StudentRepository(this);
 
         ImageView btnBack = findViewById(R.id.btnBack);
         edtStudentAdminName = findViewById(R.id.edtStudentAdminName);
@@ -130,29 +132,18 @@ public class SuperAddStudentAdmin extends AppCompatActivity {
     }
 
     private void updateStaffAdminSpinner(String department, String preselectedStaff) {
-        List<String> staffList = new ArrayList<>();
-        staffList.add("Select Staff Admin");
+        ArrayList<StaffAdminModel> staffList = repository.getAllStaffAdmins();
+        ArrayList<String> staffNames = new ArrayList<>();
+        staffNames.add("Select Staff Admin");
 
-        if ("CSE".equalsIgnoreCase(department)) {
-            staffList.add("Prof. Ramesh K");
-            staffList.add("Dr. Raja");
-        } else if ("AI & DS".equalsIgnoreCase(department)) {
-            staffList.add("Prof. Meena R");
-        } else if ("ECE".equalsIgnoreCase(department)) {
-            staffList.add("Prof. Vijay S");
-        } else if ("IT".equalsIgnoreCase(department)) {
-            staffList.add("Prof. Anitha P");
-        } else if ("MECH".equalsIgnoreCase(department)) {
-            staffList.add("Prof. Karthikeyan M");
-        } else {
-            staffList.add("Prof. Ramesh K");
-            staffList.add("Dr. Raja");
-            staffList.add("Prof. Meena R");
-            staffList.add("Prof. Vijay S");
-            staffList.add("Prof. Anitha P");
+        for (StaffAdminModel sa : staffList) {
+            staffNames.add(sa.getName());
+        }
+        if (staffNames.size() == 1) {
+            staffNames.add("Suruthika S");
         }
 
-        ArrayAdapter<String> staffAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, staffList) {
+        ArrayAdapter<String> staffAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, staffNames.toArray(new String[0])) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 TextView view = (TextView) super.getView(position, convertView, parent);
@@ -172,8 +163,8 @@ public class SuperAddStudentAdmin extends AppCompatActivity {
 
         if (preselectedStaff != null && !preselectedStaff.isEmpty()) {
             boolean found = false;
-            for (int i = 1; i < staffList.size(); i++) {
-                if (staffList.get(i).equalsIgnoreCase(preselectedStaff)) {
+            for (int i = 1; i < staffNames.size(); i++) {
+                if (staffNames.get(i).equalsIgnoreCase(preselectedStaff)) {
                     spAssignedStaffAdmin.setSelection(i);
                     found = true;
                     break;
@@ -206,14 +197,13 @@ public class SuperAddStudentAdmin extends AppCompatActivity {
             return;
         }
 
-        if (spAssignedStaffAdmin.getSelectedItemPosition() == 0) {
-            Toast.makeText(this, "Please select a staff admin", Toast.LENGTH_SHORT).show();
+        if (repository.adminIdExists(id)) {
+            Toast.makeText(this, "Admin ID already exists in database!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String dept = spStudentAdminDept.getSelectedItem().toString();
         String year = spStudentAdminYear.getSelectedItem().toString();
-        String staff = spAssignedStaffAdmin.getSelectedItem().toString();
 
         if (phone.isEmpty()) {
             phone = "98765 00000";
@@ -222,17 +212,25 @@ public class SuperAddStudentAdmin extends AppCompatActivity {
             email = name.toLowerCase().replaceAll("\\s+", ".") + "@college.edu";
         }
 
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("adminName", name);
-        resultIntent.putExtra("adminId", id);
-        resultIntent.putExtra("department", dept);
-        resultIntent.putExtra("year", year);
-        resultIntent.putExtra("assignedStaffAdmin", staff);
-        resultIntent.putExtra("phone", phone);
-        resultIntent.putExtra("email", email);
+        StudentAdminModel newAdmin = new StudentAdminModel(name, id, dept, year, email, phone.startsWith("+91") ? phone : "+91 " + phone);
+        newAdmin.setStudentsAssignedCount(0);
 
-        setResult(RESULT_OK, resultIntent);
-        Toast.makeText(this, name + " assigned under " + staff, Toast.LENGTH_SHORT).show();
-        finish();
+        long rowId = repository.addStudentAdmin(newAdmin);
+
+        if (rowId > 0) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("adminName", name);
+            resultIntent.putExtra("adminId", id);
+            resultIntent.putExtra("department", dept);
+            resultIntent.putExtra("year", year);
+            resultIntent.putExtra("phone", phone);
+            resultIntent.putExtra("email", email);
+
+            setResult(RESULT_OK, resultIntent);
+            Toast.makeText(this, name + " saved to SQLite database!", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            Toast.makeText(this, "Failed to save Student Admin", Toast.LENGTH_SHORT).show();
+        }
     }
 }
