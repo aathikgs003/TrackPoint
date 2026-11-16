@@ -25,11 +25,13 @@ import java.util.List;
 public class SuperAdminStudents extends AppCompatActivity {
 
     ImageView btnBack;
+    TextView txtHeaderTitle;
     EditText searchSuperStudent;
     Spinner spSuperStudentDept, spSuperStudentYear;
     LinearLayout superStudentListContainer;
 
     int purple = Color.parseColor("#4935B8");
+    String lockedDepartment = null;
 
     static class CollegeStudentModel {
         String name, regId, department, year, assignedAdmin, phone, email, attendance, progress, tasks;
@@ -63,12 +65,21 @@ public class SuperAdminStudents extends AppCompatActivity {
         setContentView(R.layout.activity_super_admin_students);
 
         btnBack = findViewById(R.id.btnBack);
+        txtHeaderTitle = findViewById(R.id.txtHeaderTitle);
         searchSuperStudent = findViewById(R.id.searchSuperStudent);
         spSuperStudentDept = findViewById(R.id.spSuperStudentDept);
         spSuperStudentYear = findViewById(R.id.spSuperStudentYear);
         superStudentListContainer = findViewById(R.id.superStudentListContainer);
 
         btnBack.setOnClickListener(v -> finish());
+
+        lockedDepartment = getIntent().getStringExtra("filterDepartment");
+        if (lockedDepartment != null && !lockedDepartment.isEmpty()) {
+            if (txtHeaderTitle != null) {
+                txtHeaderTitle.setText(lockedDepartment + " Students");
+            }
+            spSuperStudentDept.setVisibility(View.GONE);
+        }
 
         setupSpinner(spSuperStudentDept, new String[]{"All Departments", "CSE", "AI & DS", "ECE", "IT", "MECH"});
         setupSpinner(spSuperStudentYear, new String[]{"All Years", "II Year", "III Year", "IV Year"});
@@ -115,7 +126,7 @@ public class SuperAdminStudents extends AppCompatActivity {
 
     private void renderList() {
         superStudentListContainer.removeAllViews();
-        String dept = spSuperStudentDept.getSelectedItem().toString();
+        String dept = (lockedDepartment != null && !lockedDepartment.isEmpty()) ? lockedDepartment : spSuperStudentDept.getSelectedItem().toString();
         String year = spSuperStudentYear.getSelectedItem().toString();
         String query = searchSuperStudent.getText().toString().toLowerCase().trim();
 

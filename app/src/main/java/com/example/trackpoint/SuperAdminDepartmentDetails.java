@@ -55,5 +55,12 @@ public class SuperAdminDepartmentDetails extends AppCompatActivity {
             intent.putExtra("filterDepartment", deptCode);
             startActivity(intent);
         });
+
+        // Open Students filtered by this Department
+        findViewById(R.id.rowViewDeptStudents).setOnClickListener(v -> {
+            Intent intent = new Intent(this, SuperAdminStudents.class);
+            intent.putExtra("filterDepartment", deptCode);
+            startActivity(intent);
+        });
     }
 }
