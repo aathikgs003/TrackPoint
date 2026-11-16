@@ -108,6 +108,43 @@ public class StudentRepository {
         return null;
     }
 
+    public boolean updateStaffAdmin(StaffAdminModel staff) {
+        if (staff == null) return false;
+        SQLiteDatabase db = getDatabase();
+        try {
+            ContentValues values = staff.toContentValues();
+            values.put(DatabaseHelper.COLUMN_UPDATED_AT, getCurrentTimestamp());
+            int rows;
+            if (staff.getId() > 0) {
+                rows = db.update(DatabaseHelper.TABLE_STAFF_ADMINS, values,
+                        DatabaseHelper.COLUMN_ID + " = ?",
+                        new String[]{String.valueOf(staff.getId())});
+            } else {
+                rows = db.update(DatabaseHelper.TABLE_STAFF_ADMINS, values,
+                        DatabaseHelper.COLUMN_STAFF_ID + " = ? OR " + DatabaseHelper.COLUMN_EMAIL + " = ?",
+                        new String[]{staff.getStaffId(), staff.getEmail()});
+            }
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteStaffAdminByStaffId(String staffIdOrEmail) {
+        if (staffIdOrEmail == null || staffIdOrEmail.isEmpty()) return false;
+        SQLiteDatabase db = getDatabase();
+        try {
+            int rows = db.delete(DatabaseHelper.TABLE_STAFF_ADMINS,
+                    DatabaseHelper.COLUMN_STAFF_ID + " = ? OR " + DatabaseHelper.COLUMN_EMAIL + " = ?",
+                    new String[]{staffIdOrEmail, staffIdOrEmail});
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // --- STUDENT OPERATIONS ---
 
     public long addStudent(StudentModel student) {
@@ -399,6 +436,43 @@ public class StudentRepository {
             if (cursor != null) cursor.close();
         }
         return null;
+    }
+
+    public boolean updateStudentAdmin(StudentAdminModel admin) {
+        if (admin == null) return false;
+        SQLiteDatabase db = getDatabase();
+        try {
+            ContentValues values = admin.toContentValues();
+            values.put(DatabaseHelper.COLUMN_UPDATED_AT, getCurrentTimestamp());
+            int rows;
+            if (admin.getId() > 0) {
+                rows = db.update(DatabaseHelper.TABLE_STUDENT_ADMINS, values,
+                        DatabaseHelper.COLUMN_ID + " = ?",
+                        new String[]{String.valueOf(admin.getId())});
+            } else {
+                rows = db.update(DatabaseHelper.TABLE_STUDENT_ADMINS, values,
+                        DatabaseHelper.COLUMN_ADMIN_ID + " = ? OR " + DatabaseHelper.COLUMN_EMAIL + " = ?",
+                        new String[]{admin.getAdminId(), admin.getEmail()});
+            }
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteStudentAdminByAdminId(String adminIdOrEmail) {
+        if (adminIdOrEmail == null || adminIdOrEmail.isEmpty()) return false;
+        SQLiteDatabase db = getDatabase();
+        try {
+            int rows = db.delete(DatabaseHelper.TABLE_STUDENT_ADMINS,
+                    DatabaseHelper.COLUMN_ADMIN_ID + " = ? OR " + DatabaseHelper.COLUMN_EMAIL + " = ?",
+                    new String[]{adminIdOrEmail, adminIdOrEmail});
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public StudentAdminModel authenticateStudentAdmin(String emailOrAdminId, String password) {

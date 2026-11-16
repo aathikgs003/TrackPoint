@@ -58,41 +58,100 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:background="@drawable/card_purple"
                 android:elevation="2dp"
-                android:padding="20dp"
+                android:padding="16dp"
                 android:layout_marginBottom="16dp">
 
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:padding="12dp"
                     android:src="@drawable/profile_symbol"
                     app:tint="#4935B8"
                     android:background="#E2D5FF"
                     android:contentDescription="Staff Avatar" />
 
-                <TextView
-                    android:id="@+id/txtStaffName"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Prof. Ramesh K"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#18233F" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingStart="14dp">
 
-                <TextView
-                    android:id="@+id/txtStaffId"
+                    <TextView
+                        android:id="@+id/txtStaffName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Prof. Ramesh K"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#18233F" />
+
+                    <TextView
+                        android:id="@+id/txtStaffId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="STF001"
+                        android:textSize="13sp"
+                        android:textColor="#4935B8"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Staff Admin"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="#4935B8"
+                        android:background="#E2D5FF"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:layout_marginTop="4dp" />
+
+                </LinearLayout>
+
+                <!-- Action Icons (Edit & Delete) -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="STF001"
-                    android:textSize="13sp"
-                    android:textColor="#4935B8"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/btnEditStaff"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:padding="8dp"
+                        android:src="@drawable/edit_symbol"
+                        app:tint="#4935B8"
+                        android:background="@drawable/action_card"
+                        android:elevation="1dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:contentDescription="Edit Staff Admin"
+                        android:layout_marginEnd="8dp" />
+
+                    <ImageView
+                        android:id="@+id/btnDeleteStaff"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_trash"
+                        app:tint="#DC3545"
+                        android:background="@drawable/action_card"
+                        android:elevation="1dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:contentDescription="Delete Staff Admin" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <!-- Profile Info Rows -->
