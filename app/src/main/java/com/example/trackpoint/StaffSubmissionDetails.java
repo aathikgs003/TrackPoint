@@ -2,6 +2,7 @@ package com.example.trackpoint;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -162,6 +163,9 @@ public class StaffSubmissionDetails extends AppCompatActivity {
                 final String fType = fileType;
                 final String fNotes = notes;
 
+                String objectKey = "submissions/" + fReg + "/" + todayDateKey + "_" + fName;
+                String presignedUrl = S3StorageManager.getInstance(this).generatePresignedUrl(objectKey, 60);
+
                 if (cardAttachment != null) {
                     cardAttachment.setOnClickListener(v -> {
                         Intent viewerIntent = new Intent(StaffSubmissionDetails.this, StaffFileViewer.class);
@@ -175,7 +179,18 @@ public class StaffSubmissionDetails extends AppCompatActivity {
                 }
 
                 if (btnHeaderDownload != null) {
-                    btnHeaderDownload.setOnClickListener(v -> Toast.makeText(this, "Downloading " + fName + "...", Toast.LENGTH_SHORT).show());
+                    btnHeaderDownload.setOnClickListener(v -> {
+                        if (presignedUrl != null && !presignedUrl.isEmpty()) {
+                            try {
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(presignedUrl));
+                                startActivity(browserIntent);
+                            } catch (Exception e) {
+                                Toast.makeText(this, "Downloading " + fName + " via S3...", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(this, "Downloading " + fName + "...", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         }

@@ -37,6 +37,11 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+
+    // AWS S3 SDK for Backblaze B2 Compatibility
+    implementation("com.amazonaws:aws-android-sdk-s3:2.75.0")
+    implementation("com.amazonaws:aws-android-sdk-core:2.75.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)

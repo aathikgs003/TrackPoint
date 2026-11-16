@@ -1,6 +1,7 @@
 package com.example.trackpoint;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -150,9 +151,9 @@ public class ProgressHistory extends AppCompatActivity {
             String timeStr = dbModel != null ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + s.getRegisterNumber() + "_" + dateKey, "Not Submitted");
 
             if (isSubmitted) {
-                layoutProgressContent.addView(createStudentUploadCard(s.getName(), dateDisplay, fileName, notes, timeStr, true));
+                layoutProgressContent.addView(createStudentUploadCard(s, dateDisplay, fileName, notes, timeStr, true));
             } else {
-                layoutProgressContent.addView(createStudentUploadCard(s.getName(), dateDisplay, "No File Uploaded", "No activity document or description submitted for this date.", "Not Submitted", false));
+                layoutProgressContent.addView(createStudentUploadCard(s, dateDisplay, "No File Uploaded", "No activity document or description submitted for this date.", "Not Submitted", false));
             }
             renderedCount++;
         }
@@ -167,7 +168,7 @@ public class ProgressHistory extends AppCompatActivity {
         }
     }
 
-    private View createStudentUploadCard(String studentName, String dateStr, String fileName, String notesStr, String timeStr, boolean isSubmitted) {
+    private View createStudentUploadCard(StudentModel student, String dateStr, String fileName, String notesStr, String timeStr, boolean isSubmitted) {
         View card = LayoutInflater.from(this).inflate(R.layout.item_report_card, layoutProgressContent, false);
 
         TextView tvDate = card.findViewById(R.id.tvReportCardDate);
@@ -180,7 +181,7 @@ public class ProgressHistory extends AppCompatActivity {
         TextView tvDocName = card.findViewById(R.id.tvReportDocName);
         TextView tvNotes = card.findViewById(R.id.tvReportNotes);
 
-        if (tvDate != null) tvDate.setText("👤 " + studentName + "   (" + dateStr + ")");
+        if (tvDate != null) tvDate.setText("👤 " + student.getName() + "   (" + dateStr + ")");
         if (tvTime != null) tvTime.setText(timeStr);
 
         if (isSubmitted) {
@@ -216,6 +217,23 @@ public class ProgressHistory extends AppCompatActivity {
         if (tvNotes != null) {
             tvNotes.setText(notesStr.isEmpty() ? "No description provided" : notesStr);
         }
+
+        String fileType = (fileName.endsWith(".png") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) ? "Image" : "PDF";
+
+        card.setOnClickListener(v -> {
+            Intent intent = new Intent(ProgressHistory.this, StaffSubmissionDetails.class);
+            intent.putExtra("studentName", student.getName());
+            intent.putExtra("studentId", student.getRegisterNumber());
+            intent.putExtra("department", student.getDepartment());
+            intent.putExtra("year", student.getYear());
+            intent.putExtra("assignedAdmin", student.getAssignedAdmin() != null ? student.getAssignedAdmin() : loggedInAdminName);
+            intent.putExtra("submittedDate", dateStr);
+            intent.putExtra("notes", notesStr);
+            intent.putExtra("fileName", fileName);
+            intent.putExtra("fileType", fileType);
+            intent.putExtra("isSubmitted", isSubmitted);
+            startActivity(intent);
+        });
 
         return card;
     }

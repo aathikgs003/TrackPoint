@@ -167,21 +167,51 @@ public class StudentTodayActivity extends AppCompatActivity {
         SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
         loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
 
-        String fileName = selectedFileUri != null ? getFileNameFromUri(selectedFileUri) : "Activity Notes Submitted";
+        SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
+        String previousFileName = prefs.getString("file_name_" + loggedInRegNo + "_" + todayDateKey, null);
+        DailyActivityModel existingModel = repository.getDailyActivity(loggedInRegNo, todayDateKey);
+        if (existingModel != null && existingModel.getFileName() != null && !existingModel.getFileName().isEmpty()) {
+            previousFileName = existingModel.getFileName();
+        }
+
+        String fileName = selectedFileUri != null ? getFileNameFromUri(selectedFileUri) : (previousFileName != null ? previousFileName : "Activity Notes Submitted");
+        String objectKey = "submissions/" + loggedInRegNo + "/" + todayDateKey + "_" + fileName;
         SimpleDateFormat timeFmt = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         String timeStr = timeFmt.format(new Date());
 
-        SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("submitted_" + loggedInRegNo + "_" + todayDateKey, true);
         editor.putString("file_name_" + loggedInRegNo + "_" + todayDateKey, fileName);
+        editor.putString("file_url_" + loggedInRegNo + "_" + todayDateKey, objectKey);
         editor.putString("notes_" + loggedInRegNo + "_" + todayDateKey, notes);
         editor.putString("submit_time_" + loggedInRegNo + "_" + todayDateKey, "Submitted at " + timeStr);
         editor.putString("date_display_" + loggedInRegNo + "_" + todayDateKey, todayDateDisplay);
         editor.apply();
 
-        // Save into SQLite Database
-        repository.saveOrUpdateDailyActivity(loggedInRegNo, todayDateKey, fileName, notes, "Submitted at " + timeStr);
+        // Save into SQLite Database (includes Backblaze B2 Object Key in file_url column)
+        repository.saveOrUpdateDailyActivity(loggedInRegNo, todayDateKey, fileName, objectKey, notes, "Submitted at " + timeStr);
+
+        // Upload File to Backblaze B2 S3 Bucket
+        if (selectedFileUri != null) {
+            if (previousFileName != null && !previousFileName.equalsIgnoreCase(fileName)) {
+                String oldObjectKey = "submissions/" + loggedInRegNo + "/" + todayDateKey + "_" + previousFileName;
+                S3StorageManager.getInstance(this).deleteFile(oldObjectKey, null);
+            }
+
+            S3StorageManager.getInstance(this).uploadFile(this, selectedFileUri, loggedInRegNo, todayDateKey, new S3StorageManager.S3UploadCallback() {
+                @Override
+                public void onSuccess(String uploadedKey, String presignedUrl) {
+                    repository.saveOrUpdateDailyActivity(loggedInRegNo, todayDateKey, fileName, uploadedKey, notes, "Submitted at " + timeStr);
+                    Toast.makeText(StudentTodayActivity.this, "File uploaded to Backblaze B2 S3 bucket!", Toast.LENGTH_SHORT).show();
+                    loadSubmissionState();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Toast.makeText(StudentTodayActivity.this, "S3 Notice: " + (e != null && e.getLocalizedMessage() != null ? e.getLocalizedMessage() : "Check S3 connection"), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
 
         Toast.makeText(this, "Today's activity submitted successfully!", Toast.LENGTH_LONG).show();
         loadSubmissionState();
@@ -232,9 +262,17 @@ public class StudentTodayActivity extends AppCompatActivity {
         loggedInRegNo = sessionPrefs.getString("logged_in_reg_no", "CSE22CS001");
 
         SharedPreferences prefs = getSharedPreferences("TodayActivityPrefs", MODE_PRIVATE);
+        String fileName = prefs.getString("file_name_" + loggedInRegNo + "_" + todayDateKey, "upload_file");
+
+        DailyActivityModel dbModel = repository.getDailyActivity(loggedInRegNo, todayDateKey);
+        if (dbModel != null && dbModel.getFileName() != null && !dbModel.getFileName().isEmpty()) {
+            fileName = dbModel.getFileName();
+        }
+
         SharedPreferences.Editor editor = prefs.edit();
         editor.remove("submitted_" + loggedInRegNo + "_" + todayDateKey);
         editor.remove("file_name_" + loggedInRegNo + "_" + todayDateKey);
+        editor.remove("file_url_" + loggedInRegNo + "_" + todayDateKey);
         editor.remove("notes_" + loggedInRegNo + "_" + todayDateKey);
         editor.remove("submit_time_" + loggedInRegNo + "_" + todayDateKey);
         editor.remove("date_display_" + loggedInRegNo + "_" + todayDateKey);
@@ -242,6 +280,20 @@ public class StudentTodayActivity extends AppCompatActivity {
 
         // Remove from SQLite Database
         repository.deleteDailyActivity(loggedInRegNo, todayDateKey);
+
+        // Delete File from Backblaze B2 S3 Bucket
+        String objectKey = "submissions/" + loggedInRegNo + "/" + todayDateKey + "_" + fileName;
+        S3StorageManager.getInstance(this).deleteFile(objectKey, new S3StorageManager.S3DeleteCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(StudentTodayActivity.this, "File removed from Backblaze B2 S3 bucket", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
 
         selectedFileUri = null;
         if (etActivityNotes != null) etActivityNotes.setText("");

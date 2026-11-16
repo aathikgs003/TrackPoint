@@ -9,6 +9,7 @@ public class DailyActivityModel {
     private String studentRegNo;
     private String dateKey;
     private String fileName;
+    private String fileUrl;
     private String notes;
     private String submitTime;
     private String status;
@@ -16,15 +17,17 @@ public class DailyActivityModel {
     private String updatedAt;
 
     public DailyActivityModel() {
+        this.fileUrl = "";
         this.status = "Submitted";
         this.staffRemark = "";
         this.updatedAt = "";
     }
 
-    public DailyActivityModel(String studentRegNo, String dateKey, String fileName, String notes, String submitTime) {
+    public DailyActivityModel(String studentRegNo, String dateKey, String fileName, String fileUrl, String notes, String submitTime) {
         this.studentRegNo = studentRegNo;
         this.dateKey = dateKey;
         this.fileName = fileName;
+        this.fileUrl = fileUrl != null ? fileUrl : "";
         this.notes = notes;
         this.submitTime = submitTime;
         this.status = "Submitted";
@@ -32,11 +35,12 @@ public class DailyActivityModel {
         this.updatedAt = "";
     }
 
-    public DailyActivityModel(long id, String studentRegNo, String dateKey, String fileName, String notes, String submitTime, String status, String staffRemark, String updatedAt) {
+    public DailyActivityModel(long id, String studentRegNo, String dateKey, String fileName, String fileUrl, String notes, String submitTime, String status, String staffRemark, String updatedAt) {
         this.id = id;
         this.studentRegNo = studentRegNo;
         this.dateKey = dateKey;
         this.fileName = fileName;
+        this.fileUrl = fileUrl != null ? fileUrl : "";
         this.notes = notes;
         this.submitTime = submitTime;
         this.status = status;
@@ -74,6 +78,14 @@ public class DailyActivityModel {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
     public String getNotes() {
@@ -121,6 +133,7 @@ public class DailyActivityModel {
         values.put(DatabaseHelper.COLUMN_REG_NO, studentRegNo);
         values.put(DatabaseHelper.COLUMN_DATE_KEY, dateKey);
         values.put(DatabaseHelper.COLUMN_FILE_NAME, fileName != null ? fileName : "");
+        values.put(DatabaseHelper.COLUMN_FILE_URL, fileUrl != null ? fileUrl : "");
         values.put(DatabaseHelper.COLUMN_NOTES, notes != null ? notes : "");
         values.put(DatabaseHelper.COLUMN_SUBMIT_TIME, submitTime != null ? submitTime : "");
         values.put(DatabaseHelper.COLUMN_STATUS, status != null ? status : "Submitted");
@@ -139,6 +152,9 @@ public class DailyActivityModel {
         int fileIdx = cursor.getColumnIndex(DatabaseHelper.COLUMN_FILE_NAME);
         String fileName = fileIdx != -1 ? cursor.getString(fileIdx) : "";
 
+        int urlIdx = cursor.getColumnIndex(DatabaseHelper.COLUMN_FILE_URL);
+        String fileUrl = urlIdx != -1 ? cursor.getString(urlIdx) : "";
+
         int notesIdx = cursor.getColumnIndex(DatabaseHelper.COLUMN_NOTES);
         String notes = notesIdx != -1 ? cursor.getString(notesIdx) : "";
 
@@ -154,6 +170,6 @@ public class DailyActivityModel {
         int updatedIdx = cursor.getColumnIndex(DatabaseHelper.COLUMN_UPDATED_AT);
         String updatedAt = updatedIdx != -1 ? cursor.getString(updatedIdx) : "";
 
-        return new DailyActivityModel(id, regNo, dateKey, fileName, notes, submitTime, status, staffRemark, updatedAt);
+        return new DailyActivityModel(id, regNo, dateKey, fileName, fileUrl, notes, submitTime, status, staffRemark, updatedAt);
     }
 }

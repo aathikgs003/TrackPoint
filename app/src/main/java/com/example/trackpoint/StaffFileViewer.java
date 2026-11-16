@@ -2,6 +2,7 @@ package com.example.trackpoint;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,6 +10,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class StaffFileViewer extends AppCompatActivity {
 
@@ -57,19 +62,37 @@ public class StaffFileViewer extends AppCompatActivity {
         if (txtViewerFileName != null) txtViewerFileName.setText(fileName != null ? fileName : "Document");
         if (txtViewerStudent != null) txtViewerStudent.setText("Student: " + (studentName != null ? studentName : "") + " (" + (regId != null ? regId : "") + ")");
 
+        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        String todayKeyStr = keyFmt.format(new Date());
+
+        String objectKey = "submissions/" + regId + "/" + todayKeyStr + "_" + fileName;
+        String presignedUrl = S3StorageManager.getInstance(this).generatePresignedUrl(objectKey, 60);
+
         if ("Image".equalsIgnoreCase(fileType)) {
             if (txtDocHeader != null) txtDocHeader.setText("IMAGE SCREENSHOT PREVIEW");
-            if (txtDocBody != null) txtDocBody.setText("Attached Screenshot: " + fileName + "\n\nSummary:\n" + (notes != null ? notes : ""));
-            if (txtDocFooter != null) txtDocFooter.setText("High-Resolution Image Preview");
+            if (txtDocBody != null) txtDocBody.setText("Attached Screenshot: " + fileName + "\n\nSummary:\n" + (notes != null ? notes : "") + "\n\nBackblaze B2 S3 Object Key:\n" + objectKey);
+            if (txtDocFooter != null) txtDocFooter.setText("High-Resolution Image Preview • Presigned URL Active");
         } else {
             if (txtDocHeader != null) txtDocHeader.setText("PDF SUBMISSION REPORT");
-            if (txtDocBody != null) txtDocBody.setText("Document: " + fileName + "\n\nWork Summary:\n" + (notes != null ? notes : "") + "\n\nStatus: Submitted & logged in TrackPoint.");
-            if (txtDocFooter != null) txtDocFooter.setText("Page 1 of 1 • PDF Document");
+            if (txtDocBody != null) txtDocBody.setText("Document: " + fileName + "\n\nWork Summary:\n" + (notes != null ? notes : "") +
+                    "\n\nStatus: Submitted & Logged in TrackPoint Backblaze B2 S3 Cloud Storage.");
+            if (txtDocFooter != null) txtDocFooter.setText("Page 1 of 1 • PDF Document • Signed Presigned URL Active");
         }
 
         final String downloadName = fileName;
         if (btnViewerDownload != null) {
-            btnViewerDownload.setOnClickListener(v -> Toast.makeText(this, "Saved " + downloadName + " to Downloads", Toast.LENGTH_SHORT).show());
+            btnViewerDownload.setOnClickListener(v -> {
+                if (presignedUrl != null && !presignedUrl.isEmpty()) {
+                    try {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(presignedUrl));
+                        startActivity(browserIntent);
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Downloading " + downloadName + " via S3...", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(this, "Saved " + downloadName + " to Downloads", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 }

@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "trackpoint.db";
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 8;
 
     public static final String TABLE_STAFF_ADMINS = "staff_admins";
     public static final String TABLE_STUDENT_ADMINS = "student_admins";
@@ -42,6 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Daily Activities specific
     public static final String COLUMN_FILE_NAME = "file_name";
+    public static final String COLUMN_FILE_URL = "file_url";
     public static final String COLUMN_NOTES = "notes";
     public static final String COLUMN_SUBMIT_TIME = "submit_time";
     public static final String COLUMN_STAFF_REMARK = "staff_remark";
@@ -104,6 +105,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_REG_NO + " TEXT NOT NULL, " +
                     COLUMN_DATE_KEY + " TEXT NOT NULL, " +
                     COLUMN_FILE_NAME + " TEXT, " +
+                    COLUMN_FILE_URL + " TEXT DEFAULT '', " +
                     COLUMN_NOTES + " TEXT, " +
                     COLUMN_SUBMIT_TIME + " TEXT, " +
                     COLUMN_STATUS + " TEXT DEFAULT 'Submitted', " +
@@ -139,6 +141,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
+        try {
+            db.execSQL("ALTER TABLE " + TABLE_DAILY_ACTIVITIES + " ADD COLUMN " + COLUMN_FILE_URL + " TEXT DEFAULT '';");
+        } catch (Exception ignored) {
+        }
         db.execSQL("DELETE FROM " + TABLE_STUDENTS + " WHERE register_number IN ('CSE22CS002', 'CSE22CS003', 'CSE22CS004', 'CSE22CS005') OR name IN ('Divya S', 'Karthik R', 'Nithya P', 'Praveen M');");
     }
 

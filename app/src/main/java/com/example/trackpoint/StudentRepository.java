@@ -630,7 +630,7 @@ public class StudentRepository {
 
     // --- DAILY ACTIVITIES OPERATIONS IN SQLITE ---
 
-    public boolean saveOrUpdateDailyActivity(String studentRegNo, String dateKey, String fileName, String notes, String submitTime) {
+    public boolean saveOrUpdateDailyActivity(String studentRegNo, String dateKey, String fileName, String fileUrl, String notes, String submitTime) {
         if (studentRegNo == null || dateKey == null) return false;
 
         SQLiteDatabase db = getDatabase();
@@ -639,6 +639,7 @@ public class StudentRepository {
             values.put(DatabaseHelper.COLUMN_REG_NO, studentRegNo);
             values.put(DatabaseHelper.COLUMN_DATE_KEY, dateKey);
             values.put(DatabaseHelper.COLUMN_FILE_NAME, fileName != null ? fileName : "");
+            values.put(DatabaseHelper.COLUMN_FILE_URL, fileUrl != null ? fileUrl : "");
             values.put(DatabaseHelper.COLUMN_NOTES, notes != null ? notes : "");
             values.put(DatabaseHelper.COLUMN_SUBMIT_TIME, submitTime != null ? submitTime : "");
             values.put(DatabaseHelper.COLUMN_STATUS, "Submitted");
@@ -663,6 +664,10 @@ public class StudentRepository {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean saveOrUpdateDailyActivity(String studentRegNo, String dateKey, String fileName, String notes, String submitTime) {
+        return saveOrUpdateDailyActivity(studentRegNo, dateKey, fileName, "", notes, submitTime);
     }
 
     public boolean deleteDailyActivity(String studentRegNo, String dateKey) {

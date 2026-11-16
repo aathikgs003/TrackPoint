@@ -40,19 +40,18 @@ public class StudentAdmin extends AppCompatActivity {
         tvAdminGreeting = findViewById(R.id.tvAdminGreeting);
         tvAdminSubDept = findViewById(R.id.tvAdminSubDept);
 
-        // My Students Navigation
-        View.OnClickListener openStudents = v -> startActivity(new Intent(StudentAdmin.this, MyStudents.class));
-        findViewById(R.id.btnMyStudents).setOnClickListener(openStudents);
+        // Remove redirection on the 4 metric cards (Pure summary UI format with live DB numbers)
+        View cardMyStudents = findViewById(R.id.btnMyStudents);
+        View cardDailyProgress = findViewById(R.id.btnDailyProgress);
+        View cardAttendance = findViewById(R.id.btnAttendance);
+        View cardPending = findViewById(R.id.btnPending);
 
-        // Daily Progress Navigation
-        View.OnClickListener openProgress = v -> startActivity(new Intent(StudentAdmin.this, DailyProgress.class));
-        findViewById(R.id.btnDailyProgress).setOnClickListener(openProgress);
+        if (cardMyStudents != null) cardMyStudents.setOnClickListener(null);
+        if (cardDailyProgress != null) cardDailyProgress.setOnClickListener(null);
+        if (cardAttendance != null) cardAttendance.setOnClickListener(null);
+        if (cardPending != null) cardPending.setOnClickListener(null);
 
-        // Attendance Navigation
-        View.OnClickListener openAttendance = v -> startActivity(new Intent(StudentAdmin.this, MarkAttendance.class));
-        findViewById(R.id.btnAttendance).setOnClickListener(openAttendance);
-
-        // Progress History Navigation
+        // Progress History Navigation (Quick Action)
         findViewById(R.id.btnProgressHistory).setOnClickListener(v -> {
             Intent intent = new Intent(
                     StudentAdmin.this,
@@ -61,7 +60,7 @@ public class StudentAdmin extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Reports Navigation
+        // Attendance Reports Navigation (Quick Action)
         findViewById(R.id.btnReports).setOnClickListener(v -> {
             Intent intent = new Intent(
                     StudentAdmin.this,
