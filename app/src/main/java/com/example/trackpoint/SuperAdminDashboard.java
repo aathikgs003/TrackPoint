@@ -21,8 +21,8 @@ import java.util.Locale;
 
 public class SuperAdminDashboard extends AppCompatActivity {
 
-    TextView txtCountDepartments, txtCountStaffAdmins, txtCountStudentAdmins, txtCountTotalStudents;
-    StudentRepository repository;
+    private TextView txtCountDepartments, txtCountStaffAdmins, txtCountStudentAdmins, txtCountTotalStudents;
+    private StudentRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

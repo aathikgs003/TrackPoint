@@ -140,10 +140,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".StaffProgressReport"
-            android:exported="false" />
-
-        <activity
             android:name=".StaffProgressHistory"
             android:exported="false" />
 

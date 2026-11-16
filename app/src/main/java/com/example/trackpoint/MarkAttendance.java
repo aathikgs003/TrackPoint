@@ -125,11 +125,15 @@ public class MarkAttendance extends AppCompatActivity {
     }
 
     private void submitAttendanceData() {
-        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.US);
         String dateKey = keyFmt.format(selectedCalendar.getTime());
+        SimpleDateFormat timeStampFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        String timestamp = timeStampFmt.format(new java.util.Date());
 
         SharedPreferences prefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
+
+        ArrayList<android.content.ContentValues> batchList = new ArrayList<>();
 
         for (int i = 0; i < statusSpinners.size(); i++) {
             if (i < currentFilteredList.size()) {
@@ -137,20 +141,29 @@ public class MarkAttendance extends AppCompatActivity {
                 String selectedOption = statusSpinners.get(i).getSelectedItem() != null ?
                         statusSpinners.get(i).getSelectedItem().toString() : "Not Mentioned";
 
-                // "Not Mentioned" converts to "Absent" in database and system pages!
                 String finalStatusVal = "Present".equalsIgnoreCase(selectedOption) ? "Present" : "Absent";
 
                 editor.putString("status_" + s.regNo + "_" + dateKey, finalStatusVal);
 
-                // Save into SQLite Database
-                repository.saveOrUpdateAttendance(s.regNo, dateKey, finalStatusVal, "Student Admin");
+                android.content.ContentValues val = new android.content.ContentValues();
+                val.put(DatabaseHelper.COLUMN_REG_NO, s.regNo);
+                val.put(DatabaseHelper.COLUMN_DATE_KEY, dateKey);
+                val.put(DatabaseHelper.COLUMN_STATUS, finalStatusVal);
+                val.put(DatabaseHelper.COLUMN_MARKED_BY, "Student Admin");
+                val.put(DatabaseHelper.COLUMN_UPDATED_AT, timestamp);
+                batchList.add(val);
             }
         }
 
         editor.apply();
 
-        Toast.makeText(this, "Attendance submitted successfully for " + tvAttendanceDate.getText().toString(), Toast.LENGTH_SHORT).show();
-        finish();
+        boolean success = repository.saveOrUpdateAttendanceBatch(batchList);
+        if (success) {
+            Toast.makeText(this, "Attendance submitted successfully for " + tvAttendanceDate.getText().toString(), Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            Toast.makeText(this, "Error saving attendance to database", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadSampleStudents() {
@@ -209,7 +222,7 @@ public class MarkAttendance extends AppCompatActivity {
             return;
         }
 
-        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.US);
         String dateKey = keyFmt.format(selectedCalendar.getTime());
         SharedPreferences prefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
 

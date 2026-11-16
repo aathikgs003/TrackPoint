@@ -122,16 +122,13 @@ public class StudentDashboardActivity extends AppCompatActivity {
         String fileName = dbModel != null ? dbModel.getFileName() : prefs.getString("file_name_" + loggedInRegNo + "_" + dateKeyStr, "Document Uploaded");
         String submitTime = dbModel != null ? dbModel.getSubmitTime() : prefs.getString("submit_time_" + loggedInRegNo + "_" + dateKeyStr, "Submitted Today");
 
-        SharedPreferences attendancePrefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
-        String todayAttendanceStatus = repository.getAttendanceStatus(loggedInRegNo, dateKeyStr);
-        if (todayAttendanceStatus == null) {
-            todayAttendanceStatus = attendancePrefs.getString("status_" + loggedInRegNo + "_" + dateKeyStr, "Present");
-        }
-
-        String attendancePercentStr = "Absent".equalsIgnoreCase(todayAttendanceStatus) ? "90%" : "95%";
+        int[] attStats = repository.getAttendanceStatsForStudent(loggedInRegNo, "");
+        int totalAttDays = attStats[0];
+        int presentAttDays = attStats[1];
+        int attendancePercent = totalAttDays > 0 ? (int) Math.round(((double) presentAttDays / totalAttDays) * 100) : 100;
 
         if (tvStudentAttendance != null) {
-            tvStudentAttendance.setText(attendancePercentStr);
+            tvStudentAttendance.setText(attendancePercent + "%");
         }
 
         int completed = isSubmitted ? 1 : 0;

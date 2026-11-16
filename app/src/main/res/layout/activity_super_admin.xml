@@ -179,7 +179,7 @@
                             android:id="@+id/txtCountStaffAdmins"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="8"
+                            android:text="1"
                             android:textSize="24sp"
                             android:textStyle="bold"
                             android:textColor="#18233F" />
@@ -230,7 +230,7 @@
                             android:id="@+id/txtCountStudentAdmins"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="16"
+                            android:text="1"
                             android:textSize="24sp"
                             android:textStyle="bold"
                             android:textColor="#18233F" />
@@ -273,7 +273,7 @@
                             android:id="@+id/txtCountTotalStudents"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="372"
+                            android:text="1"
                             android:textSize="24sp"
                             android:textStyle="bold"
                             android:textColor="#18233F" />

@@ -130,12 +130,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_STAFF_ADMINS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_STUDENT_ADMINS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_STUDENTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DAILY_ACTIVITIES);
-        onCreate(db);
+        // Non-destructive upgrade hook: preserve all existing table schemas & data
     }
 
     @Override

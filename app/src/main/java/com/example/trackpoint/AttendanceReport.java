@@ -271,7 +271,7 @@ public class AttendanceReport extends AppCompatActivity {
         } else {
             // Specific Date View
             SimpleDateFormat displayFmt = new SimpleDateFormat("MMMM d, yyyy", Locale.getDefault());
-            SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+            SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.US);
 
             String dateDisplay = displayFmt.format(selectedDateCal.getTime());
             String dateKeyStr = keyFmt.format(selectedDateCal.getTime());

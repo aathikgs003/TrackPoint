@@ -120,7 +120,7 @@ public class StudentAttendanceActivity extends AppCompatActivity {
 
     private void loadTodayAttendance() {
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMM d, yyyy", Locale.getDefault());
-        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        SimpleDateFormat keyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.US);
         Date today = new Date();
 
         String currentDateStr = sdf.format(today);
@@ -234,7 +234,7 @@ public class StudentAttendanceActivity extends AppCompatActivity {
         }
 
         SharedPreferences prefs = getSharedPreferences("AttendanceStore", MODE_PRIVATE);
-        SimpleDateFormat dateKeyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        SimpleDateFormat dateKeyFmt = new SimpleDateFormat("yyyy_MM_dd", Locale.US);
 
         for (int day = 1; day <= totalDays; day++) {
             TextView dayView = new TextView(this);

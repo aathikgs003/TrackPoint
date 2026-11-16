@@ -516,12 +516,194 @@ public class StudentRepository {
         }
     }
 
+    // --- SUPER ADMIN ANALYTICS OPERATIONS ---
+
+    public int getStaffAdminCountForDept(String deptCode) {
+        if (deptCode == null || deptCode.isEmpty()) return 0;
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_STAFF_ADMINS, new String[]{DatabaseHelper.COLUMN_ID},
+                    DatabaseHelper.COLUMN_DEPT + " = ? OR " + DatabaseHelper.COLUMN_DEPT + " LIKE ?",
+                    new String[]{deptCode, "%" + deptCode + "%"}, null, null, null);
+            return cursor != null ? cursor.getCount() : 0;
+        } catch (Exception e) {
+            return 0;
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
+    public int getStudentAdminCountForDept(String deptCode) {
+        if (deptCode == null || deptCode.isEmpty()) return 0;
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_STUDENT_ADMINS, new String[]{DatabaseHelper.COLUMN_ID},
+                    DatabaseHelper.COLUMN_DEPT + " = ?",
+                    new String[]{deptCode}, null, null, null);
+            return cursor != null ? cursor.getCount() : 0;
+        } catch (Exception e) {
+            return 0;
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
+    public int getStudentCountForDept(String deptCode) {
+        if (deptCode == null || deptCode.isEmpty()) return 0;
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_STUDENTS, new String[]{DatabaseHelper.COLUMN_ID},
+                    DatabaseHelper.COLUMN_DEPT + " = ?",
+                    new String[]{deptCode}, null, null, null);
+            return cursor != null ? cursor.getCount() : 0;
+        } catch (Exception e) {
+            return 0;
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
+    public int[] getOverallAttendanceStats() {
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        int total = 0;
+        int present = 0;
+        int absent = 0;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_ATTENDANCE, new String[]{DatabaseHelper.COLUMN_STATUS},
+                    null, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    total++;
+                    String status = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_STATUS));
+                    if ("Present".equalsIgnoreCase(status)) {
+                        present++;
+                    } else if ("Absent".equalsIgnoreCase(status)) {
+                        absent++;
+                    }
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+        return new int[]{total, present, absent};
+    }
+
+    public int getTotalDailyActivitiesCount() {
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_DAILY_ACTIVITIES, new String[]{DatabaseHelper.COLUMN_ID},
+                    null, null, null, null, null);
+            return cursor != null ? cursor.getCount() : 0;
+        } catch (Exception e) {
+            return 0;
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
+    public int getDailyActivitiesCountForDate(String dateKey) {
+        if (dateKey == null || dateKey.isEmpty()) return 0;
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_DAILY_ACTIVITIES, new String[]{DatabaseHelper.COLUMN_ID},
+                    DatabaseHelper.COLUMN_DATE_KEY + " = ?",
+                    new String[]{dateKey}, null, null, null);
+            return cursor != null ? cursor.getCount() : 0;
+        } catch (Exception e) {
+            return 0;
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
     // --- ATTENDANCE OPERATIONS IN SQLITE ---
+
+    public static class DuplicateAttendanceDetail {
+        public String registerNumber;
+        public String dateKey;
+        public int duplicateCount;
+        public ArrayList<Long> recordIds;
+        public ArrayList<String> statuses;
+        public ArrayList<String> markedByList;
+
+        public DuplicateAttendanceDetail(String registerNumber, String dateKey, int duplicateCount,
+                                        ArrayList<Long> recordIds, ArrayList<String> statuses, ArrayList<String> markedByList) {
+            this.registerNumber = registerNumber;
+            this.dateKey = dateKey;
+            this.duplicateCount = duplicateCount;
+            this.recordIds = recordIds;
+            this.statuses = statuses;
+            this.markedByList = markedByList;
+        }
+    }
+
+    public ArrayList<DuplicateAttendanceDetail> getDuplicateAttendanceRecords() {
+        ArrayList<DuplicateAttendanceDetail> duplicates = new ArrayList<>();
+        SQLiteDatabase db = getDatabase();
+        Cursor groupCursor = null;
+
+        try {
+            String groupQuery = "SELECT " + DatabaseHelper.COLUMN_REG_NO + ", " + DatabaseHelper.COLUMN_DATE_KEY +
+                    ", COUNT(*) AS dup_count FROM " + DatabaseHelper.TABLE_ATTENDANCE +
+                    " GROUP BY " + DatabaseHelper.COLUMN_REG_NO + ", " + DatabaseHelper.COLUMN_DATE_KEY +
+                    " HAVING COUNT(*) > 1";
+
+            groupCursor = db.rawQuery(groupQuery, null);
+
+            if (groupCursor != null && groupCursor.moveToFirst()) {
+                do {
+                    String regNo = groupCursor.getString(0);
+                    String dateKey = groupCursor.getString(1);
+                    int count = groupCursor.getInt(2);
+
+                    Cursor detailCursor = null;
+                    ArrayList<Long> ids = new ArrayList<>();
+                    ArrayList<String> statuses = new ArrayList<>();
+                    ArrayList<String> markedBy = new ArrayList<>();
+
+                    try {
+                        detailCursor = db.query(DatabaseHelper.TABLE_ATTENDANCE,
+                                new String[]{DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_STATUS, DatabaseHelper.COLUMN_MARKED_BY},
+                                DatabaseHelper.COLUMN_REG_NO + " = ? AND " + DatabaseHelper.COLUMN_DATE_KEY + " = ?",
+                                new String[]{regNo, dateKey}, null, null, DatabaseHelper.COLUMN_ID + " ASC");
+
+                        if (detailCursor != null && detailCursor.moveToFirst()) {
+                            do {
+                                ids.add(detailCursor.getLong(0));
+                                statuses.add(detailCursor.getString(1));
+                                markedBy.add(detailCursor.getString(2));
+                            } while (detailCursor.moveToNext());
+                        }
+                    } finally {
+                        if (detailCursor != null) detailCursor.close();
+                    }
+
+                    duplicates.add(new DuplicateAttendanceDetail(regNo, dateKey, count, ids, statuses, markedBy));
+
+                } while (groupCursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (groupCursor != null) groupCursor.close();
+        }
+
+        return duplicates;
+    }
 
     public boolean saveOrUpdateAttendance(String studentRegNo, String dateKey, String status, String markedBy) {
         if (studentRegNo == null || dateKey == null || status == null) return false;
 
         SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
         try {
             ContentValues values = new ContentValues();
             values.put(DatabaseHelper.COLUMN_REG_NO, studentRegNo);
@@ -530,7 +712,7 @@ public class StudentRepository {
             values.put(DatabaseHelper.COLUMN_MARKED_BY, markedBy != null ? markedBy : "Admin");
             values.put(DatabaseHelper.COLUMN_UPDATED_AT, getCurrentTimestamp());
 
-            Cursor cursor = db.query(DatabaseHelper.TABLE_ATTENDANCE, new String[]{DatabaseHelper.COLUMN_ID},
+            cursor = db.query(DatabaseHelper.TABLE_ATTENDANCE, new String[]{DatabaseHelper.COLUMN_ID},
                     DatabaseHelper.COLUMN_REG_NO + " = ? AND " + DatabaseHelper.COLUMN_DATE_KEY + " = ?",
                     new String[]{studentRegNo, dateKey}, null, null, null);
 
@@ -538,16 +720,59 @@ public class StudentRepository {
             if (cursor != null) cursor.close();
 
             if (exists) {
-                db.update(DatabaseHelper.TABLE_ATTENDANCE, values,
+                int rows = db.update(DatabaseHelper.TABLE_ATTENDANCE, values,
                         DatabaseHelper.COLUMN_REG_NO + " = ? AND " + DatabaseHelper.COLUMN_DATE_KEY + " = ?",
                         new String[]{studentRegNo, dateKey});
+                return rows > 0;
             } else {
-                db.insert(DatabaseHelper.TABLE_ATTENDANCE, null, values);
+                long id = db.insert(DatabaseHelper.TABLE_ATTENDANCE, null, values);
+                return id != -1;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) cursor.close();
+        }
+    }
+
+    public boolean saveOrUpdateAttendanceBatch(ArrayList<ContentValues> records) {
+        if (records == null || records.isEmpty()) return false;
+        SQLiteDatabase db = getDatabase();
+        db.beginTransaction();
+        try {
+            for (ContentValues values : records) {
+                String regNo = values.getAsString(DatabaseHelper.COLUMN_REG_NO);
+                String dateKey = values.getAsString(DatabaseHelper.COLUMN_DATE_KEY);
+
+                if (regNo == null || dateKey == null) {
+                    return false;
+                }
+
+                Cursor cursor = db.query(DatabaseHelper.TABLE_ATTENDANCE, new String[]{DatabaseHelper.COLUMN_ID},
+                        DatabaseHelper.COLUMN_REG_NO + " = ? AND " + DatabaseHelper.COLUMN_DATE_KEY + " = ?",
+                        new String[]{regNo, dateKey}, null, null, null);
+
+                boolean exists = cursor != null && cursor.getCount() > 0;
+                if (cursor != null) cursor.close();
+
+                if (exists) {
+                    int rows = db.update(DatabaseHelper.TABLE_ATTENDANCE, values,
+                            DatabaseHelper.COLUMN_REG_NO + " = ? AND " + DatabaseHelper.COLUMN_DATE_KEY + " = ?",
+                            new String[]{regNo, dateKey});
+                    if (rows <= 0) return false;
+                } else {
+                    long id = db.insert(DatabaseHelper.TABLE_ATTENDANCE, null, values);
+                    if (id == -1) return false;
+                }
+            }
+            db.setTransactionSuccessful();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            db.endTransaction();
         }
     }
 

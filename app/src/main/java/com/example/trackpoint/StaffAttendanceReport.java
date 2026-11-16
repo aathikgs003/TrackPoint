@@ -115,14 +115,18 @@ public class StaffAttendanceReport extends AppCompatActivity {
             return;
         }
 
-        int sum = 0;
-        int count = 0;
+        int totalDaysSum = 0;
+        int presentDaysSum = 0;
         int lowCount = 0;
 
         for (StudentModel s : dbList) {
-            int percentage = 95;
-            sum += percentage;
-            count++;
+            int[] stats = repository.getAttendanceStatsForStudent(s.getRegisterNumber(), "");
+            int total = stats[0];
+            int present = stats[1];
+            int percentage = total > 0 ? (present * 100 / total) : 100;
+
+            totalDaysSum += total;
+            presentDaysSum += present;
             if (percentage < 75) lowCount++;
 
             LinearLayout card = new LinearLayout(this);
@@ -149,7 +153,7 @@ public class StaffAttendanceReport extends AppCompatActivity {
             tvName.setTextColor(Color.parseColor("#18233F"));
 
             TextView tvSub = new TextView(this);
-            tvSub.setText(s.getRegisterNumber() + "  •  " + s.getDepartment() + " (" + s.getYear() + ")");
+            tvSub.setText(s.getRegisterNumber() + "  •  " + s.getDepartment() + " (" + s.getYear() + ")" + (total > 0 ? "  •  " + present + "/" + total + " Days" : "  •  No Logs"));
             tvSub.setTextSize(12);
             tvSub.setTextColor(Color.parseColor("#68738A"));
 
@@ -175,7 +179,7 @@ public class StaffAttendanceReport extends AppCompatActivity {
             attendanceListContainer.addView(card);
         }
 
-        int avg = count > 0 ? (sum / count) : 100;
+        int avg = totalDaysSum > 0 ? (presentDaysSum * 100 / totalDaysSum) : 100;
         if (txtOverallAttendance != null) txtOverallAttendance.setText(avg + "%");
         if (txtLowAttendanceCount != null) txtLowAttendanceCount.setText("Below 75%: " + lowCount + (lowCount == 1 ? " Student" : " Students"));
     }

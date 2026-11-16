@@ -23,12 +23,13 @@ import java.util.List;
 
 public class SuperAdminDepartments extends AppCompatActivity {
 
-    ImageView btnBack;
-    EditText searchDepartment;
-    LinearLayout deptListContainer;
-    Button btnAddDepartment;
+    private ImageView btnBack;
+    private EditText searchDepartment;
+    private LinearLayout deptListContainer;
+    private Button btnAddDepartment;
 
-    int purple = Color.parseColor("#4935B8");
+    private StudentRepository repository;
+    private int purple = Color.parseColor("#4935B8");
 
     static class DeptModel {
         String code, fullName;
@@ -43,7 +44,7 @@ public class SuperAdminDepartments extends AppCompatActivity {
         }
     }
 
-    List<DeptModel> departments = new ArrayList<>();
+    private List<DeptModel> departments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +56,14 @@ public class SuperAdminDepartments extends AppCompatActivity {
 
         setContentView(R.layout.activity_super_admin_departments);
 
+        repository = new StudentRepository(this);
+
         btnBack = findViewById(R.id.btnBack);
         searchDepartment = findViewById(R.id.searchDepartment);
         deptListContainer = findViewById(R.id.deptListContainer);
         btnAddDepartment = findViewById(R.id.btnAddDepartment);
 
         btnBack.setOnClickListener(v -> finish());
-
-        departments.add(new DeptModel("CSE", "Computer Science & Engineering", 2, 4, 96));
-        departments.add(new DeptModel("AI & DS", "Artificial Intelligence & Data Science", 2, 3, 68));
-        departments.add(new DeptModel("ECE", "Electronics & Communication", 2, 4, 82));
-        departments.add(new DeptModel("IT", "Information Technology", 1, 3, 76));
-        departments.add(new DeptModel("MECH", "Mechanical Engineering", 1, 2, 50));
-
-        renderDepartments("");
 
         searchDepartment.addTextChangedListener(new TextWatcher() {
             @Override
@@ -84,6 +79,36 @@ public class SuperAdminDepartments extends AppCompatActivity {
         });
 
         btnAddDepartment.setOnClickListener(v -> showAddDepartmentDialog());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadDepartmentsFromDatabase();
+        renderDepartments(searchDepartment.getText().toString().trim());
+    }
+
+    private void loadDepartmentsFromDatabase() {
+        departments.clear();
+
+        String[][] defaultDepts = {
+                {"CSE", "Computer Science & Engineering"},
+                {"AI & DS", "Artificial Intelligence & Data Science"},
+                {"ECE", "Electronics & Communication"},
+                {"IT", "Information Technology"},
+                {"MECH", "Mechanical Engineering"}
+        };
+
+        for (String[] d : defaultDepts) {
+            String code = d[0];
+            String fullName = d[1];
+
+            int staffCount = repository.getStaffAdminCountForDept(code);
+            int studentAdminCount = repository.getStudentAdminCountForDept(code);
+            int studentCount = repository.getStudentCountForDept(code);
+
+            departments.add(new DeptModel(code, fullName, staffCount, studentAdminCount, studentCount));
+        }
     }
 
     private void showAddDepartmentDialog() {
@@ -109,7 +134,12 @@ public class SuperAdminDepartments extends AppCompatActivity {
                         Toast.makeText(this, "Enter both code and name", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    departments.add(new DeptModel(code, name, 0, 0, 0));
+
+                    int staffCount = repository.getStaffAdminCountForDept(code);
+                    int studentAdminCount = repository.getStudentAdminCountForDept(code);
+                    int studentCount = repository.getStudentCountForDept(code);
+
+                    departments.add(new DeptModel(code, name, staffCount, studentAdminCount, studentCount));
                     renderDepartments(searchDepartment.getText().toString().trim());
                     Toast.makeText(this, code + " Department Added", Toast.LENGTH_SHORT).show();
                 })
@@ -118,6 +148,7 @@ public class SuperAdminDepartments extends AppCompatActivity {
     }
 
     private void renderDepartments(String query) {
+        if (deptListContainer == null) return;
         deptListContainer.removeAllViews();
         String q = query.toLowerCase();
 
@@ -158,7 +189,7 @@ public class SuperAdminDepartments extends AppCompatActivity {
             tvTitle.setTextColor(Color.parseColor("#18233F"));
 
             TextView tvCounts = new TextView(this);
-            tvCounts.setText("Staff Admins: " + d.staffAdminCount + "  •  Student Admins: " + d.studentAdminCount);
+            tvCounts.setText("Staff Admins: " + d.staffAdminCount + "  •  Student Admins: " + d.studentAdminCount + "  •  Students: " + d.studentCount);
             tvCounts.setTextSize(12);
             tvCounts.setTextColor(Color.parseColor("#68738A"));
 
