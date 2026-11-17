@@ -11,6 +11,11 @@ import androidx.core.view.WindowCompat;
 
 public class SuperAdminDepartmentDetails extends AppCompatActivity {
 
+    private TextView txtDeptHeaderTitle, txtDeptFullName;
+    private TextView txtDeptStaffCount, txtDeptStudentAdminCount, txtDeptStudentCount;
+    private StudentRepository repository;
+    private String deptCode, deptName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,26 +26,24 @@ public class SuperAdminDepartmentDetails extends AppCompatActivity {
 
         setContentView(R.layout.activity_super_admin_department_details);
 
+        repository = new StudentRepository(this);
+
         ImageView btnBack = findViewById(R.id.btnBack);
-        TextView txtDeptHeaderTitle = findViewById(R.id.txtDeptHeaderTitle);
-        TextView txtDeptFullName = findViewById(R.id.txtDeptFullName);
-        TextView txtDeptStaffCount = findViewById(R.id.txtDeptStaffCount);
-        TextView txtDeptStudentAdminCount = findViewById(R.id.txtDeptStudentAdminCount);
-        TextView txtDeptStudentCount = findViewById(R.id.txtDeptStudentCount);
+        txtDeptHeaderTitle = findViewById(R.id.txtDeptHeaderTitle);
+        txtDeptFullName = findViewById(R.id.txtDeptFullName);
+        txtDeptStaffCount = findViewById(R.id.txtDeptStaffCount);
+        txtDeptStudentAdminCount = findViewById(R.id.txtDeptStudentAdminCount);
+        txtDeptStudentCount = findViewById(R.id.txtDeptStudentCount);
 
         btnBack.setOnClickListener(v -> finish());
 
-        String deptCode = getIntent().getStringExtra("deptCode");
-        String deptName = getIntent().getStringExtra("deptName");
-        int staffCount = getIntent().getIntExtra("staffCount", 0);
-        int studentAdminCount = getIntent().getIntExtra("studentAdminCount", 0);
-        int studentCount = getIntent().getIntExtra("studentCount", 0);
+        deptCode = getIntent().getStringExtra("deptCode");
+        deptName = getIntent().getStringExtra("deptName");
 
         if (deptCode != null) txtDeptHeaderTitle.setText(deptCode + " Department");
         if (deptName != null) txtDeptFullName.setText(deptName);
-        txtDeptStaffCount.setText(String.valueOf(staffCount));
-        txtDeptStudentAdminCount.setText(String.valueOf(studentAdminCount));
-        txtDeptStudentCount.setText(String.valueOf(studentCount));
+
+        loadDepartmentMetrics();
 
         // Open Staff Admins filtered by this Department
         findViewById(R.id.rowViewDeptStaffAdmins).setOnClickListener(v -> {
@@ -62,5 +65,23 @@ public class SuperAdminDepartmentDetails extends AppCompatActivity {
             intent.putExtra("filterDepartment", deptCode);
             startActivity(intent);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadDepartmentMetrics();
+    }
+
+    private void loadDepartmentMetrics() {
+        if (deptCode != null) {
+            int staffCount = repository.getStaffAdminCountForDept(deptCode);
+            int studentAdminCount = repository.getStudentAdminCountForDept(deptCode);
+            int studentCount = repository.getStudentCountForDept(deptCode);
+
+            if (txtDeptStaffCount != null) txtDeptStaffCount.setText(String.valueOf(staffCount));
+            if (txtDeptStudentAdminCount != null) txtDeptStudentAdminCount.setText(String.valueOf(studentAdminCount));
+            if (txtDeptStudentCount != null) txtDeptStudentCount.setText(String.valueOf(studentCount));
+        }
     }
 }

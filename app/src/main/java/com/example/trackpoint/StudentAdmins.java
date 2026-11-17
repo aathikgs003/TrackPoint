@@ -80,7 +80,10 @@ public class StudentAdmins extends AppCompatActivity {
         if (adminListContainer == null) return;
         adminListContainer.removeAllViews();
 
-        ArrayList<StudentAdminModel> admins = repository.getAllStudentAdmins();
+        android.content.SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        String loggedInStaffName = sessionPrefs.getString("logged_in_staff_name", "Suruthika S");
+
+        ArrayList<StudentAdminModel> admins = repository.getStudentAdminsForStaff(loggedInStaffName);
         String q = query.toLowerCase();
 
         if (admins.isEmpty()) {

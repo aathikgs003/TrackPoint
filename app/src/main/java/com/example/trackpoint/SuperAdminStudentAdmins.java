@@ -24,17 +24,20 @@ import java.util.ArrayList;
 
 public class SuperAdminStudentAdmins extends AppCompatActivity {
 
-    ImageView btnBack;
-    TextView txtHeaderTitle;
-    EditText searchStudentAdmin;
-    LinearLayout filterRow, studentAdminListContainer;
-    Spinner spFilterDept, spFilterStaff;
-    Button btnAssignStudentAdmin;
+    private ImageView btnBack;
+    private TextView txtHeaderTitle;
+    private EditText searchStudentAdmin;
+    private LinearLayout filterRow, studentAdminListContainer;
+    private Spinner spFilterDept, spFilterStaff;
+    private Button btnAssignStudentAdmin;
 
-    StudentRepository repository;
-    int purple = Color.parseColor("#4935B8");
-    String lockedDept = null;
-    String lockedStaff = null;
+    private StudentRepository repository;
+    private int purple = Color.parseColor("#4935B8");
+    private String lockedDept = null;
+    private String lockedStaff = null;
+    private boolean isUpdatingStaffSpinner = false;
+
+    private static final String[] DEPARTMENTS = {"All Depts", "CSE", "AI & DS", "ECE", "IT", "MECH"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,20 +73,32 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
             spFilterDept.setVisibility(View.GONE);
         }
 
-        setupSpinner(spFilterDept, new String[]{"All Depts", "CSE", "AI & DS", "ECE", "IT", "MECH"});
-        setupSpinner(spFilterStaff, new String[]{"All Staff Admins", "Prof. Ramesh K", "Dr. Raja", "Prof. Meena R", "Prof. Vijay S", "Prof. Anitha P"});
+        setupSpinner(spFilterDept, DEPARTMENTS);
+        updateStaffFilterSpinner("All Depts", lockedStaff);
 
-        AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
+        spFilterDept.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isUpdatingStaffSpinner) return;
+                String selectedDept = (lockedDept != null && !lockedDept.isEmpty()) ? lockedDept : DEPARTMENTS[position];
+                updateStaffFilterSpinner(selectedDept, null);
                 renderList();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
-        };
-        spFilterDept.setOnItemSelectedListener(listener);
-        spFilterStaff.setOnItemSelectedListener(listener);
+        });
+
+        spFilterStaff.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isUpdatingStaffSpinner) return;
+                renderList();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         searchStudentAdmin.addTextChangedListener(new TextWatcher() {
             @Override
@@ -102,9 +117,13 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
             Intent intent = new Intent(this, SuperAddStudentAdmin.class);
             if (lockedDept != null && !lockedDept.isEmpty()) {
                 intent.putExtra("preselectedDept", lockedDept);
+            } else if (spFilterDept.getSelectedItemPosition() > 0) {
+                intent.putExtra("preselectedDept", spFilterDept.getSelectedItem().toString());
             }
             if (lockedStaff != null && !lockedStaff.isEmpty()) {
                 intent.putExtra("preselectedStaff", lockedStaff);
+            } else if (spFilterStaff.getSelectedItemPosition() > 0) {
+                intent.putExtra("preselectedStaff", spFilterStaff.getSelectedItem().toString());
             }
             startActivity(intent);
         });
@@ -113,6 +132,12 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        String currentDept = (lockedDept != null && !lockedDept.isEmpty()) ? lockedDept :
+                (spFilterDept.getSelectedItem() != null ? spFilterDept.getSelectedItem().toString() : "All Depts");
+        String currentStaff = (lockedStaff != null && !lockedStaff.isEmpty()) ? lockedStaff :
+                (spFilterStaff.getSelectedItem() != null ? spFilterStaff.getSelectedItem().toString() : null);
+
+        updateStaffFilterSpinner(currentDept, currentStaff);
         renderList();
     }
 
@@ -122,11 +147,46 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
         spinner.setAdapter(adapter);
     }
 
+    private void updateStaffFilterSpinner(String departmentFilter, String preselectedStaff) {
+        isUpdatingStaffSpinner = true;
+        ArrayList<StaffAdminModel> allStaff = repository.getAllStaffAdmins();
+        ArrayList<String> staffNames = new ArrayList<>();
+        staffNames.add("All Staff Admins");
+
+        for (StaffAdminModel sa : allStaff) {
+            if (departmentFilter == null || departmentFilter.equals("All Depts")
+                    || sa.getDepartment().equalsIgnoreCase(departmentFilter)
+                    || sa.getDepartment().toLowerCase().contains(departmentFilter.toLowerCase())) {
+                staffNames.add(sa.getName());
+            }
+        }
+
+        ArrayAdapter<String> staffAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, staffNames.toArray(new String[0]));
+        staffAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spFilterStaff.setAdapter(staffAdapter);
+
+        int selectionIndex = 0;
+        if (preselectedStaff != null && !preselectedStaff.isEmpty()) {
+            for (int i = 1; i < staffNames.size(); i++) {
+                if (staffNames.get(i).equalsIgnoreCase(preselectedStaff)) {
+                    selectionIndex = i;
+                    break;
+                }
+            }
+        }
+
+        spFilterStaff.setSelection(selectionIndex);
+        isUpdatingStaffSpinner = false;
+    }
+
     private void renderList() {
         if (studentAdminListContainer == null) return;
         studentAdminListContainer.removeAllViews();
 
-        String deptFilter = (lockedDept != null) ? lockedDept : spFilterDept.getSelectedItem().toString();
+        String deptFilter = (lockedDept != null && !lockedDept.isEmpty()) ? lockedDept :
+                (spFilterDept.getSelectedItem() != null ? spFilterDept.getSelectedItem().toString() : "All Depts");
+        String staffFilter = (lockedStaff != null && !lockedStaff.isEmpty()) ? lockedStaff :
+                (spFilterStaff.getSelectedItem() != null ? spFilterStaff.getSelectedItem().toString() : "All Staff Admins");
         String query = searchStudentAdmin.getText().toString().toLowerCase().trim();
 
         ArrayList<StudentAdminModel> dbList = repository.getAllStudentAdmins();
@@ -140,6 +200,8 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
             studentAdminListContainer.addView(emptyView);
             return;
         }
+
+        int renderedCount = 0;
 
         for (StudentAdminModel admin : dbList) {
             if (!deptFilter.equals("All Depts") && !admin.getDepartment().equalsIgnoreCase(deptFilter)) continue;
@@ -210,6 +272,16 @@ public class SuperAdminStudentAdmins extends AppCompatActivity {
             });
 
             studentAdminListContainer.addView(card);
+            renderedCount++;
+        }
+
+        if (renderedCount == 0) {
+            TextView emptyView = new TextView(this);
+            emptyView.setText("No Student Admins found matching filters");
+            emptyView.setPadding(16, 32, 16, 32);
+            emptyView.setGravity(Gravity.CENTER);
+            emptyView.setTextColor(Color.parseColor("#68738A"));
+            studentAdminListContainer.addView(emptyView);
         }
     }
 

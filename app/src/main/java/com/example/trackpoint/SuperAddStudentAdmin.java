@@ -108,18 +108,14 @@ public class SuperAddStudentAdmin extends AppCompatActivity {
 
         spStudentAdminYear.setSelection(0);
 
-        String initialDept = spStudentAdminDept.getSelectedItemPosition() > 0 ? spStudentAdminDept.getSelectedItem().toString() : "CSE";
-        updateStaffAdminSpinner(initialDept, preselectedStaff);
+        String selectedDeptStr = spStudentAdminDept.getSelectedItemPosition() > 0 ? spStudentAdminDept.getSelectedItem().toString() : "";
+        updateStaffAdminSpinner(selectedDeptStr, preselectedStaff);
 
         spStudentAdminDept.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0) {
-                    String selectedDept = DEPARTMENTS[position];
-                    updateStaffAdminSpinner(selectedDept, null);
-                } else {
-                    updateStaffAdminSpinner("CSE", null);
-                }
+                String deptStr = (position > 0) ? DEPARTMENTS[position] : "";
+                updateStaffAdminSpinner(deptStr, null);
             }
 
             @Override
@@ -132,15 +128,16 @@ public class SuperAddStudentAdmin extends AppCompatActivity {
     }
 
     private void updateStaffAdminSpinner(String department, String preselectedStaff) {
-        ArrayList<StaffAdminModel> staffList = repository.getAllStaffAdmins();
+        ArrayList<StaffAdminModel> allStaff = repository.getAllStaffAdmins();
         ArrayList<String> staffNames = new ArrayList<>();
         staffNames.add("Select Staff Admin");
 
-        for (StaffAdminModel sa : staffList) {
-            staffNames.add(sa.getName());
-        }
-        if (staffNames.size() == 1) {
-            staffNames.add("Suruthika S");
+        for (StaffAdminModel sa : allStaff) {
+            if (department == null || department.isEmpty()
+                    || sa.getDepartment().equalsIgnoreCase(department)
+                    || sa.getDepartment().toLowerCase().contains(department.toLowerCase())) {
+                staffNames.add(sa.getName());
+            }
         }
 
         ArrayAdapter<String> staffAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, staffNames.toArray(new String[0])) {
@@ -197,6 +194,11 @@ public class SuperAddStudentAdmin extends AppCompatActivity {
             return;
         }
 
+        if (spAssignedStaffAdmin.getSelectedItemPosition() == 0) {
+            Toast.makeText(this, "Please select an assigned Staff Admin", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (repository.adminIdExists(id)) {
             Toast.makeText(this, "Admin ID already exists in database!", Toast.LENGTH_SHORT).show();
             return;
@@ -204,6 +206,7 @@ public class SuperAddStudentAdmin extends AppCompatActivity {
 
         String dept = spStudentAdminDept.getSelectedItem().toString();
         String year = spStudentAdminYear.getSelectedItem().toString();
+        String assignedStaff = spAssignedStaffAdmin.getSelectedItem().toString();
 
         if (phone.isEmpty()) {
             phone = "98765 00000";
@@ -225,6 +228,7 @@ public class SuperAddStudentAdmin extends AppCompatActivity {
             resultIntent.putExtra("year", year);
             resultIntent.putExtra("phone", phone);
             resultIntent.putExtra("email", email);
+            resultIntent.putExtra("assignedStaff", assignedStaff);
 
             setResult(RESULT_OK, resultIntent);
             Toast.makeText(this, name + " saved to SQLite database!", Toast.LENGTH_SHORT).show();

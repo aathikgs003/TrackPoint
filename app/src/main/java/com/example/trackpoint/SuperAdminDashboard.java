@@ -148,10 +148,12 @@ public class SuperAdminDashboard extends AppCompatActivity {
         int studentAdminCount = repository.getAllStudentAdmins().size();
         int studentCount = repository.getAllStudents().size();
 
+        int deptCount = repository.getDepartmentCount();
+
         if (txtCountStaffAdmins != null) txtCountStaffAdmins.setText(String.valueOf(staffCount));
         if (txtCountStudentAdmins != null) txtCountStudentAdmins.setText(String.valueOf(studentAdminCount));
         if (txtCountTotalStudents != null) txtCountTotalStudents.setText(String.valueOf(studentCount));
-        if (txtCountDepartments != null) txtCountDepartments.setText("5");
+        if (txtCountDepartments != null) txtCountDepartments.setText(String.valueOf(deptCount));
     }
 
     private void showLogoutDialog() {

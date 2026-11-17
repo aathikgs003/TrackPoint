@@ -127,13 +127,17 @@ public class AddStudentAdmin extends AppCompatActivity {
             String dept = spAdminDepartment.getSelectedItem().toString();
             String year = spAdminYear.getSelectedItem().toString();
 
+            android.content.SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+            String loggedInStaffName = sessionPrefs.getString("logged_in_staff_name", "Suruthika S");
+
             StudentAdminModel newAdmin = new StudentAdminModel(
                     name,
                     id,
                     dept,
                     year,
                     email,
-                    phone.startsWith("+91") ? phone : "+91 " + phone
+                    phone.startsWith("+91") ? phone : "+91 " + phone,
+                    loggedInStaffName
             );
             newAdmin.setStudentsAssignedCount(0);
 

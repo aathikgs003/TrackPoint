@@ -14,11 +14,13 @@ public class StudentAdminModel {
     private String phone;
     private String password;
     private int studentsAssignedCount;
+    private String assignedStaffAdmin;
     private String updatedAt;
 
     public StudentAdminModel() {
         this.password = "123";
         this.studentsAssignedCount = 0;
+        this.assignedStaffAdmin = "Suruthika S";
         this.updatedAt = "";
     }
 
@@ -31,10 +33,24 @@ public class StudentAdminModel {
         this.phone = phone;
         this.password = "123";
         this.studentsAssignedCount = 0;
+        this.assignedStaffAdmin = "Suruthika S";
         this.updatedAt = "";
     }
 
-    public StudentAdminModel(long id, String name, String adminId, String department, String year, String email, String phone, String password, int studentsAssignedCount, String updatedAt) {
+    public StudentAdminModel(String name, String adminId, String department, String year, String email, String phone, String assignedStaffAdmin) {
+        this.name = name;
+        this.adminId = adminId;
+        this.department = department;
+        this.year = year;
+        this.email = email;
+        this.phone = phone;
+        this.password = "123";
+        this.studentsAssignedCount = 0;
+        this.assignedStaffAdmin = assignedStaffAdmin != null && !assignedStaffAdmin.isEmpty() ? assignedStaffAdmin : "Suruthika S";
+        this.updatedAt = "";
+    }
+
+    public StudentAdminModel(long id, String name, String adminId, String department, String year, String email, String phone, String password, int studentsAssignedCount, String assignedStaffAdmin, String updatedAt) {
         this.id = id;
         this.name = name;
         this.adminId = adminId;
@@ -44,6 +60,7 @@ public class StudentAdminModel {
         this.phone = phone;
         this.password = password;
         this.studentsAssignedCount = studentsAssignedCount;
+        this.assignedStaffAdmin = assignedStaffAdmin != null && !assignedStaffAdmin.isEmpty() ? assignedStaffAdmin : "Suruthika S";
         this.updatedAt = updatedAt;
     }
 
@@ -119,6 +136,14 @@ public class StudentAdminModel {
         this.studentsAssignedCount = studentsAssignedCount;
     }
 
+    public String getAssignedStaffAdmin() {
+        return assignedStaffAdmin;
+    }
+
+    public void setAssignedStaffAdmin(String assignedStaffAdmin) {
+        this.assignedStaffAdmin = assignedStaffAdmin;
+    }
+
     public String getUpdatedAt() {
         return updatedAt;
     }
@@ -137,6 +162,7 @@ public class StudentAdminModel {
         values.put(DatabaseHelper.COLUMN_PHONE, phone);
         values.put(DatabaseHelper.COLUMN_PASSWORD, password != null ? password : "123");
         values.put(DatabaseHelper.COLUMN_STUDENTS_ASSIGNED_COUNT, studentsAssignedCount);
+        values.put(DatabaseHelper.COLUMN_ASSIGNED_STAFF_ADMIN, assignedStaffAdmin != null ? assignedStaffAdmin : "Suruthika S");
         values.put(DatabaseHelper.COLUMN_UPDATED_AT, updatedAt != null ? updatedAt : "");
         return values;
     }
@@ -162,9 +188,12 @@ public class StudentAdminModel {
         int countIdx = cursor.getColumnIndex(DatabaseHelper.COLUMN_STUDENTS_ASSIGNED_COUNT);
         int count = countIdx != -1 ? cursor.getInt(countIdx) : 0;
 
+        int staffIdx = cursor.getColumnIndex(DatabaseHelper.COLUMN_ASSIGNED_STAFF_ADMIN);
+        String assignedStaffAdmin = staffIdx != -1 ? cursor.getString(staffIdx) : "Suruthika S";
+
         int updatedIdx = cursor.getColumnIndex(DatabaseHelper.COLUMN_UPDATED_AT);
         String updatedAt = updatedIdx != -1 ? cursor.getString(updatedIdx) : "";
 
-        return new StudentAdminModel(id, name, adminId, department, year, email, phone, password, count, updatedAt);
+        return new StudentAdminModel(id, name, adminId, department, year, email, phone, password, count, assignedStaffAdmin, updatedAt);
     }
 }

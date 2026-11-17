@@ -123,11 +123,36 @@ public class StaffAdminStudents extends AppCompatActivity {
         if (studentListContainer == null) return;
         studentListContainer.removeAllViews();
 
+        android.content.SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        String loggedInStaffName = sessionPrefs.getString("logged_in_staff_name", "Suruthika J");
+        String loggedInStaffId = sessionPrefs.getString("logged_in_staff_id", "STF001");
+
+        StaffAdminModel currentStaff = repository.getStaffAdminByEmail(loggedInStaffId);
+        if (currentStaff == null) currentStaff = repository.getStaffAdminByEmail(loggedInStaffName);
+        if (currentStaff != null) loggedInStaffName = currentStaff.getName();
+
         String selectedDept = spFilterDepartment.getSelectedItem() != null ? spFilterDepartment.getSelectedItem().toString() : "All Departments";
         String selectedYear = spFilterYear.getSelectedItem() != null ? spFilterYear.getSelectedItem().toString() : "All Years";
         String query = searchStudent.getText().toString().trim();
 
-        ArrayList<StudentModel> dbList = repository.searchAndFilterStudentsForAdmin(query, selectedDept, selectedYear, filterByAdminName);
+        ArrayList<StudentModel> dbList = new ArrayList<>();
+
+        if (filterByAdminName != null && !filterByAdminName.isEmpty()) {
+            dbList = repository.searchAndFilterStudentsForAdmin(query, selectedDept, selectedYear, filterByAdminName);
+        } else {
+            ArrayList<StudentAdminModel> staffStudentAdmins = repository.getStudentAdminsForStaff(loggedInStaffName);
+            for (StudentAdminModel sa : staffStudentAdmins) {
+                ArrayList<StudentModel> saStudents = repository.searchAndFilterStudentsForAdmin(query, selectedDept, selectedYear, sa.getName());
+                for (StudentModel s : saStudents) {
+                    if (!dbList.contains(s)) {
+                        dbList.add(s);
+                    }
+                }
+            }
+            if (dbList.isEmpty()) {
+                dbList = repository.searchAndFilterStudentsForAdmin(query, selectedDept, selectedYear, null);
+            }
+        }
 
         if (dbList.isEmpty()) {
             TextView emptyView = new TextView(this);

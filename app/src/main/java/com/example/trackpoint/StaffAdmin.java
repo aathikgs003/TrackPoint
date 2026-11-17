@@ -1,6 +1,7 @@
 package com.example.trackpoint;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -10,21 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 public class StaffAdmin extends AppCompatActivity {
 
-    TextView quickAdmins;
-    TextView tvStaffAdminsCount, tvStaffStudentsCount, tvStaffAttendanceRate, tvStaffSubmissionsCount;
-    StudentRepository repository;
+    private TextView quickAdmins;
+    private TextView tvStaffAdminsCount, tvStaffStudentsCount, tvStaffAttendanceRate, tvStaffSubmissionsCount;
+    private StudentRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,23 +136,39 @@ public class StaffAdmin extends AppCompatActivity {
     }
 
     private void loadDashboardMetrics() {
-        int studentAdminsCount = repository.getAllStudentAdmins().size();
-        int studentsCount = repository.getAllStudents().size();
+        SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
+        String loggedInStaffName = sessionPrefs.getString("logged_in_staff_name", "Suruthika J");
+        String loggedInStaffId = sessionPrefs.getString("logged_in_staff_id", "STF001");
+
+        StaffAdminModel currentStaff = repository.getStaffAdminByEmail(loggedInStaffId);
+        if (currentStaff == null) currentStaff = repository.getStaffAdminByEmail(loggedInStaffName);
+        if (currentStaff != null) loggedInStaffName = currentStaff.getName();
+
+        ArrayList<StudentAdminModel> assignedStudentAdmins = repository.getStudentAdminsForStaff(loggedInStaffName);
+        int studentAdminsCount = assignedStudentAdmins.size();
+
+        int totalStudentsCount = 0;
+        for (StudentAdminModel sa : assignedStudentAdmins) {
+            totalStudentsCount += repository.getAssignedStudentsCountForAdmin(sa.getName());
+        }
+        if (totalStudentsCount == 0) {
+            totalStudentsCount = repository.getAllStudents().size();
+        }
 
         if (tvStaffAdminsCount != null) {
             tvStaffAdminsCount.setText(String.valueOf(studentAdminsCount));
         }
 
         if (tvStaffStudentsCount != null) {
-            tvStaffStudentsCount.setText(String.valueOf(studentsCount));
+            tvStaffStudentsCount.setText(String.valueOf(totalStudentsCount));
         }
 
         if (tvStaffAttendanceRate != null) {
-            tvStaffAttendanceRate.setText("100%");
+            tvStaffAttendanceRate.setText("95%");
         }
 
         if (tvStaffSubmissionsCount != null) {
-            tvStaffSubmissionsCount.setText(String.valueOf(studentsCount));
+            tvStaffSubmissionsCount.setText(String.valueOf(totalStudentsCount));
         }
     }
 

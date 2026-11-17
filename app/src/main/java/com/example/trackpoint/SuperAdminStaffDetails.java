@@ -85,6 +85,12 @@ public class SuperAdminStaffDetails extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadStaffDetails();
+    }
+
     private void loadStaffDetails() {
         StaffAdminModel staff = repository.getStaffAdminByEmail(staffId != null ? staffId : email);
         if (staff != null) {
@@ -94,6 +100,9 @@ public class SuperAdminStaffDetails extends AppCompatActivity {
             email = staff.getEmail();
             phone = staff.getPhone();
         }
+
+        int realCount = repository.getStudentAdminsCountForStaff(staffName != null ? staffName : staffId);
+        studentAdminCount = realCount;
 
         if (staffName != null) txtStaffName.setText(staffName);
         if (staffId != null) txtStaffId.setText(staffId);

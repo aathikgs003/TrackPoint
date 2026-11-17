@@ -15,6 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_STUDENTS = "students";
     public static final String TABLE_ATTENDANCE = "attendance";
     public static final String TABLE_DAILY_ACTIVITIES = "daily_activities";
+    public static final String TABLE_DEPARTMENTS = "departments";
 
     // Common Columns
     public static final String COLUMN_ID = "_id";
@@ -28,6 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PHONE = "phone";
     public static final String COLUMN_PASSWORD = "password";
     public static final String COLUMN_ASSIGNED_ADMIN = "assigned_admin";
+    public static final String COLUMN_ASSIGNED_STAFF_ADMIN = "assigned_staff_admin";
     public static final String COLUMN_SERVER_ID = "server_id";
     public static final String COLUMN_IS_SYNCED = "is_synced";
     public static final String COLUMN_UPDATED_AT = "updated_at";
@@ -46,6 +48,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_NOTES = "notes";
     public static final String COLUMN_SUBMIT_TIME = "submit_time";
     public static final String COLUMN_STAFF_REMARK = "staff_remark";
+
+    // Departments specific
+    public static final String COLUMN_CODE = "code";
+    public static final String COLUMN_FULL_NAME = "full_name";
 
     private static final String CREATE_TABLE_STAFF_ADMINS =
             "CREATE TABLE " + TABLE_STAFF_ADMINS + " (" +
@@ -70,6 +76,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_PHONE + " TEXT, " +
                     COLUMN_PASSWORD + " TEXT DEFAULT '123', " +
                     COLUMN_STUDENTS_ASSIGNED_COUNT + " INTEGER DEFAULT 0, " +
+                    COLUMN_ASSIGNED_STAFF_ADMIN + " TEXT DEFAULT 'Suruthika J', " +
                     COLUMN_UPDATED_AT + " TEXT DEFAULT ''" +
                     ");";
 
@@ -113,6 +120,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_UPDATED_AT + " TEXT DEFAULT ''" +
                     ");";
 
+    private static final String CREATE_TABLE_DEPARTMENTS =
+            "CREATE TABLE " + TABLE_DEPARTMENTS + " (" +
+                    COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_CODE + " TEXT UNIQUE NOT NULL, " +
+                    COLUMN_FULL_NAME + " TEXT NOT NULL, " +
+                    COLUMN_UPDATED_AT + " TEXT DEFAULT ''" +
+                    ");";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -124,6 +139,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_STUDENTS);
         db.execSQL(CREATE_TABLE_ATTENDANCE);
         db.execSQL(CREATE_TABLE_DAILY_ACTIVITIES);
+        db.execSQL(CREATE_TABLE_DEPARTMENTS);
 
         seedInitialData(db);
     }
@@ -137,6 +153,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
         try {
+            db.execSQL(CREATE_TABLE_DEPARTMENTS);
+        } catch (Exception ignored) {
+        }
+        try {
+            db.execSQL("ALTER TABLE " + TABLE_STUDENT_ADMINS + " ADD COLUMN " + COLUMN_ASSIGNED_STAFF_ADMIN + " TEXT DEFAULT 'Suruthika J';");
+        } catch (Exception ignored) {
+        }
+        try {
             db.execSQL("ALTER TABLE " + TABLE_DAILY_ACTIVITIES + " ADD COLUMN " + COLUMN_FILE_URL + " TEXT DEFAULT '';");
         } catch (Exception ignored) {
         }
@@ -144,9 +168,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void seedInitialData(SQLiteDatabase db) {
-        // 1. Seed Staff Admin
+        // 1. Seed Departments
+        String[][] initialDepts = {
+                {"CSE", "Computer Science & Engineering"},
+                {"AI & DS", "Artificial Intelligence & Data Science"},
+                {"ECE", "Electronics & Communication"},
+                {"IT", "Information Technology"},
+                {"MECH", "Mechanical Engineering"}
+        };
+        for (String[] dept : initialDepts) {
+            ContentValues dVal = new ContentValues();
+            dVal.put(COLUMN_CODE, dept[0]);
+            dVal.put(COLUMN_FULL_NAME, dept[1]);
+            dVal.put(COLUMN_UPDATED_AT, String.valueOf(System.currentTimeMillis()));
+            db.insertWithOnConflict(TABLE_DEPARTMENTS, null, dVal, SQLiteDatabase.CONFLICT_IGNORE);
+        }
+
+        // 2. Seed Staff Admin
         ContentValues stfVal = new ContentValues();
-        stfVal.put(COLUMN_NAME, "Suruthika S");
+        stfVal.put(COLUMN_NAME, "Suruthika J");
         stfVal.put(COLUMN_STAFF_ID, "STF001");
         stfVal.put(COLUMN_DEPT, "Computer Science & Engineering");
         stfVal.put(COLUMN_EMAIL, "suruthika@gmail.com");
@@ -155,7 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         stfVal.put(COLUMN_UPDATED_AT, String.valueOf(System.currentTimeMillis()));
         db.insertWithOnConflict(TABLE_STAFF_ADMINS, null, stfVal, SQLiteDatabase.CONFLICT_REPLACE);
 
-        // 2. Seed Student Admin
+        // 3. Seed Student Admin
         ContentValues saVal = new ContentValues();
         saVal.put(COLUMN_NAME, "Aathi");
         saVal.put(COLUMN_ADMIN_ID, "SADM001");
@@ -165,10 +205,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         saVal.put(COLUMN_PHONE, "98765 43201");
         saVal.put(COLUMN_PASSWORD, "123");
         saVal.put(COLUMN_STUDENTS_ASSIGNED_COUNT, 1);
+        saVal.put(COLUMN_ASSIGNED_STAFF_ADMIN, "Suruthika J");
         saVal.put(COLUMN_UPDATED_AT, String.valueOf(System.currentTimeMillis()));
         db.insertWithOnConflict(TABLE_STUDENT_ADMINS, null, saVal, SQLiteDatabase.CONFLICT_REPLACE);
 
-        // 3. Seed Student
+        // 4. Seed Student
         ContentValues sVal = new ContentValues();
         sVal.put(COLUMN_NAME, "Arun Kumar");
         sVal.put(COLUMN_REG_NO, "CSE22CS001");

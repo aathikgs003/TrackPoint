@@ -1,4 +1,3 @@
-
 package com.example.trackpoint;
 
 import android.content.Intent;
@@ -12,10 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText edtEmail;
-    EditText edtPassword;
-    Button btnLogin;
-    StudentRepository repository;
+    private EditText edtEmail;
+    private EditText edtPassword;
+    private Button btnLogin;
+    private StudentRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,14 +32,7 @@ public class MainActivity extends AppCompatActivity {
             String password = edtPassword.getText().toString();
 
             if (email.isEmpty()) {
-                edtEmail.setError("Email is required");
-                return;
-            }
-
-            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-                    && !email.equalsIgnoreCase("CSE22CS001")
-                    && !email.equalsIgnoreCase("SADM001")) {
-                edtEmail.setError("Enter valid email or ID");
+                edtEmail.setError("Email or ID is required");
                 return;
             }
 
@@ -49,10 +41,20 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            // 1. Staff Admin Role
-            if (email.equalsIgnoreCase("suruthika@gmail.com") && password.equals("123")) {
+            // 1. Staff Admin Role (SQLite DB check)
+            StaffAdminModel staffAdmin = repository.authenticateStaffAdmin(email, password);
+            if (staffAdmin != null || (email.equalsIgnoreCase("suruthika@gmail.com") && password.equals("123"))) {
+                String staffName = staffAdmin != null ? staffAdmin.getName() : "Suruthika J";
+                String staffId = staffAdmin != null ? staffAdmin.getStaffId() : "STF001";
+                String staffDept = staffAdmin != null ? staffAdmin.getDepartment() : "CSE";
+                String staffEmail = staffAdmin != null ? staffAdmin.getEmail() : email;
+
                 SharedPreferences sessionPrefs = getSharedPreferences("SessionPrefs", MODE_PRIVATE);
-                sessionPrefs.edit().putString("logged_in_role", "STAFF_ADMIN").apply();
+                sessionPrefs.edit().putString("logged_in_role", "STAFF_ADMIN")
+                        .putString("logged_in_staff_id", staffId)
+                        .putString("logged_in_staff_name", staffName)
+                        .putString("logged_in_staff_dept", staffDept)
+                        .putString("logged_in_staff_email", staffEmail).apply();
 
                 Intent intent = new Intent(MainActivity.this, StaffAdmin.class);
                 startActivity(intent);

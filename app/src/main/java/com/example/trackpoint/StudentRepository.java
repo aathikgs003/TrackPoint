@@ -516,6 +516,130 @@ public class StudentRepository {
         }
     }
 
+    // --- DEPARTMENT OPERATIONS ---
+
+    public int getDepartmentCount() {
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_DEPARTMENTS, new String[]{DatabaseHelper.COLUMN_ID}, null, null, null, null, null);
+            int count = cursor != null ? cursor.getCount() : 0;
+            return count > 0 ? count : 5;
+        } catch (Exception e) {
+            return 5;
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
+    public ArrayList<String> getAllDepartmentCodes() {
+        ArrayList<String> list = new ArrayList<>();
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_DEPARTMENTS, new String[]{DatabaseHelper.COLUMN_CODE}, null, null, null, null, DatabaseHelper.COLUMN_CODE + " ASC");
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    list.add(cursor.getString(0));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+        if (list.isEmpty()) {
+            list.add("CSE");
+            list.add("AI & DS");
+            list.add("ECE");
+            list.add("IT");
+            list.add("MECH");
+        }
+        return list;
+    }
+
+    public long addDepartment(String code, String fullName) {
+        if (code == null || fullName == null) return -1;
+        SQLiteDatabase db = getDatabase();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.COLUMN_CODE, code);
+            values.put(DatabaseHelper.COLUMN_FULL_NAME, fullName);
+            values.put(DatabaseHelper.COLUMN_UPDATED_AT, getCurrentTimestamp());
+            return db.insertWithOnConflict(DatabaseHelper.TABLE_DEPARTMENTS, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public int getStudentAdminsCountForStaff(String staffNameOrId) {
+        if (staffNameOrId == null || staffNameOrId.isEmpty()) return 0;
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        try {
+            String target = staffNameOrId.trim();
+            cursor = db.query(DatabaseHelper.TABLE_STUDENT_ADMINS, new String[]{DatabaseHelper.COLUMN_ID},
+                    "TRIM(" + DatabaseHelper.COLUMN_ASSIGNED_STAFF_ADMIN + ") = ? COLLATE NOCASE OR " +
+                    "TRIM(" + DatabaseHelper.COLUMN_ASSIGNED_STAFF_ADMIN + ") LIKE ? COLLATE NOCASE OR " +
+                    DatabaseHelper.COLUMN_DEPT + " IN (SELECT " + DatabaseHelper.COLUMN_DEPT + " FROM " + DatabaseHelper.TABLE_STAFF_ADMINS + " WHERE TRIM(" + DatabaseHelper.COLUMN_NAME + ") = ? COLLATE NOCASE OR TRIM(" + DatabaseHelper.COLUMN_STAFF_ID + ") = ? COLLATE NOCASE)",
+                    new String[]{target, "%" + target + "%", target, target},
+                    null, null, null);
+            int count = cursor != null ? cursor.getCount() : 0;
+            if (count == 0) {
+                StaffAdminModel staff = getStaffAdminByEmail(target);
+                if (staff != null && staff.getDepartment() != null) {
+                    return getStudentAdminCountForDept(staff.getDepartment());
+                }
+            }
+            return count;
+        } catch (Exception e) {
+            return 0;
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
+    public ArrayList<StudentAdminModel> getStudentAdminsForStaff(String staffNameOrId) {
+        ArrayList<StudentAdminModel> list = new ArrayList<>();
+        if (staffNameOrId == null || staffNameOrId.isEmpty()) return list;
+
+        SQLiteDatabase db = getDatabase();
+        Cursor cursor = null;
+        try {
+            String target = staffNameOrId.trim();
+            cursor = db.query(DatabaseHelper.TABLE_STUDENT_ADMINS, null,
+                    "TRIM(" + DatabaseHelper.COLUMN_ASSIGNED_STAFF_ADMIN + ") = ? COLLATE NOCASE OR " +
+                    "TRIM(" + DatabaseHelper.COLUMN_ASSIGNED_STAFF_ADMIN + ") LIKE ? COLLATE NOCASE OR " +
+                    DatabaseHelper.COLUMN_DEPT + " IN (SELECT " + DatabaseHelper.COLUMN_DEPT + " FROM " + DatabaseHelper.TABLE_STAFF_ADMINS + " WHERE TRIM(" + DatabaseHelper.COLUMN_NAME + ") = ? COLLATE NOCASE OR TRIM(" + DatabaseHelper.COLUMN_STAFF_ID + ") = ? COLLATE NOCASE)",
+                    new String[]{target, "%" + target + "%", target, target},
+                    null, null, DatabaseHelper.COLUMN_NAME + " ASC");
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    StudentAdminModel sa = StudentAdminModel.fromCursor(cursor);
+                    if (sa != null) {
+                        sa.setStudentsAssignedCount(getAssignedStudentsCountForAdmin(sa.getName()));
+                        list.add(sa);
+                    }
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
+        if (list.isEmpty()) {
+            return getAllStudentAdmins();
+        }
+        return list;
+    }
+
+    public int getStudentsCountForStudentAdmin(String studentAdminNameOrId) {
+        return getAssignedStudentsCountForAdmin(studentAdminNameOrId);
+    }
+
     // --- SUPER ADMIN ANALYTICS OPERATIONS ---
 
     public int getStaffAdminCountForDept(String deptCode) {

@@ -161,8 +161,10 @@ public class SuperAdminStaffAdmins extends AppCompatActivity {
             tvName.setTextSize(16);
             tvName.setTextColor(Color.parseColor("#18233F"));
 
+            int studentAdminCount = repository.getStudentAdminsCountForStaff(staff.getName());
+
             TextView tvMeta = new TextView(this);
-            tvMeta.setText(staff.getStaffId() + "  •  Dept: " + staff.getDepartment());
+            tvMeta.setText(staff.getStaffId() + "  •  Dept: " + staff.getDepartment() + "  •  Student Admins: " + studentAdminCount);
             tvMeta.setTextSize(13);
             tvMeta.setTextColor(Color.parseColor("#68738A"));
 
@@ -191,6 +193,7 @@ public class SuperAdminStaffAdmins extends AppCompatActivity {
                 intent.putExtra("department", staff.getDepartment());
                 intent.putExtra("email", staff.getEmail());
                 intent.putExtra("phone", staff.getPhone());
+                intent.putExtra("studentAdminCount", studentAdminCount);
                 startActivity(intent);
             });
 
